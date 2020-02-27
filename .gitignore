@@ -13,6 +13,7 @@ hs_err_pid*
 /html/gwt-unitCache/
 .apt_generated/
 .gwt/
+gwt-unitCache/
 www-test/
 .gwt-tmp/
 

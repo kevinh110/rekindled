@@ -27,6 +27,7 @@ package edu.cornell.gdiac.rekindled;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 
 //import edu.cornell.gdiac.mesh.*;
 
@@ -57,18 +58,10 @@ public class Board {
     }
 
     // Constants
-    /** How far a doomed ship will fall (in z-coords) each turn */
-    private static final float FALL_RATE = 0.5f;
-    /** The minimal z-coordinate before a ship will fall to death */
-    private static final float MIN_FALL_AMOUNT = 1.0f;
-    /** The z-coordinate at which the ship is removed from the screen */
-    private static final float MAX_FALL_AMOUNT = 200.0f;
     /** Space to leave open between tiles */
     private static final float TILE_SPACE = 0;
     /** The dimensions of a single tile */
     private static final int   TILE_WIDTH = 64; // MUST BE 2X VALUE IN GAMECANVAS
-    /** The number of normal tiles before a power tile */
-    private static final int   POWER_SPACE = 4;
 
     //images
     /** The file location of the light tile*/
@@ -124,7 +117,6 @@ public class Board {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 TileState tile = getTileState(x, y);
-                tile.power = (x % POWER_SPACE == 0) || (y % POWER_SPACE == 0);
                 tile.goal = false;
                 tile.visited = false;
                 tile.fallAmount = 0.0f;
@@ -235,59 +227,6 @@ public class Board {
         getTileState(x, y).falling = true;
     }
 
-    /**
-     * Returns true if a tile is completely destroyed yet.
-     *
-     * Destruction only causes the tile to begin to fall. It is not
-     * actually destroyed until it reaches MIN_FATAL_AMOUNT.
-     *
-     * @param x The x index for the Tile cell
-     * @param y The y index for the Tile cell
-     *
-     * @return true if a tile is completely destroyed
-     */
-    public boolean isDestroyedAt(int x, int y) {
-        if (!inBounds(x, y)) {
-            return true;
-        }
-
-        return getTileState(x, y).fallAmount >= MIN_FALL_AMOUNT;
-    }
-
-    /**
-     * Returns true if a tile is a power tile (for weapon firing).
-     *
-     * @param x The x value in screen coordinates
-     * @param y The y value in screen coordinates
-     *
-     * @return true if a tile is a power tile
-     */
-    public boolean isPowerTileAtScreen(float x, float y) {
-        int tx = screenToBoard(x);
-        int ty = screenToBoard(y);
-        if (!inBounds(tx, ty)) {
-            return false;
-        }
-
-        return getTileState(tx, ty).power;
-    }
-
-    /**
-     * Returns true if a tile is a power tile (for weapon firing).
-     *
-     * @param x The x index for the Tile cell
-     * @param y The y index for the Tile cell
-     *
-     * @return true if a tile is a power tile
-     */
-    public boolean isPowerTileAt(int x, int y) {
-        if (!inBounds(x, y)) {
-            return false;
-        }
-
-        return getTileState(x, y).power;
-    }
-
     // GAME LOOP
     // This performs any updates local to the board (e.g. animation)
 
@@ -300,9 +239,6 @@ public class Board {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 TileState tile = getTileState(x, y);
-                if (tile.falling && tile.fallAmount <= MAX_FALL_AMOUNT) {
-                    tile.fallAmount += FALL_RATE;
-                }
             }
         }
     }
@@ -334,17 +270,9 @@ public class Board {
     private void drawTile(int x, int y, GameCanvas canvas) {
         TileState tile = getTileState(x, y);
 
-        // Don't draw tile if it's fallen off the screen
-        if (tile.fallAmount >= 0.95f * MAX_FALL_AMOUNT) {
-            return;
-        }
-
         // Compute drawing coordinates
         float sx = boardToScreen(x);
         float sy = boardToScreen(y);
-        float sz = tile.fallAmount;
-        float a = 0.1f * tile.fallAmount;
-
         // You can modify the following to change a tile's highlight color.
         // BASIC_COLOR corresponds to no highlight.
         ///////////////////////////////////////////////////////
@@ -377,6 +305,18 @@ public class Board {
      */
     public int screenToBoard(float f) {
         return (int)(f / (getTileSize() + getTileSpacing()));
+    }
+
+    /**
+     * Returns if the given position is at center of a tile.
+     */
+    public boolean isCenterOfTile(Vector2 position){
+        float nearestCenterX = boardToScreen(screenToBoard(position.x));
+        float nearestCenterY = boardToScreen(screenToBoard(position.y));
+        if(Math.abs(nearestCenterX - position.x) < .001 && Math.abs(nearestCenterY - position.y) < .001){
+            return true;
+        }
+        return false;
     }
 
     /**

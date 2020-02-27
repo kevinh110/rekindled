@@ -26,11 +26,6 @@ import edu.cornell.gdiac.util.*;
  * a controller via the new XBox360Controller class.
  */
 public class InputController {
-	// Sensitivity for moving crosshair with gameplay
-	private static final float GP_ACCELERATE = 1.0f;
-	private static final float GP_MAX_SPEED  = 10.0f;
-	private static final float GP_THRESHOLD  = 0.01f;
-
 	/** The singleton instance of the input controller */
 	private static InputController theController = null;
 	
@@ -70,7 +65,19 @@ public class InputController {
 	/** Whether the exit button was pressed. */
 	private boolean exitPressed;
 	private boolean exitPrevious;
-	
+	/** Whether the down button was pressed. */
+	private boolean downPressed;
+	private boolean downPrevious;
+	/** Whether the up button was pressed. */
+	private boolean upPressed;
+	private boolean upPrevious;
+	/** Whether the left button was pressed. */
+	private boolean leftPressed;
+	private boolean leftPrevious;
+	/** Whether the right button was pressed. */
+	private boolean rightPressed;
+	private boolean rightPrevious;
+
 	/** How much did we move horizontally? */
 	private float horizontal;
 	/** How much did we move vertically? */
@@ -84,34 +91,34 @@ public class InputController {
 	
 	/** An X-Box controller (if it is connected) */
 	XBox360Controller xbox;
-	
+
 	/**
-	 * Returns the amount of sideways movement. 
+	 * Returns the amount of sideways movement.
 	 *
 	 * -1 = left, 1 = right, 0 = still
 	 *
-	 * @return the amount of sideways movement. 
+	 * @return the amount of sideways movement.
 	 */
 	public float getHorizontal() {
 		return horizontal;
 	}
-	
+
 	/**
-	 * Returns the amount of vertical movement. 
+	 * Returns the amount of vertical movement.
 	 *
 	 * -1 = down, 1 = up, 0 = still
 	 *
-	 * @return the amount of vertical movement. 
+	 * @return the amount of vertical movement.
 	 */
 	public float getVertical() {
 		return vertical;
 	}
-	
+
 	/**
 	 * Returns the current position of the crosshairs on the screen.
 	 *
 	 * This value does not return the actual reference to the crosshairs position.
-	 * That way this method can be called multiple times without any fair that 
+	 * That way this method can be called multiple times without any fair that
 	 * the position has been corrupted.  However, it does return the same object
 	 * each time.  So if you modify the object, the object will be reset in a
 	 * subsequent call to this getter.
@@ -168,23 +175,53 @@ public class InputController {
 	}
 
 	/**
-	 * Returns true if the player wants to go to the next level.
+	 * Returns true if the tertiary action button was pressed.
 	 *
-	 * @return true if the player wants to go to the next level.
+	 * This is a sustained button. It will returns true as long as the player
+	 * holds it down.
+	 *
+	 * @return true if the secondary action button was pressed.
 	 */
-	public boolean didAdvance() {
-		return nextPressed && !nextPrevious;
+	public boolean didUp() {
+		return upPressed;
 	}
-	
+
 	/**
-	 * Returns true if the player wants to go to the previous level.
+	 * Returns true if the tertiary action button was pressed.
 	 *
-	 * @return true if the player wants to go to the previous level.
+	 * This is a sustained button. It will returns true as long as the player
+	 * holds it down.
+	 *
+	 * @return true if the secondary action button was pressed.
 	 */
-	public boolean didRetreat() {
-		return prevPressed && !prevPrevious;
+	public boolean didDown() {
+		return downPressed;
 	}
-	
+
+	/**
+	 * Returns true if the tertiary action button was pressed.
+	 *
+	 * This is a sustained button. It will returns true as long as the player
+	 * holds it down.
+	 *
+	 * @return true if the secondary action button was pressed.
+	 */
+	public boolean didLeft() {
+		return leftPressed;
+	}
+
+	/**
+	 * Returns true if the tertiary action button was pressed.
+	 *
+	 * This is a sustained button. It will returns true as long as the player
+	 * holds it down.
+	 *
+	 * @return true if the secondary action button was pressed.
+	 */
+	public boolean didRight() {
+		return rightPressed;
+	}
+
 	/**
 	 * Returns true if the player wants to go toggle the debug mode.
 	 *
@@ -268,20 +305,10 @@ public class InputController {
 		horizontal = xbox.getLeftX();
 		vertical   = xbox.getLeftY();
 		secondPressed = xbox.getRightTrigger() > 0.6f;
-		
+
 		// Move the crosshairs with the right stick.
 		tertiaryPressed = xbox.getA();
 		crosscache.set(xbox.getLeftX(), xbox.getLeftY());
-		if (crosscache.len2() > GP_THRESHOLD) {
-			momentum += GP_ACCELERATE;
-			momentum = Math.min(momentum, GP_MAX_SPEED);
-			crosscache.scl(momentum);
-			crosscache.scl(1/scale.x,1/scale.y);
-			crosshair.add(crosscache);
-		} else {
-			momentum = 0;
-		}
-		clampPosition(bounds);
 	}
 
 	/**
@@ -302,7 +329,11 @@ public class InputController {
 		prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
 		nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
 		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
-		
+		upPressed  = (secondary && upPressed) || (Gdx.input.isKeyPressed(Input.Keys.UP));
+		downPressed  = (secondary && downPressed) || (Gdx.input.isKeyPressed(Input.Keys.DOWN));
+		leftPressed  = (secondary && leftPressed) || (Gdx.input.isKeyPressed(Input.Keys.LEFT));
+		rightPressed  = (secondary && rightPressed) || (Gdx.input.isKeyPressed(Input.Keys.RIGHT));
+
 		// Directional controls
 		horizontal = (secondary ? horizontal : 0.0f);
 		if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
@@ -311,7 +342,7 @@ public class InputController {
 		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
 			horizontal -= 1.0f;
 		}
-		
+
 		vertical = (secondary ? vertical : 0.0f);
 		if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
 			vertical += 1.0f;
@@ -319,23 +350,6 @@ public class InputController {
 		if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
 			vertical -= 1.0f;
 		}
-		
-		// Mouse results
-        tertiaryPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
-		crosshair.set(Gdx.input.getX(), Gdx.input.getY());
-		crosshair.scl(1/scale.x,-1/scale.y);
-		crosshair.y += bounds.height;
-		clampPosition(bounds);
 	}
-	
-	/**
-	 * Clamp the cursor position so that it does not go outside the window
-	 *
-	 * While this is not usually a problem with mouse control, this is critical 
-	 * for the gamepad controls.
-	 */
-	private void clampPosition(Rectangle bounds) {
-		crosshair.x = Math.max(bounds.x, Math.min(bounds.x+bounds.width, crosshair.x));
-		crosshair.y = Math.max(bounds.y, Math.min(bounds.y+bounds.height, crosshair.y));
-	}
+
 }

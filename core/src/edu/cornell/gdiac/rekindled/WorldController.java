@@ -213,6 +213,14 @@ public abstract class WorldController implements Screen {
 	/** Listener that will update the player mode when we are done */
 	private ScreenListener listener;
 
+	/** The Game Board*/
+	private Board board;
+	/** Board width in tiles*/
+	private static final int BOARD_WIDTH = 10;
+	/** Board Height in tiles*/
+	private static final int BOARD_HEIGHT = 8;
+
+
 	/** The Box2D world */
 	protected World world;
 	/** The boundary of the world */
@@ -374,6 +382,7 @@ public abstract class WorldController implements Screen {
 	 * @param gravity	The gravitational force on this Box2d world
 	 */
 	protected WorldController(Rectangle bounds, Vector2 gravity) {
+		board = new Board(BOARD_WIDTH, BOARD_HEIGHT);
 		assets = new Array<String>();
 		world = new World(gravity,false);
 		this.bounds = new Rectangle(bounds);
@@ -562,6 +571,7 @@ public abstract class WorldController implements Screen {
 		canvas.clear();
 		
 		canvas.begin();
+		board.draw(canvas);
 		for(Obstacle obj : objects) {
 			obj.draw(canvas);
 		}

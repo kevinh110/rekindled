@@ -38,10 +38,11 @@ public class GDXRoot extends Game implements ScreenListener {
 	private GameCanvas canvas; 
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
 	private LoadingMode loading;
+
+	private GameMode gameMode;
+
 	/** Player mode for the the game proper (CONTROLLER CLASS) */
 	private int current;
-	/** WorldController */
-	private GameplayController controller;
 	
 	/**
 	 * Creates a new game from the configuration settings.
@@ -70,8 +71,8 @@ public class GDXRoot extends Game implements ScreenListener {
 		loading = new LoadingMode(canvas,manager,1);
 		
 		// Initialize the game worlds
-		controller = new GameplayController();
-		controller.preLoadContent(manager);
+		gameMode = new GameMode(canvas);
+		gameMode.preLoadContent(manager);
 		current = 0;
 		loading.setScreenListener(this);
 		setScreen(loading);
@@ -85,8 +86,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void dispose() {
 		// Call dispose on our children
 		setScreen(null);
-		controller.unloadContent(manager);
-		controller.dispose();
+		gameMode.unloadContent(manager);
+		gameMode.dispose();
 
 		canvas.dispose();
 		canvas = null;
@@ -121,12 +122,9 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == loading) {
-			controller.loadContent(manager);
-			controller.setScreenListener(this);
-			controller.setCanvas(canvas);
-
-			controller.reset();
-			setScreen(controller);
+			gameMode.loadContent(manager);
+			gameMode.setScreenListener(this);
+			setScreen(gameMode);
 			
 			loading.dispose();
 			loading = null;

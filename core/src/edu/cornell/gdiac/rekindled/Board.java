@@ -48,9 +48,8 @@ public class Board {
         public boolean isLitLightSource;
         public boolean isDimLightSource;
         public boolean isWall;
+        public boolean isLit;
 
-        /** Is this a power tile? */
-        public boolean power = false;
         /** Is this a goal tiles */
         public boolean goal = false;
         /** Has this tile been visited (used for pathfinding)? */
@@ -59,6 +58,9 @@ public class Board {
         public boolean falling = false;
         /** How far the tile has fallen */
         public float fallAmount = 0;
+
+        public final int lightRadius = 3;
+
 
         private void setWall(){
             isWall = true;
@@ -106,7 +108,7 @@ public class Board {
     /** The board height (in number of tiles) */
     private int height;
     /** The tile grid (with above dimensions) */
-    private TileState[] tiles;
+    private TileState[][] tiles;
     /**The texture for the light tile*/
     private Texture lightTile;
     /**the texture for the dark tile**/
@@ -151,18 +153,20 @@ public class Board {
         this.wallRegion = new TextureRegion(wallTexture, TILE_WIDTH, TILE_WIDTH);
 
 
-        tiles = new TileState[width * height];
-        for (int ii = 0; ii < tiles.length; ii++) {
-            tiles[ii] = new TileState();
+        tiles = new TileState[width][height];
+        for (int x = 0; x < width; x++){
+            for (int y = 0; y < height; y++){
+                tiles[x][y] = new TileState();
+            }
         }
-        for(int index: walls){
-            tiles[index].setWall();
+        for(int ii = 0; ii < walls.length-1; ii += 2){
+            tiles[walls[ii]][walls[ii+1]].setWall();
         }
-        for(int index: litSources){
-            tiles[index].setLitLightSource();
+        for(int ii = 0; ii < litSources.length-1; ii += 2){
+            tiles[litSources[ii]][litSources[ii+1]].setLitLightSource();
         }
-        for(int index: dimSources){
-            tiles[index].setDimLightSource();
+        for(int ii = 0; ii < dimSources.length-1; ii += 2){
+            tiles[dimSources[ii]][dimSources[ii+1]].setDimLightSource();
         }
 
         resetTiles();
@@ -174,27 +178,13 @@ public class Board {
     public void resetTiles() {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                TileState tile = getTileState(x, y);
+                TileState tile = tiles[x][y];
                 tile.goal = false;
                 tile.visited = false;
                 tile.fallAmount = 0.0f;
                 tile.falling = false;
             }
         }
-    }
-
-    /**
-     * Returns the tile state for the given position (INTERNAL USE ONLY)
-     *
-     * Returns null if that position is out of bounds.
-     *
-     * @return the tile state for the given position
-     */
-    private TileState getTileState(int x, int y) {
-        if (!inBounds(x, y)) {
-            return null;
-        }
-        return tiles[x * height + y];
     }
 
     /**
@@ -233,57 +223,6 @@ public class Board {
         return TILE_SPACE;
     }
 
-    // COORDINATE TRANSFORMS
-    // The methods are used by the physics engine to coordinate the
-    // Ships and Photons with the board. You should not need them.
-
-    /**
-     * Returns true if a screen location is safe (i.e. there is a tile there)
-     *
-     * @param x The x value in screen coordinates
-     * @param y The y value in screen coordinates
-     *
-     * @return true if a screen location is safe
-     */
-    public boolean isSafeAtScreen(float x, float y) {
-        int bx = screenToBoard(x);
-        int by = screenToBoard(y);
-        return x >= 0 && y >= 0
-                && x < width * (getTileSize() + getTileSpacing()) - getTileSpacing()
-                && y < height * (getTileSize() + getTileSpacing()) - getTileSpacing()
-                && !getTileState(bx, by).falling;
-    }
-
-    /**
-     * Returns true if a tile location is safe (i.e. there is a tile there)
-     *
-     * @param x The x index for the Tile cell
-     * @param y The y index for the Tile cell
-     *
-     * @return true if a screen location is safe
-     */
-    public boolean isSafeAt(int x, int y) {
-        return x >= 0 && y >= 0 && x < width && y < height
-                && !getTileState(x, y).falling;
-    }
-
-    /**
-     * Destroys a tile at the given cell location.
-     *
-     * Destruction only causes the tile to begin to fall. It is not
-     * destroyed until it reaches MIN_FATAL_AMOUNT.  This allows any
-     * ships on it a little bit of time to escape.
-     *
-     * @param x The x index for the Tile cell
-     * @param y The y index for the Tile cell
-     */
-    public void destroyTileAt(int x, int y) {
-        if (!inBounds(x, y)) {
-            return;
-        }
-
-        getTileState(x, y).falling = true;
-    }
 
     // GAME LOOP
     // This performs any updates local to the board (e.g. animation)
@@ -296,7 +235,7 @@ public class Board {
     public void update() {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                TileState tile = getTileState(x, y);
+                TileState tile = tiles[x][y];
             }
         }
     }
@@ -326,7 +265,7 @@ public class Board {
      * @param y The y index for the Tile cell
      */
     private void drawTile(int x, int y, GameCanvas canvas) {
-        TileState tile = getTileState(x, y);
+        TileState tile = tiles[x][y];
 
         // Compute drawing coordinates
         float sx = boardToScreen(x);
@@ -450,7 +389,7 @@ public class Board {
             return false;
         }
 
-        return getTileState(x, y).visited;
+        return tiles[x][y].visited;
     }
 
     /**
@@ -466,7 +405,7 @@ public class Board {
             Gdx.app.error("Board", "Illegal tile "+x+","+y, new IndexOutOfBoundsException());
             return;
         }
-        getTileState(x, y).visited = true;
+        tiles[x][y].visited = true;
     }
 
     /**
@@ -478,7 +417,7 @@ public class Board {
      * @return true if the tile is a goal.
      */
     public boolean isObstructed(Vector2 position) {
-        TileState tile = getTileState(screenToBoard(position.x), screenToBoard(position.y));
+        TileState tile = tiles[screenToBoard(position.x)][screenToBoard(position.y)];
         return tile.isWall || tile.isDimLightSource || tile.isLitLightSource;
     }
 
@@ -495,7 +434,7 @@ public class Board {
             Gdx.app.error("Board", "Illegal tile "+x+","+y, new IndexOutOfBoundsException());
             return;
         }
-        getTileState(x, y).goal = true;
+        tiles[x][y].goal = true;
     }
 
 
@@ -507,7 +446,7 @@ public class Board {
     public void clearMarks() {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                TileState state = getTileState(x, y);
+                TileState state = tiles[x][y];
                 state.visited = false;
                 state.goal = false;
             }

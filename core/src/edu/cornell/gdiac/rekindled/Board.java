@@ -45,9 +45,9 @@ public class Board {
      * Therefore, we make this an inner class.
      */
     private static class TileState {
-        public boolean litLightSource;
-        public boolean dimLightSource;
-        public boolean wall;
+        public boolean isLitLightSource;
+        public boolean isDimLightSource;
+        public boolean isWall;
 
         /** Is this a power tile? */
         public boolean power = false;
@@ -61,21 +61,21 @@ public class Board {
         public float fallAmount = 0;
 
         private void setWall(){
-            wall = true;
-            litLightSource = false;
-            dimLightSource = false;
+            isWall = true;
+            isLitLightSource = false;
+            isDimLightSource = false;
         }
 
         private void setLitLightSource(){
-            wall = false;
-            litLightSource = true;
-            dimLightSource = false;
+            isWall = false;
+            isLitLightSource = true;
+            isDimLightSource = false;
         }
 
         private void setDimLightSource(){
-            wall = false;
-            litLightSource = false;
-            dimLightSource = true;
+            isWall = false;
+            isLitLightSource = false;
+            isDimLightSource = true;
         }
     }
 
@@ -340,11 +340,11 @@ public class Board {
         ///////////////////////////////////////////////////////
 
         // Draw
-        if(tile.wall)
+        if(tile.isWall)
             canvas.draw(wallRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
-        else if(tile.litLightSource)
+        else if(tile.isLitLightSource)
             canvas.draw(litSourceRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
-        else if(tile.dimLightSource)
+        else if(tile.isDimLightSource)
             canvas.draw(dimSourceRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
         else
             canvas.draw(darkRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
@@ -474,17 +474,12 @@ public class Board {
      *
      * A tile position that is not on the board will always evaluate to false.
      *
-     * @param x The x index for the Tile cell
-     * @param y The y index for the Tile cell
      *
      * @return true if the tile is a goal.
      */
-    public boolean isGoal(int x, int y) {
-        if (!inBounds(x, y)) {
-            return false;
-        }
-
-        return getTileState(x, y).goal;
+    public boolean isObstructed(Vector2 position) {
+        TileState tile = getTileState(screenToBoard(position.x), screenToBoard(position.y));
+        return tile.isWall || tile.isDimLightSource || tile.isLitLightSource;
     }
 
     /**
@@ -502,6 +497,7 @@ public class Board {
         }
         getTileState(x, y).goal = true;
     }
+
 
     /**
      * Clears all marks on the board.

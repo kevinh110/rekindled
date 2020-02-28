@@ -304,7 +304,6 @@ public class GameplayController implements Screen {
 
 		if (board.isCenterOfTile(player.getPosition())){
 			player.setMoving(false);
-
 		}
 
 		if(input.didUp()){
@@ -318,6 +317,9 @@ public class GameplayController implements Screen {
 		}
 		else if (input.didRight()){
 			player.move(board.getTileSize() + board.getTileSpacing(), 0);
+		}
+		if (board.isObstructed(player.getGoal())){
+			player.setMoving(false);
 		}
 
 		player.update();

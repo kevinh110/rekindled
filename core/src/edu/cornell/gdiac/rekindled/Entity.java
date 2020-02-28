@@ -58,6 +58,10 @@ public class Entity {
         }
     }
 
+    public Vector2 getGoal(){
+        return new Vector2(goalX, goalY);
+    }
+
     /// Texture Information
     /**
      * Returns the object texture for drawing purposes.

@@ -45,10 +45,10 @@ public class Board {
      * Therefore, we make this an inner class.
      */
     private static class TileState {
+        public boolean isLightSource;
         public boolean isLitLightSource;
-        public boolean isDimLightSource;
         public boolean isWall;
-        public boolean isLit;
+        public boolean isLitTile;
 
         /** Is this a goal tiles */
         public boolean goal = false;
@@ -61,23 +61,25 @@ public class Board {
 
         public final int lightRadius = 3;
 
-
         private void setWall(){
             isWall = true;
             isLitLightSource = false;
-            isDimLightSource = false;
+            isLightSource = false;
+            isLitTile = false;
         }
 
         private void setLitLightSource(){
             isWall = false;
             isLitLightSource = true;
-            isDimLightSource = false;
+            isLightSource = true;
+            isLitTile = true;
         }
 
         private void setDimLightSource(){
             isWall = false;
             isLitLightSource = false;
-            isDimLightSource = true;
+            isLightSource = true;
+            isLitTile = false;
         }
     }
 
@@ -293,23 +295,19 @@ public class Board {
         // Compute drawing coordinates
         float sx = boardToScreen(x);
         float sy = boardToScreen(y);
-        // You can modify the following to change a tile's highlight color.
-        // BASIC_COLOR corresponds to no highlight.
-        ///////////////////////////////////////////////////////
 
-
-
-        ///////////////////////////////////////////////////////
-
-        // Draw
         if(tile.isWall)
             canvas.draw(wallRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
-        else if(tile.isLitLightSource)
-            canvas.draw(litSourceRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
-        else if(tile.isDimLightSource)
-            canvas.draw(dimSourceRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
+        else if (tile.isLitTile)
+            canvas.draw(lightRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
         else
             canvas.draw(darkRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
+        if (tile.isLightSource){
+            if(tile.isLitLightSource)
+                canvas.draw(litSourceRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
+            else
+                canvas.draw(dimSourceRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
+        }
     }
 
     // METHODS FOR LAB 2
@@ -441,7 +439,7 @@ public class Board {
      */
     public boolean isObstructed(Vector2 position) {
         TileState tile = tiles[screenToBoard(position.x)][screenToBoard(position.y)];
-        return tile.isWall || tile.isDimLightSource || tile.isLitLightSource;
+        return tile.isWall || tile.isLightSource;
     }
 
     /**

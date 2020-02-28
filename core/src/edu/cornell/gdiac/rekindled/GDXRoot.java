@@ -129,6 +129,9 @@ public class GDXRoot extends Game implements ScreenListener {
 			loading.dispose();
 			loading = null;
 		}
+		if (screen == gameMode){
+			//code for going into menu or something
+		}
 	}
 
 }

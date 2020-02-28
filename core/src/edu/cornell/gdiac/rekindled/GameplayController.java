@@ -51,6 +51,8 @@ public class GameplayController {
 	public void preLoadContent(AssetManager manager, Array<String> assets) {
 		manager.load(PLAYER_FILE, Texture.class);
 		assets.add(PLAYER_FILE);
+		manager.load(ENEMY_FILE, Texture.class);
+		assets.add(ENEMY_FILE);
 	}
 
 	/**
@@ -66,6 +68,10 @@ public class GameplayController {
 	public void loadContent(AssetManager manager) {
 		playerTexture = createTexture(manager,PLAYER_FILE);
 		player.setTexture(playerTexture);
+		enemyTexture = createTexture(manager,ENEMY_FILE);
+		for(Enemy enemy: enemies) {
+			enemy.setTexture(enemyTexture);
+		}
 	}
 
 	private Texture createTexture(AssetManager manager, String file) {
@@ -106,25 +112,33 @@ public class GameplayController {
 	/** The Game Board*/
 	private Board board;
 	/** Board width in tiles*/
-	private static final int BOARD_WIDTH = 10;
+	private static final int BOARD_WIDTH = 16;
 	/** Board Height in tiles*/
-	private static final int BOARD_HEIGHT = 8;
+	private static final int BOARD_HEIGHT = 9;
 
 	private Player player;
+
+	private Enemy[] enemies;
 
 	/** The boundary of the world */
 	protected Rectangle bounds;
 	/** The world scale */
 	protected Vector2 scale;
 
-	/** File storing the enemy texture for a ship */
+	/** File storing the player */
 	private static final String PLAYER_FILE  = "images/player.png";
-	/** Texture for beam */
+	/** Texture for player */
 	private Texture playerTexture;
+
+	/** File storing the enemy */
+	private static final String ENEMY_FILE  = "images/enemy.png";
+	/** Texture for enemy */
+	private Texture enemyTexture;
 
 	private int[] walls = {3, 4, 3, 5, 3, 6, 3, 7};
 	private int[] dimSources = {5, 3, 2, 4};
 	private int[] litSources = {2, 2, 5, 6};
+	private int[] enemyLocations = {10, 4};
 
 
 	/**
@@ -151,6 +165,10 @@ public class GameplayController {
 	protected GameplayController(Rectangle bounds, Array<String> assets) {
 		board = new Board(BOARD_WIDTH, BOARD_HEIGHT, walls, litSources, dimSources);
 		player = new Player(board.boardToScreen(1), board.boardToScreen(1), 2);
+		enemies = new Enemy[enemyLocations.length/2];
+		for (int ii = 0; ii < enemyLocations.length-1; ii += 2){
+			enemies[ii/2] = new Enemy(board.boardToScreen(enemyLocations[ii]), board.boardToScreen(enemyLocations[ii+1]), 2);
+		}
 		this.bounds = new Rectangle(bounds);
 		this.scale = new Vector2(1,1);
 	}
@@ -224,6 +242,9 @@ public class GameplayController {
 	public void draw(GameCanvas canvas, float delta) {
 		board.draw(canvas);
 		player.draw(canvas);
+		for(Enemy enemy : enemies){
+			enemy.draw(canvas);
+		}
 
 	}
 }

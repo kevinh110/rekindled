@@ -169,6 +169,17 @@ public class Board {
             tiles[dimSources[ii]][dimSources[ii+1]].setDimLightSource();
         }
 
+
+        //temp code for perimeter
+        for (int x = 0; x < tiles.length; x++){
+            tiles[x][0].setWall();
+            tiles[x][8].setWall();
+        }
+        for (int y = 0; y < tiles[0].length; y++){
+            tiles[0][y].setWall();
+            tiles[15][y].setWall();
+        }
+
         resetTiles();
     }
 

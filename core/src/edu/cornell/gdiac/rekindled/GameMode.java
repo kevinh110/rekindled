@@ -48,9 +48,6 @@ public class GameMode implements Screen {
     // Loaded assets
     /** The background image for the game */
     private Texture background;
-    /** The font for giving messages to the player */
-    private BitmapFont displayFont;
-    private int FONT_SIZE = 24;
 
     /** Track all loaded assets (for unloading purposes) */
     private Array<String> assets;
@@ -84,9 +81,6 @@ public class GameMode implements Screen {
      * @param manager Reference to global asset manager.
      */
     public void loadContent(AssetManager manager) {
-        // Allocate the font
-        displayFont = null;
-
         // Allocate the background
         if (manager.isLoaded(BKGD_FILE)) {
             background = manager.get(BKGD_FILE, Texture.class);
@@ -117,10 +111,6 @@ public class GameMode implements Screen {
 
     /** Factor used to compute where we are in scrolling process */
     private static final float TIME_MODIFIER    = 0.06f;
-    /** Offset for the shell counter message on the screen */
-    private static final float COUNTER_OFFSET   = 5.0f;
-    /** Offset for the game over message on the screen */
-    private static final float GAME_OVER_OFFSET = 40.0f;
 
     /** Reference to drawing context to display graphics (VIEW CLASS) */
     private GameCanvas canvas;

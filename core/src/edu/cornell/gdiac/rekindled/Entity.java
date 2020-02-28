@@ -90,6 +90,10 @@ public class Entity {
         origin.set(mainTexture.getWidth()/2.0f, mainTexture.getHeight()/2.0f);
     }
 
+    public void setPosition(float x, float y){
+        position = new Vector2(x, y);
+    }
+
     /**
      * Draws the physics object.
      *

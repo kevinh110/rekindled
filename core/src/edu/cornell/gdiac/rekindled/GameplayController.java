@@ -140,6 +140,10 @@ public class GameplayController {
 	private int[] litSources = {2, 2, 5, 6};
 	private int[] enemyLocations = {10, 4};
 
+	CollisionController collisions;
+
+	boolean lostGame;
+
 
 	/**
 	 * Creates a new game world with the default values.
@@ -171,6 +175,8 @@ public class GameplayController {
 		}
 		this.bounds = new Rectangle(bounds);
 		this.scale = new Vector2(1,1);
+		collisions = new CollisionController(board, enemies, player);
+		lostGame = false;
 	}
 
 	/**
@@ -187,10 +193,10 @@ public class GameplayController {
 		InputController input = InputController.getInstance();
 		input.readInput(bounds, scale);
 
+		//player movement
 		if (board.isCenterOfTile(player.getPosition())){
 			player.setMoving(false);
 		}
-
 		if(input.didUp()){
 			player.move(0, board.getTileSize() + board.getTileSpacing());
 		}
@@ -207,6 +213,12 @@ public class GameplayController {
 			player.setMoving(false);
 		}
 
+		//player-enemy collision
+		if(collisions.checkPlayerEnemyCollision()){
+			lostGame = true;
+		}
+
+
 		player.update();
 		board.update();
 		//enemy.update();
@@ -219,6 +231,12 @@ public class GameplayController {
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
+		board.reset(walls, litSources, dimSources);
+		player.setPosition(board.boardToScreen(1), board.boardToScreen(1));
+		for (int ii = 0; ii < enemyLocations.length-1; ii += 2){
+			enemies[ii/2].setPosition(board.boardToScreen(enemyLocations[ii]), board.boardToScreen(enemyLocations[ii+1]));
+		}
+		lostGame = false;
 	}
 
 	public boolean isAlive(){
@@ -227,6 +245,10 @@ public class GameplayController {
 
 	public boolean won(){
 		return false;
+	}
+
+	public boolean lost(){
+		return lostGame;
 	}
 
 	/**

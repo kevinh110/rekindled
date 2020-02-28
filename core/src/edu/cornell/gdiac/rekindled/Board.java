@@ -198,6 +198,18 @@ public class Board {
         }
     }
 
+    public void reset(int[] walls, int[] litSources, int[] dimSources){
+        for(int ii = 0; ii < walls.length-1; ii += 2){
+            tiles[walls[ii]][walls[ii+1]].setWall();
+        }
+        for(int ii = 0; ii < litSources.length-1; ii += 2){
+            tiles[litSources[ii]][litSources[ii+1]].setLitLightSource();
+        }
+        for(int ii = 0; ii < dimSources.length-1; ii += 2){
+            tiles[dimSources[ii]][dimSources[ii+1]].setDimLightSource();
+        }
+    }
+
     /**
      * Returns the number of tiles horizontally across the board.
      *

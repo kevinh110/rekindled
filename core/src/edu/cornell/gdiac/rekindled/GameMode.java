@@ -15,8 +15,6 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.graphics.g2d.freetype.*;
 
 import edu.cornell.gdiac.util.*;
 
@@ -180,12 +178,13 @@ public class GameMode implements Screen {
                 if (inputController.didReset()) {
                     gameState = GameState.PLAY;
                     gameplayController.reset();
-                } else {
-                    play(delta);
                 }
                 break;
             case PLAY:
                 play(delta);
+                if(gameplayController.lost()){
+                    gameState = GameState.OVER;
+                }
                 break;
             default:
                 break;

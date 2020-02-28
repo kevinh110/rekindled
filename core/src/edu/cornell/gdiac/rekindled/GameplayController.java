@@ -131,6 +131,10 @@ public class GameplayController implements Screen {
 	/** Texture for beam */
 	private Texture playerTexture;
 
+	private int[] walls = {20, 21, 22, 23};
+	private int[] dimSources = {11, 73};
+	private int[] litSources = {50};
+
 
 	/**
 	 * Returns true if debug mode is active.
@@ -213,8 +217,8 @@ public class GameplayController implements Screen {
 	 * @param bounds	The game bounds in Box2d coordinates
 	 */
 	protected GameplayController(Rectangle bounds) {
-		board = new Board(BOARD_WIDTH, BOARD_HEIGHT);
-		player = new Player(board.boardToScreen(0), board.boardToScreen(0), 2);
+		board = new Board(BOARD_WIDTH, BOARD_HEIGHT, walls, litSources, dimSources);
+		player = new Player(board.boardToScreen(1), board.boardToScreen(1), 2);
 		assets = new Array<String>();
 		this.bounds = new Rectangle(bounds);
 		this.scale = new Vector2(1,1);

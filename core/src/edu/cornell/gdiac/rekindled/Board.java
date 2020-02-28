@@ -45,6 +45,10 @@ public class Board {
      * Therefore, we make this an inner class.
      */
     private static class TileState {
+        public boolean litLightSource;
+        public boolean dimLightSource;
+        public boolean wall;
+
         /** Is this a power tile? */
         public boolean power = false;
         /** Is this a goal tiles */
@@ -55,24 +59,46 @@ public class Board {
         public boolean falling = false;
         /** How far the tile has fallen */
         public float fallAmount = 0;
+
+        private void setWall(){
+            wall = true;
+            litLightSource = false;
+            dimLightSource = false;
+        }
+
+        private void setLitLightSource(){
+            wall = false;
+            litLightSource = true;
+            dimLightSource = false;
+        }
+
+        private void setDimLightSource(){
+            wall = false;
+            litLightSource = false;
+            dimLightSource = true;
+        }
     }
 
     // Constants
     /** Space to leave open between tiles */
     private static final float TILE_SPACE = 0;
     /** The dimensions of a single tile */
-    private static final int   TILE_WIDTH = 64; // MUST BE 2X VALUE IN GAMECANVAS
+    private static final int TILE_WIDTH = 64; // MUST BE 2X VALUE IN GAMECANVAS
 
     //images
     /** The file location of the light tile*/
     private static final String LIGHT_TILE = "images/LightTile.png";
     /** The file location of the dark tile*/
     private static final String DARK_TILE = "images/DarkTile.png";
+    /** The file location of the wall*/
+    private static final String WALL = "images/wall.png";
+    /** The file location of a lit light source*/
+    private static final String LIT_SOURCE = "images/litLightSource.png";
+    /** The file location of a dim light source*/
+    private static final String DIM_SOURCE = "images/dimLightSource.png";
 
 
 
-    /** Highlight color for power tiles */
-    private static final Color POWER_COLOR = new Color( 0.0f,  1.0f,  1.0f, 0.5f);
 
     // Instance attributes
     /** The board width (in number of tiles) */
@@ -85,10 +111,23 @@ public class Board {
     private Texture lightTile;
     /**the texture for the dark tile**/
     private Texture darkTile;
+    /**the texture for the wall**/
+    private Texture wallTexture;
+    /**texture region for dim light source*/;
+    private Texture dimLightSource;
+    /**texture region for lit light source*/;
+    private Texture litLightSource;
+
     /**texture region for lightTile*/;
     private TextureRegion lightRegion
     /**texture region for darkTile*/;
     private TextureRegion darkRegion;
+    /**texture region for lit source*/
+    private TextureRegion litSourceRegion;
+            /**texture region for dim source*/;
+    private TextureRegion dimSourceRegion;
+    /**texture region for wall*/
+    private TextureRegion wallRegion;
 
     /**
      * Creates a new board of the given size
@@ -96,17 +135,36 @@ public class Board {
      * @param width Board width in tiles
      * @param height Board height in tiles
      */
-    public Board(int width, int height) {
+    public Board(int width, int height, int[] walls, int[] litSources, int[] dimSources) {
         this.width = width;
         this.height = height;
         this.darkTile = new Texture(DARK_TILE);
         this.lightTile = new Texture(LIGHT_TILE);
+        this.wallTexture = new Texture(WALL);
+        this.dimLightSource = new Texture(DIM_SOURCE);
+        this.litLightSource = new Texture(LIT_SOURCE);
+
         this.darkRegion = new TextureRegion(darkTile, TILE_WIDTH, TILE_WIDTH);
         this.lightRegion = new TextureRegion(lightTile, TILE_WIDTH, TILE_WIDTH);
+        this.litSourceRegion = new TextureRegion(litLightSource, TILE_WIDTH, TILE_WIDTH);
+        this.dimSourceRegion = new TextureRegion(dimLightSource, TILE_WIDTH, TILE_WIDTH);
+        this.wallRegion = new TextureRegion(wallTexture, TILE_WIDTH, TILE_WIDTH);
+
+
         tiles = new TileState[width * height];
         for (int ii = 0; ii < tiles.length; ii++) {
             tiles[ii] = new TileState();
         }
+        for(int index: walls){
+            tiles[index].setWall();
+        }
+        for(int index: litSources){
+            tiles[index].setLitLightSource();
+        }
+        for(int index: dimSources){
+            tiles[index].setDimLightSource();
+        }
+
         resetTiles();
     }
 
@@ -282,7 +340,14 @@ public class Board {
         ///////////////////////////////////////////////////////
 
         // Draw
-        canvas.draw(darkRegion,  sx, sy);
+        if(tile.wall)
+            canvas.draw(wallRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
+        else if(tile.litLightSource)
+            canvas.draw(litSourceRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
+        else if(tile.dimLightSource)
+            canvas.draw(dimSourceRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
+        else
+            canvas.draw(darkRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
     }
 
     // METHODS FOR LAB 2

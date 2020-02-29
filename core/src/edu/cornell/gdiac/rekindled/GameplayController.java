@@ -213,6 +213,12 @@ public class GameplayController {
 			player.setMoving(false);
 		}
 
+		//placing and taking light
+		if (input.didSecondary() && board.inLightInteractRange(player.getPosition().x, player.getPosition().y)) {
+			System.out.println("Space pressed");
+			doLightInteraction();
+		}
+
 		//player-enemy collision
 		if(collisions.checkPlayerEnemyCollision()){
 			lostGame = true;
@@ -220,6 +226,9 @@ public class GameplayController {
 
 
 		player.update();
+		//System.out.println(board.screenToBoard(player.getPosition().x));
+		//System.out.println(board.screenToBoard(player.getPosition().y));
+		//System.out.println(player.lights);
 		board.update();
 		//enemy.update();
 	}
@@ -249,6 +258,29 @@ public class GameplayController {
 
 	public boolean lost(){
 		return lostGame;
+	}
+
+	/** Handles Lux's light interactions (placing and taking)
+	 *
+	 */
+	public void doLightInteraction() {
+		//find whether or not lux is in range of a light source
+		Vector2 pos = player.getPosition();
+
+		System.out.println("in Range");
+		Vector2 source = board.getInteractedSource(pos.x, pos.y);
+		System.out.println(source.x);
+		System.out.println(source.y);
+			//take light, place light
+		if (board.getSourceOn(source) && player.hasSpace()) {
+			System.out.println("Taking Light");
+			board.turnSourceOff(source);
+			player.increaseLights();
+		} else if (!board.getSourceOn(source) && player.hasLights()) {
+			System.out.println("Placing light");
+			board.turnSourceOn(source);
+			player.decreaseLights();
+		}
 	}
 
 	/**

@@ -81,6 +81,10 @@ public class Board {
             isLightSource = true;
             isLitTile = false;
         }
+
+        public void setLit() {
+            isLitTile = true;
+        }
     }
 
     // Constants
@@ -100,6 +104,7 @@ public class Board {
     private static final String LIT_SOURCE = "images/litLightSource.png";
     /** The file location of a dim light source*/
     private static final String DIM_SOURCE = "images/dimLightSource.png";
+    private static final int LIGHT_RADIUS = 2;
 
 
 
@@ -154,6 +159,8 @@ public class Board {
         this.dimSourceRegion = new TextureRegion(dimLightSource, TILE_WIDTH, TILE_WIDTH);
         this.wallRegion = new TextureRegion(wallTexture, TILE_WIDTH, TILE_WIDTH);
 
+        Vector2 temp = new Vector2();
+
 
         tiles = new TileState[width][height];
         for (int x = 0; x < width; x++){
@@ -166,6 +173,9 @@ public class Board {
         }
         for(int ii = 0; ii < litSources.length-1; ii += 2){
             tiles[litSources[ii]][litSources[ii+1]].setLitLightSource();
+            //URGENT: Change so new vector is not created
+            temp.set(litSources[ii], litSources[ii+1]);
+            updateLitTiles(temp);
         }
         for(int ii = 0; ii < dimSources.length-1; ii += 2){
             tiles[dimSources[ii]][dimSources[ii+1]].setDimLightSource();
@@ -473,4 +483,93 @@ public class Board {
             }
         }
     }
+
+    public void clearLight() {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                TileState state = tiles[x][y];
+                state.isLitTile = false;
+            }
+        }
+    }
+
+    //Player has to be adjacent to light source
+    //May change later
+    public boolean inLightInteractRange(float x, float y) {
+        int xx = screenToBoard(x);
+        int yy = screenToBoard(y);
+
+        boolean interact = false;
+        for (int i = xx - 1; i <= xx + 1; i++) {
+            for (int j = yy - 1; j <= yy + 1; j++) {
+                TileState tile = tiles[i][j];
+                if (tile.isLightSource) {
+                    interact = true;
+                }
+            }
+        }
+        return interact;
+    }
+
+    public Vector2 getInteractedSource(float x, float y) {
+        int xx = screenToBoard(x);
+        int yy = screenToBoard(y);
+
+        for (int i = xx - 1; i <= xx + 1; i++) {
+            for (int j = yy - 1; j <= yy + 1; j++) {
+                TileState tile = tiles[i][j];
+                if (tile.isLightSource) {
+                    return new Vector2(i, j);
+                }
+            }
+        }
+        return new Vector2(0,0);
+    }
+
+    public boolean getSourceOn(Vector2 source) {
+        return tiles[(int)source.x][(int)source.y].isLitLightSource;
+
+    }
+
+    public void turnSourceOff(Vector2 source) {
+        tiles[(int)source.x][(int)source.y].isLitLightSource = false;
+    }
+
+    public void turnSourceOn(Vector2 source) {
+        tiles[(int)source.x][(int)source.y].isLitLightSource = true;
+        updateLitTiles(source);
+    }
+
+    private void updateLitTiles(Vector2 source) {
+        int x = (int) source.x;
+        int y = (int) source.y;
+
+        for (int i = x - LIGHT_RADIUS; i <= x + LIGHT_RADIUS; i++) {
+            for (int j = y - LIGHT_RADIUS; j <= y + LIGHT_RADIUS; j++) {
+                if (inBounds(i , j)) {
+                TileState tile = tiles[i][j];
+                if (!tile.isWall)
+                    tile.setLit();
+
+                 }
+            }
+        }
+//        for (int i = 0; i <= LIGHT_RADIUS; i++) {
+//            for (int j = 0; j <= LIGHT_RADIUS; j++) {
+//                TileState tile1 = tiles[x+i][y+j];
+//                TileState tile2 = tiles[x+i][y-j];
+//                TileState tile3 = tiles[x-i][y+j];
+//                TileState tile4 = tiles[x-i][y-j];
+//            }
+//        }
+    }
+
+    //Returns whether or not a tile is bloacked from light
+    private boolean isBlockedFromLight(Vector2 source, int x, int y) {
+        return true;
+    }
+
+
+
+
 }

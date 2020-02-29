@@ -573,33 +573,173 @@ public class Board {
     private void updateLitTiles(Vector2 source) {
         int x = (int) source.x;
         int y = (int) source.y;
+        tiles[x][y].setLit();
 
-        for (int i = x - LIGHT_RADIUS; i <= x + LIGHT_RADIUS; i++) {
-            for (int j = y - LIGHT_RADIUS; j <= y + LIGHT_RADIUS; j++) {
-                if (inBounds(i , j)) {
-                TileState tile = tiles[i][j];
-                if (!tile.isWall)
-                    tile.setLit();
+        boolean top = false;
+        boolean bottom = false;
+        boolean left = false;
+        boolean right = false;
 
-                 }
-            }
+        if (inBounds(x, y + 1)) {
+            TileState tile = tiles[x][y+1];
+            if (!tile.isWall)
+                top = true;
         }
-//        for (int i = 0; i <= LIGHT_RADIUS; i++) {
-//            for (int j = 0; j <= LIGHT_RADIUS; j++) {
-//                TileState tile1 = tiles[x+i][y+j];
-//                TileState tile2 = tiles[x+i][y-j];
-//                TileState tile3 = tiles[x-i][y+j];
-//                TileState tile4 = tiles[x-i][y-j];
-//            }
-//        }
+        if (inBounds(x, y - 1)) {
+            TileState tile = tiles[x][y-1];
+            if (!tile.isWall)
+                bottom = true;
+        }
+        if (inBounds(x-1, y)) {
+            TileState tile = tiles[x-1][y];
+            if (!tile.isWall)
+                left = true;
+        }
+        if (inBounds(x+1, y)) {
+            TileState tile = tiles[x+1][y];
+            if (!tile.isWall)
+                right = true;
+        }
+        spreadLight(LIGHT_RADIUS, x, y, top, bottom, left, right);
     }
 
-    //Returns whether or not a tile is bloacked from light
-    private boolean isBlockedFromLight(Vector2 source, int x, int y) {
-        return true;
+    public void spreadLight(int depth, int x, int y, boolean top, boolean bottom, boolean left, boolean right) {
+        if (depth == 0)
+            return;
+
+        if (top) {
+            int xx = x;
+            int yy = y+1;
+            TileState tile = tiles[xx][yy];
+            tile.setLit();
+
+            boolean top1 = false;
+            boolean bottom1 = false;
+            boolean left1 = false;
+            boolean right1 = false;
+
+            if (inBounds(xx, yy + 1)) {
+                tile = tiles[xx][yy+1];
+                if (!tile.isWall)
+                    top1 = true;
+            }
+            if (inBounds(xx, yy - 1)) {
+                tile = tiles[xx][yy-1];
+                if (!tile.isWall)
+                    bottom1 = true;
+            }
+            if (inBounds(xx-1, yy)) {
+                tile = tiles[xx-1][yy];
+                if (!tile.isWall)
+                    left1 = true;
+            }
+            if (inBounds(xx+1, yy)) {
+                tile = tiles[xx+1][yy];
+                if (!tile.isWall)
+                    right1 = true;
+            }
+            spreadLight(depth-1, xx, yy, top1, bottom1, left1, right1);
+        }
+
+        if (bottom) {
+            int xx = x;
+            int yy = y-1;
+            TileState tile = tiles[xx][yy];
+            tile.setLit();
+
+            boolean top1 = false;
+            boolean bottom1 = false;
+            boolean left1 = false;
+            boolean right1 = false;
+
+            if (inBounds(xx, yy + 1)) {
+                tile = tiles[xx][yy+1];
+                if (!tile.isWall)
+                    top1 = true;
+            }
+            if (inBounds(xx, yy - 1)) {
+                tile = tiles[xx][yy-1];
+                if (!tile.isWall)
+                    bottom1 = true;
+            }
+            if (inBounds(xx-1, yy)) {
+                tile = tiles[xx-1][yy];
+                if (!tile.isWall)
+                    left1 = true;
+            }
+            if (inBounds(xx+1, yy)) {
+                tile = tiles[xx+1][yy];
+                if (!tile.isWall)
+                    right1 = true;
+            }
+            spreadLight(depth-1, xx, yy, top1, bottom1, left1, right1);
+        }
+        if (left) {
+            int xx = x -1;
+            int yy = y;
+            TileState tile = tiles[xx][yy];
+            tile.setLit();
+
+            boolean top1 = false;
+            boolean bottom1 = false;
+            boolean left1 = false;
+            boolean right1 = false;
+
+            if (inBounds(xx, yy + 1)) {
+                tile = tiles[xx][yy+1];
+                if (!tile.isWall)
+                    top1 = true;
+            }
+            if (inBounds(xx, yy - 1)) {
+                tile = tiles[xx][yy-1];
+                if (!tile.isWall)
+                    bottom1 = true;
+            }
+            if (inBounds(xx-1, yy)) {
+                tile = tiles[xx-1][yy];
+                if (!tile.isWall)
+                    left1 = true;
+            }
+            if (inBounds(xx+1, yy)) {
+                tile = tiles[xx+1][yy];
+                if (!tile.isWall)
+                    right1 = true;
+            }
+            spreadLight(depth-1, xx, yy, top1, bottom1, left1, right1);
+        }
+        if (right) {
+            int xx = x+1;
+            int yy = y;
+            TileState tile = tiles[xx][yy];
+            tile.setLit();
+
+            boolean top1 = false;
+            boolean bottom1 = false;
+            boolean left1 = false;
+            boolean right1 = false;
+
+            if (inBounds(xx, yy + 1)) {
+                tile = tiles[xx][yy+1];
+                if (!tile.isWall)
+                    top1 = true;
+            }
+            if (inBounds(xx, yy - 1)) {
+                tile = tiles[xx][yy-1];
+                if (!tile.isWall)
+                    bottom1 = true;
+            }
+            if (inBounds(xx-1, yy)) {
+                tile = tiles[xx-1][yy];
+                if (!tile.isWall)
+                    left1 = true;
+            }
+            if (inBounds(xx+1, yy)) {
+                tile = tiles[xx+1][yy];
+                if (!tile.isWall)
+                    right1 = true;
+            }
+            spreadLight(depth-1, xx, yy, top1, bottom1, left1, right1);
+
+        }
     }
-
-
-
-
 }

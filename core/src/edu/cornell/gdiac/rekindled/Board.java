@@ -29,6 +29,8 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.LinkedList;
+
 //import edu.cornell.gdiac.mesh.*;
 
 /**
@@ -114,6 +116,8 @@ public class Board {
     private int width;
     /** The board height (in number of tiles) */
     private int height;
+
+    private LinkedList<Integer> lightSources;
     /** The tile grid (with above dimensions) */
     private TileState[][] tiles;
     /**The texture for the light tile*/
@@ -160,6 +164,7 @@ public class Board {
         this.wallRegion = new TextureRegion(wallTexture, TILE_WIDTH, TILE_WIDTH);
 
         Vector2 temp = new Vector2();
+        this.lightSources = new LinkedList<>();
 
 
         tiles = new TileState[width][height];
@@ -172,12 +177,15 @@ public class Board {
             tiles[walls[ii]][walls[ii+1]].setWall();
         }
         for(int ii = 0; ii < litSources.length-1; ii += 2){
+            lightSources.add(litSources[ii]);
+            lightSources.add(litSources[ii + 1]);
             tiles[litSources[ii]][litSources[ii+1]].setLitLightSource();
             //URGENT: Change so new vector is not created
             temp.set(litSources[ii], litSources[ii+1]);
             updateLitTiles(temp);
         }
         for(int ii = 0; ii < dimSources.length-1; ii += 2){
+            lightSources.add(dimSources[ii]);
             tiles[dimSources[ii]][dimSources[ii+1]].setDimLightSource();
         }
 
@@ -268,9 +276,20 @@ public class Board {
      * All we do is animate falling tiles.
      */
     public void update() {
+        Vector2 temp = new Vector2();
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 TileState tile = tiles[x][y];
+                tile.isLitTile = false;
+            }
+        }
+        for(int ii = 0; ii < lightSources.size() -1; ii += 2){
+            TileState source = tiles[lightSources.get(ii)][lightSources.get(ii+1)];
+            //URGENT: Change so new vector is not created
+            if (source.isLitLightSource) {
+                temp.set(lightSources.get(ii), lightSources.get(ii + 1));
+
+                updateLitTiles(temp);
             }
         }
     }

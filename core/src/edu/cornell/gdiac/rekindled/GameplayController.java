@@ -49,8 +49,14 @@ public class GameplayController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void preLoadContent(AssetManager manager, Array<String> assets) {
-		manager.load(PLAYER_FILE, Texture.class);
-		assets.add(PLAYER_FILE);
+		manager.load(PLAYER_FILE_RIGHT, Texture.class);
+		assets.add(PLAYER_FILE_RIGHT);
+		manager.load(PLAYER_FILE_LEFT, Texture.class);
+		assets.add(PLAYER_FILE_LEFT);
+		manager.load(PLAYER_FILE_UP, Texture.class);
+		assets.add(PLAYER_FILE_UP);
+		manager.load(PLAYER_FILE_DOWN, Texture.class);
+		assets.add(PLAYER_FILE_DOWN);
 		manager.load(ENEMY_FILE, Texture.class);
 		assets.add(ENEMY_FILE);
 	}
@@ -66,8 +72,11 @@ public class GameplayController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void loadContent(AssetManager manager) {
-		playerTexture = createTexture(manager,PLAYER_FILE);
-		player.setTexture(playerTexture);
+		playerTextureRight = createTexture(manager,PLAYER_FILE_RIGHT);
+		playerTextureLeft = createTexture(manager,PLAYER_FILE_LEFT);
+		playerTextureDown = createTexture(manager,PLAYER_FILE_DOWN);
+		playerTextureUp = createTexture(manager,PLAYER_FILE_UP);
+		player.setTexture(playerTextureRight);
 		enemyTexture = createTexture(manager,ENEMY_FILE);
 		for(Enemy enemy: enemies) {
 			enemy.setTexture(enemyTexture);
@@ -125,10 +134,17 @@ public class GameplayController {
 	/** The world scale */
 	protected Vector2 scale;
 
-	/** File storing the player */
-	private static final String PLAYER_FILE  = "images/player.png";
-	/** Texture for player */
-	private Texture playerTexture;
+	/** File storing the players */
+	private static final String PLAYER_FILE_RIGHT  = "images/player.png";
+	private static final String PLAYER_FILE_LEFT  = "images/playerLEFT.png";
+	private static final String PLAYER_FILE_DOWN = "images/playerDOWN.png";
+	private static final String PLAYER_FILE_UP = "images/playerUP.png";
+
+	/** Textures for player */
+	private Texture playerTextureRight;
+	private Texture playerTextureLeft;
+	private Texture playerTextureDown;
+	private Texture playerTextureUp;
 
 	/** File storing the enemy */
 	private static final String ENEMY_FILE  = "images/enemy.png";
@@ -199,16 +215,39 @@ public class GameplayController {
 			player.setMoving(false);
 		}
 		if(input.didUp()){
-			player.move(0, board.getTileSize() + board.getTileSpacing());
+			if(player.getDirection() == Entity.Direction.UP){
+				player.move(0, board.getTileSize() + board.getTileSpacing());
+			} else {
+				player.setDirection(Entity.Direction.UP);
+				player.setTexture(playerTextureUp);
+			}
+
 		}
 		else if (input.didDown()){
-			player.move(0, -board.getTileSize() - board.getTileSpacing());
+			if(player.getDirection() == Entity.Direction.DOWN){
+				player.move(0, -board.getTileSize() - board.getTileSpacing());
+			} else {
+				player.setDirection(Entity.Direction.DOWN);
+				player.setTexture(playerTextureDown);
+			}
+
 		}
 		else if (input.didLeft()){
-			player.move(-board.getTileSize() - board.getTileSpacing(), 0);
+			if(player.getDirection() == Entity.Direction.LEFT){
+				player.move(-board.getTileSize() - board.getTileSpacing(), 0);
+			} else {
+				player.setDirection(Entity.Direction.LEFT);
+				player.setTexture(playerTextureLeft);
+			}
+
 		}
 		else if (input.didRight()){
-			player.move(board.getTileSize() + board.getTileSpacing(), 0);
+			if(player.getDirection() == Entity.Direction.RIGHT) {
+				player.move(board.getTileSize() + board.getTileSpacing(), 0);
+			} else {
+				player.setDirection(Entity.Direction.RIGHT);
+				player.setTexture(playerTextureRight);
+			}
 		}
 		if (board.isObstructed(player.getGoal())){
 			player.setMoving(false);

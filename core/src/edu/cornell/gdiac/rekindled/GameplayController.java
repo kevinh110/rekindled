@@ -143,6 +143,7 @@ public class GameplayController {
 	CollisionController collisions;
 
 	boolean lostGame;
+	boolean wonGame;
 
 
 	/**
@@ -217,11 +218,45 @@ public class GameplayController {
 		if(collisions.checkPlayerEnemyCollision()){
 			lostGame = true;
 		}
-
-
 		player.update();
+
+		// Enemy Movement
+		int numLit = 0;
+		for (Enemy e: enemies){
+			if (board.isCenterOfTile(e.getPosition())) {
+				e.setMoving(false);
+			}
+			// Calculate direction to move
+			if (board.isLitTile(e.getPosition())){
+				numLit++;
+			} else {
+				float diffX = player.getPosition().x - e.getPosition().x;
+				float diffY = player.getPosition().y - e.getPosition().y;
+				if (Math.max(Math.abs(diffX), Math.abs(diffY)) == Math.abs(diffX)){
+					e.move(Math.signum(diffX) * (board.getTileSize() + board.getTileSpacing()), 0);
+					if (board.isObstructed(e.getGoal())){
+						e.setMoving(false);
+						e.move(0, Math.signum(diffY) * (board.getTileSize() + board.getTileSpacing()));
+					}
+				} else {
+					e.move(0, Math.signum(diffY) * (board.getTileSize() + board.getTileSpacing()));
+					if (board.isObstructed(e.getGoal())) {
+						e.setMoving(false);
+						e.move(Math.signum(diffX) * (board.getTileSize() + board.getTileSpacing()), 0);
+					}
+				}
+			}
+			if (board.isObstructed(e.getGoal()) || board.isLitTile(e.getGoal())) {
+				e.setMoving(false);
+			}
+			e.update();
+		}
+		// Win Condition
+		if (numLit == enemies.length){
+			wonGame = true;
+		}
+
 		board.update();
-		//enemy.update();
 	}
 
 
@@ -244,7 +279,7 @@ public class GameplayController {
 	}
 
 	public boolean won(){
-		return false;
+		return wonGame;
 	}
 
 	public boolean lost(){

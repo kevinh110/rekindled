@@ -442,6 +442,11 @@ public class Board {
         return tile.isWall || tile.isLightSource;
     }
 
+    public boolean isLitTile(Vector2 position){
+        TileState tile = tiles[screenToBoard(position.x)][screenToBoard(position.y)];
+        return tile.isLitTile;
+    }
+
     /**
      * Marks a tile as a goal.
      *

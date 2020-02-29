@@ -186,6 +186,7 @@ public class Board {
         }
         for(int ii = 0; ii < dimSources.length-1; ii += 2){
             lightSources.add(dimSources[ii]);
+            lightSources.add(dimSources[ii + 1]);
             tiles[dimSources[ii]][dimSources[ii+1]].setDimLightSource();
         }
 
@@ -566,7 +567,7 @@ public class Board {
 
     public void turnSourceOn(Vector2 source) {
         tiles[(int)source.x][(int)source.y].isLitLightSource = true;
-        updateLitTiles(source);
+        //updateLitTiles(source);
     }
 
     private void updateLitTiles(Vector2 source) {

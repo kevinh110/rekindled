@@ -2,11 +2,15 @@ package edu.cornell.gdiac.rekindled;
 
 public class Player extends Entity {
     public int lights;
+
     private static final int MAXLIGHTS = 2;
 
-    public Player(float x, float y, float velocity){
-        super(x, y, velocity);
+    public Player(float x, float y, float velocity, Direction direction){
+        super(x, y, velocity, direction);
         lights = 0;
+    }
+    public Player(float x, float y, float velocity){
+        this(x, y, velocity, Direction.RIGHT);
     }
 
     public void decreaseLights() {

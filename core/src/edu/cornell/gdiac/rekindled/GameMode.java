@@ -182,7 +182,7 @@ public class GameMode implements Screen {
                 break;
             case PLAY:
                 play(delta);
-                if(gameplayController.lost()){
+                if(gameplayController.lost() || gameplayController.won()){
                     gameState = GameState.OVER;
                 }
                 break;

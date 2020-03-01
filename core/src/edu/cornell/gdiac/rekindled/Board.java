@@ -51,6 +51,7 @@ public class Board {
         public boolean isLitLightSource;
         public boolean isWall;
         public boolean isLitTile;
+        public boolean isDimTile;
 
         /** Is this a goal tiles */
         public boolean goal = false;
@@ -86,6 +87,10 @@ public class Board {
 
         public void setLit() {
             isLitTile = true;
+        }
+
+        public void setDim() {
+            isDimTile = true;
         }
     }
 
@@ -341,6 +346,8 @@ public class Board {
             canvas.draw(wallRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
         else if (tile.isLitTile)
             canvas.draw(lightRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
+        else if (tile.isDimTile)
+            canvas.draw(darkRegion, Color.YELLOW,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2, darkRegion.getRegionWidth(), darkRegion.getRegionHeight());
         else
             canvas.draw(darkRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
         if (tile.isLightSource){
@@ -562,7 +569,8 @@ public class Board {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 TileState state = tiles[x][y];
-                state.isLitTile = false;
+               // state.isLitTile = false;
+                state.isDimTile = false;
             }
         }
     }
@@ -783,7 +791,25 @@ public class Board {
                     right1 = true;
             }
             spreadLight(depth-1, xx, yy, top1, bottom1, left1, right1);
-
         }
+    }
+    public void dimTiles(Vector2 pos) {
+        int x = screenToBoard(pos.x);
+        int y = screenToBoard(pos.y);
+
+        tiles[x][y].setDim();
+
+        //top tile
+        if (inBounds(x, y + 1))
+            tiles[x][y+1].setDim();
+        //bottom tile
+        if (inBounds(x, y - 1))
+            tiles[x][y-1].setDim();
+        //left tile
+        if (inBounds(x - 1, y))
+            tiles[x-1][y].setDim();
+        //right tile
+        if (inBounds(x + 1, y))
+            tiles[x+1][y].setDim();
     }
 }

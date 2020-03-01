@@ -264,6 +264,9 @@ public class GameplayController {
 			lostGame = true;
 		}
 		player.update();
+		board.clearLight();
+		if (player.hasLightRadius())
+			board.dimTiles(player.getPosition());
 
 		// Enemy Movement
 		int numLit = 0;

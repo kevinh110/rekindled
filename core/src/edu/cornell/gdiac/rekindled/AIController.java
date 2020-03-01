@@ -10,6 +10,8 @@
  */
 package edu.cornell.gdiac.rekindled;
 
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.*;
@@ -94,6 +96,12 @@ public class AIController {
     }
 
     /**
+     *
+     * @return the enemy of this AIController
+     */
+    public Enemy getEnemy() { return this.enemy; }
+
+    /**
      * Returns the action selected by this InputController
      *
      * The returned int is a bit-vector of more than one possible input
@@ -164,7 +172,6 @@ public class AIController {
                 if(board.isLitLightSource(current_pos)){
                     state = FSMState.LIT;
                 } else {
-                    selectTarget();
                     if (target) {
                         // has target
                         state = FSMState.CHASE;
@@ -203,23 +210,205 @@ public class AIController {
                 state = FSMState.WANDER; // If debugging is off
                 break;
         }
-//		System.out.println("++changed state: "+state);
     }
 
     /**
-     * Acquire a target to attack (and put it in field target).
-     *
-     * Insert your checking and target selection code here. Note that this
-     * code does not need to reassign <c>target</c> every single time it is
-     * called. Like all other methods, make sure it works with any number
-     * of players (between 0 and 32 players will be checked). Also, it is a
-     * good idea to make sure the ship does not target itself or an
-     * already-fallen (e.g. inactive) ship.
+     * Returns (delX, delY) representing next direction for this enemy to move
      */
-    private void selectTarget() {
+    public Vector2 getNextDirection(){
+
+        Queue<ArrayList<Integer>> q = new LinkedList<>();
+        int[][][] parent = new int[board.getWidth()][board.getHeight()][2];
+
+        // Set Goal
+        setGoals();
+        board.clearVisited();
+
+        // Get the tile for this enemy
+        int sx = board.screenToBoard(enemy.getPosition().x);
+        int sy = board.screenToBoard(enemy.getPosition().y);
+        ArrayList<Integer> s = new ArrayList<Integer>();
+        s.add(sx); s.add(sy);
+        board.setVisited(sx,sy); //visit s
+        q.add(s);
+
+
+
+
+        //BFS
+        int[] reachedGoal = new int[2];
+        reachedGoal[0] = -1;
+        reachedGoal[1] = -1;
+        while(!q.isEmpty()){
+            s = q.poll(); //get first element in queue
+            int xIdx = s.get(0);
+            int yIdx = s.get(1);
+            if(board.isGoal(xIdx,yIdx)){
+                reachedGoal[0] = xIdx;
+                reachedGoal[1] = yIdx;
+                break;
+            }
+            //add each neighbor of s to queue if not visited yet
+            if(!board.isEnemyMovable(xIdx+1,yIdx) && !board.isVisited(xIdx+1,yIdx)
+            && board.isSafeAt(xIdx + 1, yIdx)){ //right
+                board.setVisited(xIdx+1,yIdx);
+                ArrayList<Integer> r = new ArrayList<Integer>();
+                r.add(xIdx+1); r.add(yIdx);
+                q.add(r);
+                parent[xIdx+1][yIdx][0] = xIdx;
+                parent[xIdx+1][yIdx][1] = yIdx;
+            }
+            if(!board.isEnemyMovable(xIdx-1,yIdx) && !board.isVisited(xIdx-1,yIdx)
+                    && board.isSafeAt(xIdx - 1, yIdx)){ //left
+                board.setVisited(xIdx-1,yIdx);
+                ArrayList<Integer> l = new ArrayList<Integer>();
+                l.add(xIdx-1); l.add(yIdx);
+                q.add(l);
+                parent[xIdx-1][yIdx][0] = xIdx;
+                parent[xIdx-1][yIdx][1] = yIdx;
+            }
+            if(!board.isEnemyMovable(xIdx,yIdx+1) && !board.isVisited(xIdx,yIdx+1)
+                    && board.isSafeAt(xIdx, yIdx + 1)){ //up
+                board.setVisited(xIdx,yIdx+1);
+                ArrayList<Integer> u = new ArrayList<Integer>();
+                u.add(xIdx); u.add(yIdx+1);
+                q.add(u);
+                parent[xIdx][yIdx+1][0] = xIdx;
+                parent[xIdx][yIdx+1][1] = yIdx;
+            }
+            if(!board.isEnemyMovable(xIdx,yIdx-1) && !board.isVisited(xIdx,yIdx-1)
+                    && board.isSafeAt(xIdx, yIdx - 1)){ //down
+                board.setVisited(xIdx,yIdx-1);
+                ArrayList<Integer> d = new ArrayList<Integer>();
+                d.add(xIdx); d.add(yIdx-1);
+                q.add(d);
+                parent[xIdx][yIdx-1][0] = xIdx;
+                parent[xIdx][yIdx-1][1] = yIdx;
+            }
+        }
+        int[] root = {sx,sy};
+        int[] prev = reachedGoal;
+
+        // If goal not found, don't move
+        if (reachedGoal[0] == -1 && reachedGoal[1] == -1){
+            return new Vector2(0, 0);
+        }
+
+        while(!Arrays.equals(prev,root) && !Arrays.equals(parent[prev[0]][prev[1]],root))  {
+            prev = parent[prev[0]][prev[1]];
+        }
+
+        return new Vector2(prev[0] - root[0], prev[1] - root[1]);
     }
 
-    // Add any auxiliary methods or data structures here
+    /**
+     * Sets goal for this enemy.
+     * If player is on unlit tile, goal is player pos
+     * Else, goal is nearest unlit tile to player
+     */
+    private void setGoals(){
+        Queue<ArrayList<Integer>> q = new LinkedList<>();
+        ArrayList<Integer> s = new ArrayList<Integer>();
+
+        // Set Current Position to Visited
+        int px = board.screenToBoard(player.getPosition().x);
+        int py = board.screenToBoard(player.getPosition().y);
+//        System.out.println(px + "," + py);
+        s.add(px); s.add(py);
+        board.setVisited(px,py); //visit s
+        q.add(s);
+
+        while(!q.isEmpty()) {
+            s = q.poll(); //get first element in queue
+            int xIdx = s.get(0);
+            int yIdx = s.get(1);
+            if (!board.isLitTileBoard(xIdx, yIdx)) {
+                System.out.println("Goal: " + xIdx +", " + yIdx);
+                board.setGoal(xIdx, yIdx);
+            }
+            else {
+                //add each neighbor of s to queue if not visited yet
+                if (!board.isObstructedBoard(xIdx + 1, yIdx) && !board.isVisited(xIdx + 1, yIdx)
+                        && board.isSafeAt(xIdx + 1, yIdx)) { //right
+                    board.setVisited(xIdx + 1, yIdx);
+                    ArrayList<Integer> r = new ArrayList<Integer>();
+                    r.add(xIdx + 1);
+                    r.add(yIdx);
+                    q.add(r);
+                }
+                if (!board.isObstructedBoard(xIdx - 1, yIdx) && !board.isVisited(xIdx - 1, yIdx)
+                        && board.isSafeAt(xIdx - 1, yIdx)) { //left
+                    board.setVisited(xIdx - 1, yIdx);
+                    ArrayList<Integer> l = new ArrayList<Integer>();
+                    l.add(xIdx - 1);
+                    l.add(yIdx);
+                    q.add(l);
+                }
+                if (!board.isObstructedBoard(xIdx, yIdx + 1) && !board.isVisited(xIdx, yIdx + 1)
+                        && board.isSafeAt(xIdx, yIdx + 1)) { //up
+                    board.setVisited(xIdx, yIdx + 1);
+                    ArrayList<Integer> u = new ArrayList<Integer>();
+                    u.add(xIdx);
+                    u.add(yIdx + 1);
+                    q.add(u);
+                }
+                if (!board.isObstructedBoard(xIdx, yIdx - 1) && !board.isVisited(xIdx, yIdx - 1)
+                        && board.isSafeAt(xIdx, yIdx - 1)) { //down
+                    board.setVisited(xIdx, yIdx - 1);
+                    ArrayList<Integer> d = new ArrayList<Integer>();
+                    d.add(xIdx);
+                    d.add(yIdx - 1);
+                    q.add(d);
+                }
+            }
+        }
+        System.out.println("-----------");
+//        System.out.println("Result: " + result.get(0) + "," + result.get(1));
+    }
+
+    /** Moves this enemy */
+    public void move(){
+        if (board.isCenterOfTile(enemy.getPosition())) {
+            enemy.setMoving(false);
+        }
+
+        // Calculate direction to move
+        if (!board.isLitTile(enemy.getPosition()) && hasLoS()) {
+            Vector2 dir = getNextDirection();
+            enemy.move(dir.x * (board.getTileSize() + board.getTileSpacing()),
+                    (board.getTileSize() + board.getTileSpacing()) * dir.y);
+        }
+
+        if (board.isObstructed(enemy.getGoal()) || board.isLitTile(enemy.getGoal())) {
+            enemy.setMoving(false);
+        }
+        enemy.update();
+        board.clearMarks();
+
+    }
+
+    private boolean hasLoS(){
+        int idx = 0;
+        boolean result = true;
+        while (idx < board.walls.length - 1){
+            float[] vertices = new float[] {
+                    board.walls[idx] + .03f, board.walls[idx+1] + .03f,
+                    board.walls[idx] + .03f, board.walls[idx+1] + .97f,
+                    board.walls[idx] + .97f, board.walls[idx + 1] + .03f,
+                    board.walls[idx] + .97f, board.walls[idx + 1] + .97f
+            };
+            Polygon poly = new Polygon(vertices);
+            Vector2 playerPos = board.screenToBoard(player.getPosition());
+            Vector2 enemyPos = board.screenToBoard(enemy.getPosition());
+            if (Intersector.intersectSegmentPolygon(playerPos,enemyPos, poly)){
+                result = false;
+            }
+            idx +=2;
+        }
+        return result;
+    }
+
+
     //#region PUT YOUR CODE HERE
 
     //#endregion

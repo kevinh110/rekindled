@@ -23,6 +23,8 @@ import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.graphics.*;
 import edu.cornell.gdiac.util.*;
 
+import java.util.Arrays;
+
 /**
  * Base class for a world-specific controller.
  *
@@ -38,6 +40,9 @@ import edu.cornell.gdiac.util.*;
  * place nicely with the static assets.
  */
 public class GameplayController {
+
+
+
 	/**
 	 * Preloads the assets for this controller.
 	 *
@@ -129,6 +134,9 @@ public class GameplayController {
 
 	private Enemy[] enemies;
 
+	/** Stores all the AI controllers */
+	protected AIController[] controls;
+
 	/** The boundary of the world */
 	protected Rectangle bounds;
 	/** The world scale */
@@ -194,6 +202,12 @@ public class GameplayController {
 		this.scale = new Vector2(1,1);
 		collisions = new CollisionController(board, enemies, player);
 		lostGame = false;
+		wonGame = false;
+
+		controls = new AIController[enemies.length];
+		for(int ii = 0; ii < enemies.length; ii++) {
+			controls[ii] = new AIController(enemies[ii],board,player);
+		}
 	}
 
 	/**
@@ -207,6 +221,7 @@ public class GameplayController {
 	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt){
+
 		InputController input = InputController.getInstance();
 		input.readInput(bounds, scale);
 
@@ -255,7 +270,6 @@ public class GameplayController {
 
 		//placing and taking light
 		if (input.didSecondary() && board.inLightInteractRange(player.getPosition().x, player.getPosition().y)) {
-			System.out.println("Space pressed");
 			doLightInteraction();
 		}
 
@@ -266,46 +280,19 @@ public class GameplayController {
 		player.update();
 
 		// Enemy Movement
+		for (AIController controller : controls){
+			controller.move();
+		}
+
+		// Check win Condition
 		int numLit = 0;
-		for (Enemy e: enemies){
-			if (board.isCenterOfTile(e.getPosition())) {
-				e.setMoving(false);
-			}
-			// Calculate direction to move
+		for (Enemy e : enemies){
 			if (board.isLitTile(e.getPosition())){
 				numLit++;
-			} else {
-				float diffX = player.getPosition().x - e.getPosition().x;
-				float diffY = player.getPosition().y - e.getPosition().y;
-				if (Math.max(Math.abs(diffX), Math.abs(diffY)) == Math.abs(diffX)){
-					e.move(Math.signum(diffX) * (board.getTileSize() + board.getTileSpacing()), 0);
-					if (board.isObstructed(e.getGoal())){
-						e.setMoving(false);
-						e.move(0, Math.signum(diffY) * (board.getTileSize() + board.getTileSpacing()));
-					}
-				} else {
-					e.move(0, Math.signum(diffY) * (board.getTileSize() + board.getTileSpacing()));
-					if (board.isObstructed(e.getGoal())) {
-						e.setMoving(false);
-						e.move(Math.signum(diffX) * (board.getTileSize() + board.getTileSpacing()), 0);
-					}
-				}
 			}
-			if (board.isObstructed(e.getGoal()) || board.isLitTile(e.getGoal())) {
-				e.setMoving(false);
-			}
-			e.update();
 		}
-		// Win Condition
-		if (numLit == enemies.length){
-			wonGame = true;
-		}
-
-
+		wonGame = (numLit == enemies.length);
 		player.update();
-		//System.out.println(board.screenToBoard(player.getPosition().x));
-		//System.out.println(board.screenToBoard(player.getPosition().y));
-		//System.out.println(player.lights);
 		board.update();
 	}
 
@@ -322,6 +309,7 @@ public class GameplayController {
 			enemies[ii/2].setPosition(board.boardToScreen(enemyLocations[ii]), board.boardToScreen(enemyLocations[ii+1]));
 		}
 		lostGame = false;
+		wonGame = false;
 	}
 
 	public boolean isAlive(){

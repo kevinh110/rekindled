@@ -323,7 +323,6 @@ public class AIController {
             int xIdx = s.get(0);
             int yIdx = s.get(1);
             if (!board.isLitTileBoard(xIdx, yIdx)) {
-                System.out.println("Goal: " + xIdx +", " + yIdx);
                 board.setGoal(xIdx, yIdx);
             }
             else {

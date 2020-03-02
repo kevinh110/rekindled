@@ -361,7 +361,6 @@ public class AIController {
                 }
             }
         }
-        System.out.println("-----------");
 //        System.out.println("Result: " + result.get(0) + "," + result.get(1));
     }
 
@@ -372,7 +371,8 @@ public class AIController {
         }
 
         // Calculate direction to move
-        if (!board.isLitTile(enemy.getPosition()) && hasLoS()) {
+        if (!board.isLitTile(enemy.getPosition()) && hasLoS() &&
+                (board.isLitTile(player.getPosition()) || board.isDimTile(player.getPosition()))) {
             Vector2 dir = getNextDirection();
             enemy.move(dir.x * (board.getTileSize() + board.getTileSpacing()),
                     (board.getTileSize() + board.getTileSpacing()) * dir.y);

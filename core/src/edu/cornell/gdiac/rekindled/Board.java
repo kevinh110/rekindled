@@ -505,6 +505,11 @@ public class Board {
         return tile.isLitTile;
     }
 
+    public boolean isDimTile(Vector2 position) {
+        TileState tile = tiles[screenToBoard(position.x)][screenToBoard(position.y)];
+        return tile.isDimTile;
+    }
+
     public boolean isLitTileBoard(int x, int y){
         TileState tile = tiles[x][y];
         return tile.isLitTile;

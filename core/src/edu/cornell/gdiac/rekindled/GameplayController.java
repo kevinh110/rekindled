@@ -129,6 +129,10 @@ public class GameplayController {
 	private static final int BOARD_WIDTH = 16;
 	/** Board Height in tiles*/
 	private static final int BOARD_HEIGHT = 9;
+	private static final int TURN_ON_DELAY = 2;
+
+	private float delayTimer;
+	private boolean cooldown;
 
 	private Player player;
 
@@ -203,6 +207,8 @@ public class GameplayController {
 		collisions = new CollisionController(board, enemies, player);
 		lostGame = false;
 		wonGame = false;
+		delayTimer = 0;
+		cooldown = false;
 
 		controls = new AIController[enemies.length];
 		for(int ii = 0; ii < enemies.length; ii++) {
@@ -268,9 +274,18 @@ public class GameplayController {
 			player.setMoving(false);
 		}
 
+		//update light cooldown
+		if (cooldown) {
+			delayTimer+= dt;
+			if (delayTimer >= TURN_ON_DELAY)
+				cooldown = false;
+		}
+
 		//placing and taking light
-		if (input.didSecondary() && board.inLightInteractRange(player.getPosition().x, player.getPosition().y)) {
+		if (input.didSecondary() && board.inLightInteractRange(player.getPosition().x, player.getPosition().y) && !cooldown) {
 			doLightInteraction();
+			delayTimer = 0;
+			cooldown = true;
 		}
 
 		//player-enemy collision
@@ -313,6 +328,7 @@ public class GameplayController {
 		}
 		lostGame = false;
 		wonGame = false;
+		cooldown = false;
 	}
 
 	public boolean isAlive(){

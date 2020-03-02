@@ -116,16 +116,16 @@ public class Entity {
      */
     public void draw(GameCanvas canvas) {
         if (mainTexture != null) {
-            canvas.draw(mainTexture, Color.WHITE,origin.x,origin.y,position.x,position.y,0,1,1);
+            canvas.draw(mainTexture, Color.WHITE,origin.x,origin.y,position.x,position.y + 16,0,1,1);
         }
     }
 
     public void draw(GameCanvas canvas, Direction direction){
         if (mainTexture != null) {
             if(direction == Direction.LEFT){
-                canvas.draw(mainTexture, Color.WHITE,origin.x,origin.y,position.x,position.y,0,-1,1);
+                canvas.draw(mainTexture, Color.WHITE,origin.x,origin.y,position.x,position.y + 16,0,-1,1);
             } else {
-                canvas.draw(mainTexture, Color.WHITE, origin.x, origin.y, position.x, position.y, 0, 1, 1);
+                canvas.draw(mainTexture, Color.WHITE, origin.x, origin.y, position.x, position.y + 16, 0, 1, 1);
             }
         }
     }

@@ -18,6 +18,7 @@ public class Entity {
 
     /** The texture origin for drawing */
     protected Vector2 origin;
+    protected Vector2 secondaryOrigin;
 
     private Direction direction;
 
@@ -36,6 +37,12 @@ public class Entity {
         this.speed = speed;
         this.direction = direction;
         origin = new Vector2();
+        secondaryOrigin = new Vector2();
+        mainState = true;
+    }
+
+    public void setMainState(boolean value){
+        mainState = value;
     }
 
     /**
@@ -105,6 +112,12 @@ public class Entity {
         origin.set(mainTexture.getWidth()/2.0f, mainTexture.getHeight()/2.0f);
     }
 
+
+    public void setSecondaryTexture(Texture value) {
+        secondaryTexture = value;
+        secondaryOrigin.set(secondaryTexture.getWidth()/2.0f, secondaryTexture.getHeight()/2.0f);
+    }
+
     public void setPosition(float x, float y){
         position = new Vector2(x, y);
     }
@@ -115,7 +128,10 @@ public class Entity {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
-        if (mainTexture != null) {
+        if(mainState == false){
+            canvas.draw(secondaryTexture, Color.WHITE, secondaryOrigin.x, secondaryOrigin.y, position.x, position.y, 0, 1, 1);
+        }
+        else if (mainTexture != null) {
             canvas.draw(mainTexture, Color.WHITE,origin.x,origin.y,position.x,position.y + 16,0,1,1);
         }
     }

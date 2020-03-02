@@ -5,12 +5,12 @@ public class Player extends Entity {
 
     private static final int MAXLIGHTS = 2;
 
-    public Player(float x, float y, float velocity, Direction direction){
-        super(x, y, velocity, direction);
+    public Player(float x, float y, float speed, Direction direction){
+        super(x, y, speed, direction);
         lights = 0;
     }
-    public Player(float x, float y, float velocity){
-        this(x, y, velocity, Direction.RIGHT);
+    public Player(float x, float y, float speed){
+        this(x, y, speed, Direction.RIGHT);
     }
 
     public void decreaseLights() {

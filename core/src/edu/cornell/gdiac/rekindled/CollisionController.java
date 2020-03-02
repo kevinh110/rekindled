@@ -80,7 +80,7 @@ public class CollisionController {
             int enemyBoardY = board.screenToBoard(e.getPosition().y);
             int playerBoardX = board.screenToBoard(player.getPosition().x);
             int playerBoardY = board.screenToBoard(player.getPosition().y);
-            if(enemyBoardX == playerBoardX && enemyBoardY == playerBoardY){
+            if(enemyBoardX == playerBoardX && enemyBoardY == playerBoardY && !e.isLit){
                 return true;
             }
         }

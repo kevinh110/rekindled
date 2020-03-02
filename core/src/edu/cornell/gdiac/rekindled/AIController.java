@@ -25,16 +25,6 @@ public class AIController {
     // We would normally use an enum here, but Java enums do not bitmask nicely
     /** Do not do anything */
     public static final int CONTROL_NO_ACTION  = 0x00;
-    /** Move the ship to the left */
-    public static final int CONTROL_MOVE_LEFT  = 0x01;
-    /** Move the ship to the right */
-    public static final int CONTROL_MOVE_RIGHT = 0x02;
-    /** Move the ship to the up */
-    public static final int CONTROL_MOVE_UP    = 0x04;
-    /** Move the ship to the down */
-    public static final int CONTROL_MOVE_DOWN  = 0x08;
-    /** Fire the ship weapon */
-    public static final int CONTROL_FIRE 	   = 0x10;
 
     /**
      * Enumeration to encode the finite state machine.
@@ -50,11 +40,6 @@ public class AIController {
         LIT
     }
 
-    // Constants for chase algorithms
-    /** How close a target must be for us to chase it */
-    private static final int CHASE_DIST  = 9;
-    /** How close a target must be for us to attack it */
-    private static final int ATTACK_DIST = 4;
 
     // Instance Attributes
     /** The enemy being controlled by this AIController */
@@ -71,6 +56,7 @@ public class AIController {
     private int move; // A ControlCode
     /** The number of ticks since we started this controller */
     private long ticks;
+    private Enemy[] enemies;
 
     // Custom fields for AI algorithms
 
@@ -81,10 +67,11 @@ public class AIController {
      * @param board The game board (for pathfinding)
      * @param player The player (for targetting)
      */
-    public AIController(Enemy enemy, Board board, Player player) {
+    public AIController(Enemy enemy, Board board, Player player, Enemy[] enemies) {
         this.enemy = enemy;
         this.board = board;
         this.player = player;
+        this.enemies = enemies;
 
         state = FSMState.SPAWN;
         move  = CONTROL_NO_ACTION;
@@ -250,7 +237,7 @@ public class AIController {
             }
             //add each neighbor of s to queue if not visited yet
             if(!board.isEnemyMovable(xIdx+1,yIdx) && !board.isVisited(xIdx+1,yIdx)
-            && board.isSafeAt(xIdx + 1, yIdx)){ //right
+            && board.isSafeAt(xIdx + 1, yIdx) && noEnemyAt(xIdx +1, yIdx)){ //right
                 board.setVisited(xIdx+1,yIdx);
                 ArrayList<Integer> r = new ArrayList<Integer>();
                 r.add(xIdx+1); r.add(yIdx);
@@ -259,7 +246,7 @@ public class AIController {
                 parent[xIdx+1][yIdx][1] = yIdx;
             }
             if(!board.isEnemyMovable(xIdx-1,yIdx) && !board.isVisited(xIdx-1,yIdx)
-                    && board.isSafeAt(xIdx - 1, yIdx)){ //left
+                    && board.isSafeAt(xIdx - 1, yIdx) && noEnemyAt(xIdx -1, yIdx)){ //left
                 board.setVisited(xIdx-1,yIdx);
                 ArrayList<Integer> l = new ArrayList<Integer>();
                 l.add(xIdx-1); l.add(yIdx);
@@ -268,7 +255,7 @@ public class AIController {
                 parent[xIdx-1][yIdx][1] = yIdx;
             }
             if(!board.isEnemyMovable(xIdx,yIdx+1) && !board.isVisited(xIdx,yIdx+1)
-                    && board.isSafeAt(xIdx, yIdx + 1)){ //up
+                    && board.isSafeAt(xIdx, yIdx + 1) && noEnemyAt(xIdx, yIdx+1)){ //up
                 board.setVisited(xIdx,yIdx+1);
                 ArrayList<Integer> u = new ArrayList<Integer>();
                 u.add(xIdx); u.add(yIdx+1);
@@ -277,7 +264,7 @@ public class AIController {
                 parent[xIdx][yIdx+1][1] = yIdx;
             }
             if(!board.isEnemyMovable(xIdx,yIdx-1) && !board.isVisited(xIdx,yIdx-1)
-                    && board.isSafeAt(xIdx, yIdx - 1)){ //down
+                    && board.isSafeAt(xIdx, yIdx - 1) && noEnemyAt(xIdx, yIdx-1)){ //down
                 board.setVisited(xIdx,yIdx-1);
                 ArrayList<Integer> d = new ArrayList<Integer>();
                 d.add(xIdx); d.add(yIdx-1);
@@ -299,6 +286,17 @@ public class AIController {
         }
 
         return new Vector2(prev[0] - root[0], prev[1] - root[1]);
+    }
+
+    private boolean noEnemyAt(int x, int y){
+        for (Enemy e : enemies){
+            if (e != enemy){
+                if (board.screenToBoard(e.getPosition().x) == x && board.screenToBoard(e.getPosition().y) == y){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**

@@ -270,7 +270,7 @@ public class Board {
      *
      * @return the size of the tile texture.
      */
-    public int getTileSize() {
+    public int getTileSize()  {
         return TILE_WIDTH;
     }
 
@@ -429,6 +429,10 @@ public class Board {
         int cell = screenToBoard(f);
         float nearestCenter = (cell + 0.5f) * paddedTileSize;
         return f - nearestCenter;
+    }
+
+    public boolean isSameTile(Vector2 pos1, Vector2 pos2){
+        return screenToBoard(pos1.x) == screenToBoard(pos2.x) && screenToBoard(pos1.y) == screenToBoard(pos2.y);
     }
 
     // PATHFINDING METHODS (REQUIRED)

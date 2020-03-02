@@ -57,6 +57,9 @@ public class Entity {
     public void setMoving(boolean value){
         moving = value;
     }
+    public boolean getMoving(){
+      return moving;
+    }
 
     public Vector2 getPosition(){
         return position;

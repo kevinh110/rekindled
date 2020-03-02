@@ -122,6 +122,11 @@ public class Board {
     /** The board height (in number of tiles) */
     private int height;
 
+    /** Walls in index coordinates.
+     * VERY BAD DESIGN. JUST NEEDED FOR LINE OF SIGHT IN AI CONTROLLER
+     */
+    public int[] walls;
+
     private LinkedList<Integer> lightSources;
     /** The tile grid (with above dimensions) */
     private TileState[][] tiles;
@@ -156,6 +161,7 @@ public class Board {
     public Board(int width, int height, int[] walls, int[] litSources, int[] dimSources) {
         this.width = width;
         this.height = height;
+        this.walls = walls;
         this.darkTile = new Texture(DARK_TILE);
         this.lightTile = new Texture(LIGHT_TILE);
         this.wallTexture = new Texture(WALL);
@@ -223,6 +229,11 @@ public class Board {
             }
         }
     }
+
+    public boolean isSafeAt(int x, int y) {
+        return x >= 0 && y >= 0 && x < width && y < height;
+    }
+
 
     public void reset(int[] walls, int[] litSources, int[] dimSources){
         for(int ii = 0; ii < walls.length-1; ii += 2){
@@ -369,10 +380,15 @@ public class Board {
         return (int)(f / (getTileSize() + getTileSpacing()));
     }
 
+    public Vector2 screenToBoard(Vector2 v){
+        return new Vector2(screenToBoard(v.x), screenToBoard(v.y));
+    }
+
     /**
      * Returns if the given position is at center of a tile.
      */
     public boolean isCenterOfTile(Vector2 position){
+
         float nearestCenterX = boardToScreen(screenToBoard(position.x));
         float nearestCenterY = boardToScreen(screenToBoard(position.y));
         if(Math.abs(nearestCenterX - position.x) < .001 && Math.abs(nearestCenterY - position.y) < .001){
@@ -479,9 +495,24 @@ public class Board {
         return tile.isWall || tile.isLightSource;
     }
 
+    public boolean isObstructedBoard(int x, int y) {
+        TileState tile = tiles[x][y];
+        return tile.isWall || tile.isLightSource;
+    }
+
     public boolean isLitTile(Vector2 position){
         TileState tile = tiles[screenToBoard(position.x)][screenToBoard(position.y)];
         return tile.isLitTile;
+    }
+
+    public boolean isLitTileBoard(int x, int y){
+        TileState tile = tiles[x][y];
+        return tile.isLitTile;
+    }
+
+    public boolean isEnemyMovable(int x, int y){
+        TileState tile = tiles[x][y];
+        return tile.isWall || tile.isLightSource || tile.isLitTile;
     }
 
     public boolean isLitLightSource(Vector2 position){
@@ -505,6 +536,10 @@ public class Board {
         tiles[x][y].goal = true;
     }
 
+    public boolean isGoal(int x, int y){
+        return tiles[x][y].goal;
+    }
+
 
     /**
      * Clears all marks on the board.
@@ -517,6 +552,15 @@ public class Board {
                 TileState state = tiles[x][y];
                 state.visited = false;
                 state.goal = false;
+            }
+        }
+    }
+
+    public void clearVisited() {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                TileState state = tiles[x][y];
+                state.visited = false;
             }
         }
     }

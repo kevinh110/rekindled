@@ -33,5 +33,9 @@ public class Player extends Entity {
         return lights > 0;
     }
 
+    public void setLights(int x) {
+        lights = x;
+    }
+
 
 }

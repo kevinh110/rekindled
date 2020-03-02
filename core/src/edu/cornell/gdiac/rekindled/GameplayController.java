@@ -323,6 +323,7 @@ public class GameplayController {
 	public void reset() {
 		board.reset(walls, litSources, dimSources);
 		player.setPosition(board.boardToScreen(1), board.boardToScreen(1));
+		player.setLights(0);
 		for (int ii = 0; ii < enemyLocations.length-1; ii += 2){
 			enemies[ii/2].setPosition(board.boardToScreen(enemyLocations[ii]), board.boardToScreen(enemyLocations[ii+1]));
 		}

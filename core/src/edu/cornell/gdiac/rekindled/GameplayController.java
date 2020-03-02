@@ -350,17 +350,14 @@ public class GameplayController {
 		//find whether or not lux is in range of a light source
 		Vector2 pos = player.getPosition();
 
-		System.out.println("in Range");
 		Vector2 source = board.getInteractedSource(pos.x, pos.y);
 		System.out.println(source.x);
 		System.out.println(source.y);
 			//take light, place light
 		if (board.getSourceOn(source) && player.hasSpace()) {
-			System.out.println("Taking Light");
 			board.turnSourceOff(source);
 			player.increaseLights();
 		} else if (!board.getSourceOn(source) && player.hasLights()) {
-			System.out.println("Placing light");
 			board.turnSourceOn(source);
 			player.decreaseLights();
 		}

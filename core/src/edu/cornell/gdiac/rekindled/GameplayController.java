@@ -182,10 +182,10 @@ public class GameplayController {
 	private static final String WIN_SCREEN_FILE = "images/winScreen.png";
 	private static final String LOSS_SCREEN_FILE = "images/lossScreen.png";
 
-	private int[] walls = {3, 4, 3, 5, 3, 6, 3, 7};
-	private int[] dimSources = {5, 3, 2, 4};
-	private int[] litSources = {2, 2, 5, 6};
-	private int[] enemyLocations = {10, 4, 7, 7};
+	private int[] walls = {3,2,3,3,3,4,6,2,6,3,6,4};
+	private int[] dimSources = {};
+	private int[] litSources = {2,7,10,6};
+	private int[] enemyLocations = {1,5,12,2};
 
 	CollisionController collisions;
 

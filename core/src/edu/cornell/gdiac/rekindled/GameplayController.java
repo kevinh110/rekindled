@@ -184,8 +184,8 @@ public class GameplayController {
 
 	private int[] walls = {3,2,3,3,3,4,6,2,6,3,6,4};
 	private int[] dimSources = {};
-	private int[] litSources = {2,7,10,6};
-	private int[] enemyLocations = {1,5,12,2};
+	private int[] litSources = {3,7,10,6};
+	private int[] enemyLocations = {1,5,12,3};
 
 	CollisionController collisions;
 

@@ -369,8 +369,7 @@ public class AIController {
         }
 
         // Calculate direction to move
-        if (!board.isLitTile(enemy.getPosition()) && hasLoS() &&
-                (board.isLitTile(player.getPosition()) || board.isDimTile(player.getPosition()))) {
+        if (!board.isLitTile(enemy.getPosition()) && hasLoS()) {
             Vector2 dir = getNextDirection();
             enemy.move(dir.x * (board.getTileSize() + board.getTileSpacing()),
                     (board.getTileSize() + board.getTileSpacing()) * dir.y);
@@ -389,15 +388,23 @@ public class AIController {
         boolean result = true;
         while (idx < board.walls.length - 1){
             float[] vertices = new float[] {
-                    board.walls[idx] + .03f, board.walls[idx+1] + .03f,
-                    board.walls[idx] + .03f, board.walls[idx+1] + .97f,
-                    board.walls[idx] + .97f, board.walls[idx + 1] + .03f,
-                    board.walls[idx] + .97f, board.walls[idx + 1] + .97f
+//                    board.walls[idx] + .01f, board.walls[idx+1] + .01f,
+//                    board.walls[idx] + .01f, board.walls[idx+1] + .99f,
+//                    board.walls[idx] + .99f, board.walls[idx + 1] + .01f,
+//                    board.walls[idx] + .99f, board.walls[idx + 1] + .99f
+
+                    board.walls[idx] , board.walls[idx+1] ,
+                    board.walls[idx], board.walls[idx+1] + 1f,
+                    board.walls[idx] + 1f, board.walls[idx + 1] ,
+                    board.walls[idx] + 1f, board.walls[idx + 1] + 1f
             };
             Polygon poly = new Polygon(vertices);
-            Vector2 playerPos = board.screenToBoard(player.getPosition());
-            Vector2 enemyPos = board.screenToBoard(enemy.getPosition());
+            Vector2 playerPos = new Vector2(board.screenToBoard(player.getPosition().x) + .5f,
+                    board.screenToBoard(player.getPosition().y) + .5f);
+            Vector2 enemyPos = new Vector2(board.screenToBoard(enemy.getPosition().x) + .5f,
+                    board.screenToBoard(enemy.getPosition().y) + .5f);
             if (Intersector.intersectSegmentPolygon(playerPos,enemyPos, poly)){
+                System.out.println(board.walls[idx] +", " + board.walls[idx+1]);
                 result = false;
             }
             idx +=2;

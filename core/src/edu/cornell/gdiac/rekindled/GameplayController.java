@@ -182,10 +182,10 @@ public class GameplayController {
 	private static final String WIN_SCREEN_FILE = "images/winScreen.png";
 	private static final String LOSS_SCREEN_FILE = "images/lossScreen.png";
 
-	private int[] walls = {3, 4, 3, 5, 3, 6, 3, 7};
-	private int[] dimSources = {5, 3, 2, 4};
-	private int[] litSources = {2, 2, 5, 6};
-	private int[] enemyLocations = {10, 4, 7, 7};
+	private int[] walls = {4, 3, 4, 4, 4, 5, 9,3,9,4,9,5};
+	private int[] dimSources = {};
+	private int[] litSources = {5,7};
+	private int[] enemyLocations = {13,2};
 
 	CollisionController collisions;
 
@@ -216,10 +216,10 @@ public class GameplayController {
 	 */
 	protected GameplayController(Rectangle bounds, Array<String> assets) {
 		board = new Board(BOARD_WIDTH, BOARD_HEIGHT, walls, litSources, dimSources);
-		player = new Player(board.boardToScreen(1), board.boardToScreen(1), 1f);
+		player = new Player(board.boardToScreen(2), board.boardToScreen(2), 1f);
 		enemies = new Enemy[enemyLocations.length/2];
 		for (int ii = 0; ii < enemyLocations.length-1; ii += 2){
-			enemies[ii/2] = new Enemy(board.boardToScreen(enemyLocations[ii]), board.boardToScreen(enemyLocations[ii+1]), 2f);
+			enemies[ii/2] = new Enemy(board.boardToScreen(enemyLocations[ii]), board.boardToScreen(enemyLocations[ii+1]), 1f);
 		}
 		this.bounds = new Rectangle(bounds);
 		this.scale = new Vector2(1,1);
@@ -314,6 +314,7 @@ public class GameplayController {
 		if(collisions.checkPlayerEnemyCollision()){
 			lostGame = true;
 		}
+
 		player.update();
 		board.clearLight();
 		if (player.hasLightRadius())
@@ -322,6 +323,16 @@ public class GameplayController {
 		// Enemy Movement
 		for (AIController controller : controls){
 			controller.move();
+			if(collisions.checkPlayerEnemyCollision()){
+				lostGame = true;
+			}
+			controller.move();
+			if(collisions.checkPlayerEnemyCollision()){
+				lostGame = true;
+			}
+			controller.move();
+
+
 		}
 
 		// Check win Condition

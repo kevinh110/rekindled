@@ -64,6 +64,12 @@ public class GameplayController {
 		assets.add(PLAYER_FILE_DOWN);
 		manager.load(ENEMY_FILE, Texture.class);
 		assets.add(ENEMY_FILE);
+		manager.load(SAVED_ENEMY_FILE, Texture.class);
+		assets.add(SAVED_ENEMY_FILE);
+		manager.load(WIN_SCREEN_FILE, Texture.class);
+		assets.add(WIN_SCREEN_FILE);
+		manager.load(LOSS_SCREEN_FILE, Texture.class);
+		assets.add(LOSS_SCREEN_FILE);
 	}
 
 	/**
@@ -83,9 +89,13 @@ public class GameplayController {
 		playerTextureUp = createTexture(manager,PLAYER_FILE_UP);
 		player.setTexture(playerTextureRight);
 		enemyTexture = createTexture(manager,ENEMY_FILE);
+		savedEnemyTexture = createTexture(manager,SAVED_ENEMY_FILE);
 		for(Enemy enemy: enemies) {
 			enemy.setTexture(enemyTexture);
+			enemy.setSecondaryTexture(savedEnemyTexture);
 		}
+		winScreenTexture = createTexture(manager, WIN_SCREEN_FILE);
+		lossScreenTexture = createTexture(manager, LOSS_SCREEN_FILE);
 	}
 
 	private Texture createTexture(AssetManager manager, String file) {
@@ -160,13 +170,22 @@ public class GameplayController {
 
 	/** File storing the enemy */
 	private static final String ENEMY_FILE  = "images/enemy.png";
+	/** File storing the saved enemy */
+	private static final String SAVED_ENEMY_FILE  = "images/savedEnemy.png";
 	/** Texture for enemy */
 	private Texture enemyTexture;
+	/** Texture for saved enemy */
+	private Texture savedEnemyTexture;
+
+	private Texture winScreenTexture;
+	private Texture lossScreenTexture;
+	private static final String WIN_SCREEN_FILE = "images/winScreen.png";
+	private static final String LOSS_SCREEN_FILE = "images/lossScreen.png";
 
 	private int[] walls = {3, 4, 3, 5, 3, 6, 3, 7};
 	private int[] dimSources = {5, 3, 2, 4};
 	private int[] litSources = {2, 2, 5, 6};
-	private int[] enemyLocations = {10, 4};
+	private int[] enemyLocations = {10, 4, 7, 7};
 
 	CollisionController collisions;
 
@@ -197,10 +216,10 @@ public class GameplayController {
 	 */
 	protected GameplayController(Rectangle bounds, Array<String> assets) {
 		board = new Board(BOARD_WIDTH, BOARD_HEIGHT, walls, litSources, dimSources);
-		player = new Player(board.boardToScreen(1), board.boardToScreen(1), 2);
+		player = new Player(board.boardToScreen(1), board.boardToScreen(1), 1f);
 		enemies = new Enemy[enemyLocations.length/2];
 		for (int ii = 0; ii < enemyLocations.length-1; ii += 2){
-			enemies[ii/2] = new Enemy(board.boardToScreen(enemyLocations[ii]), board.boardToScreen(enemyLocations[ii+1]), 2);
+			enemies[ii/2] = new Enemy(board.boardToScreen(enemyLocations[ii]), board.boardToScreen(enemyLocations[ii+1]), 2f);
 		}
 		this.bounds = new Rectangle(bounds);
 		this.scale = new Vector2(1,1);
@@ -212,7 +231,7 @@ public class GameplayController {
 
 		controls = new AIController[enemies.length];
 		for(int ii = 0; ii < enemies.length; ii++) {
-			controls[ii] = new AIController(enemies[ii],board,player);
+			controls[ii] = new AIController(enemies[ii],board,player, enemies);
 		}
 	}
 
@@ -234,6 +253,9 @@ public class GameplayController {
 		//player movement
 		if (board.isCenterOfTile(player.getPosition())){
 			player.setMoving(false);
+			//reset to center
+			player.setPosition(board.boardToScreen(board.screenToBoard(player.getPosition().x)),
+					board.boardToScreen(board.screenToBoard(player.getPosition().y)));
 		}
 		if(input.didUp()){
 			if(player.getDirection() == Entity.Direction.UP){
@@ -307,7 +329,10 @@ public class GameplayController {
 		for (Enemy e : enemies){
 			if (board.isLitTile(e.getPosition())){
 				numLit++;
+				e.setIsLit(true);
 			}
+			else
+				e.setIsLit(false);
 		}
 		wonGame = (numLit == enemies.length);
 		player.update();
@@ -379,6 +404,12 @@ public class GameplayController {
 		player.draw(canvas);
 		for(Enemy enemy : enemies){
 			enemy.draw(canvas);
+		}
+		if(wonGame){
+			canvas.draw(winScreenTexture, 450, 350);
+		}
+		if(lostGame){
+			canvas.draw(lossScreenTexture, 350, 300);
 		}
 
 	}

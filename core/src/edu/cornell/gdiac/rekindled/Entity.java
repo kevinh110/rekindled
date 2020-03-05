@@ -136,12 +136,13 @@ public class Entity {
         }
     }
 
-    public void draw(GameCanvas canvas, Direction direction){
+    public void draw(GameCanvas canvas, Direction direction, boolean cooldown){
+        Color tint = cooldown ? Color.RED : Color.WHITE;
         if (mainTexture != null) {
-            if(direction == Direction.LEFT){
-                canvas.draw(mainTexture, Color.WHITE,origin.x,origin.y,position.x,position.y + 16,0,-1,1);
+            if(direction == Direction.RIGHT){
+                canvas.draw(mainTexture, tint,origin.x,origin.y,position.x,position.y + 32,0,-.25f / 3,.25f / 3);
             } else {
-                canvas.draw(mainTexture, Color.WHITE, origin.x, origin.y, position.x, position.y + 16, 0, 1, 1);
+                canvas.draw(mainTexture, tint, origin.x, origin.y, position.x, position.y + 32, 0, .25f / 3, .25f / 3);
             }
         }
     }

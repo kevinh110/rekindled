@@ -2,6 +2,7 @@ package edu.cornell.gdiac.rekindled;
 
 public class Player extends Entity {
     public int lights;
+    private boolean cooldown;
 
     private static final int MAXLIGHTS = 2;
 
@@ -37,5 +38,8 @@ public class Player extends Entity {
         lights = x;
     }
 
+    public void setCooldown(boolean value) { this.cooldown = value;}
+
+    public boolean getCooldown() { return this.cooldown; }
 
 }

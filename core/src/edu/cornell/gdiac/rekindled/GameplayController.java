@@ -54,14 +54,12 @@ public class GameplayController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void preLoadContent(AssetManager manager, Array<String> assets) {
-		manager.load(PLAYER_FILE_RIGHT, Texture.class);
-		assets.add(PLAYER_FILE_RIGHT);
 		manager.load(PLAYER_FILE_LEFT, Texture.class);
 		assets.add(PLAYER_FILE_LEFT);
-		manager.load(PLAYER_FILE_UP, Texture.class);
-		assets.add(PLAYER_FILE_UP);
-		manager.load(PLAYER_FILE_DOWN, Texture.class);
-		assets.add(PLAYER_FILE_DOWN);
+		manager.load(PLAYER_FILE_BACK, Texture.class);
+		assets.add(PLAYER_FILE_BACK);
+		manager.load(PLAYER_FILE_FRONT, Texture.class);
+		assets.add(PLAYER_FILE_FRONT);
 		manager.load(ENEMY_FILE, Texture.class);
 		assets.add(ENEMY_FILE);
 		manager.load(SAVED_ENEMY_FILE, Texture.class);
@@ -83,11 +81,10 @@ public class GameplayController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void loadContent(AssetManager manager) {
-		playerTextureRight = createTexture(manager,PLAYER_FILE_RIGHT);
 		playerTextureLeft = createTexture(manager,PLAYER_FILE_LEFT);
-		playerTextureDown = createTexture(manager,PLAYER_FILE_DOWN);
-		playerTextureUp = createTexture(manager,PLAYER_FILE_UP);
-		player.setTexture(playerTextureRight);
+		playerTextureFront = createTexture(manager,PLAYER_FILE_FRONT);
+		playerTextureBack = createTexture(manager,PLAYER_FILE_BACK);
+		player.setTexture(playerTextureLeft);
 		enemyTexture = createTexture(manager,ENEMY_FILE);
 		savedEnemyTexture = createTexture(manager,SAVED_ENEMY_FILE);
 		for(Enemy enemy: enemies) {
@@ -157,16 +154,14 @@ public class GameplayController {
 	protected Vector2 scale;
 
 	/** File storing the players */
-	private static final String PLAYER_FILE_RIGHT  = "images/player.png";
-	private static final String PLAYER_FILE_LEFT  = "images/playerLEFT.png";
-	private static final String PLAYER_FILE_DOWN = "images/playerDOWN.png";
-	private static final String PLAYER_FILE_UP = "images/playerUP.png";
+	private static final String PLAYER_FILE_FRONT  = "images/front.png";
+	private static final String PLAYER_FILE_BACK = "images/back.png";
+	private static final String PLAYER_FILE_LEFT = "images/left.png";
 
 	/** Textures for player */
-	private Texture playerTextureRight;
 	private Texture playerTextureLeft;
-	private Texture playerTextureDown;
-	private Texture playerTextureUp;
+	private Texture playerTextureBack;
+	private Texture playerTextureFront;
 
 	/** File storing the enemy */
 	private static final String ENEMY_FILE  = "images/enemy.png";
@@ -216,7 +211,7 @@ public class GameplayController {
 	 */
 	protected GameplayController(Rectangle bounds, Array<String> assets) {
 		board = new Board(BOARD_WIDTH, BOARD_HEIGHT, walls, litSources, dimSources);
-		player = new Player(board.boardToScreen(2), board.boardToScreen(2), 1f);
+		player = new Player(board.boardToScreen(4), board.boardToScreen(2), 1f);
 		enemies = new Enemy[enemyLocations.length/2];
 		for (int ii = 0; ii < enemyLocations.length-1; ii += 2){
 			enemies[ii/2] = new Enemy(board.boardToScreen(enemyLocations[ii]), board.boardToScreen(enemyLocations[ii+1]), 1f);
@@ -262,7 +257,7 @@ public class GameplayController {
 				player.move(0, board.getTileSize() + board.getTileSpacing());
 			} else {
 				player.setDirection(Entity.Direction.UP);
-				player.setTexture(playerTextureUp);
+				player.setTexture(playerTextureBack);
 			}
 
 		}
@@ -271,7 +266,7 @@ public class GameplayController {
 				player.move(0, -board.getTileSize() - board.getTileSpacing());
 			} else {
 				player.setDirection(Entity.Direction.DOWN);
-				player.setTexture(playerTextureDown);
+				player.setTexture(playerTextureFront);
 			}
 
 		}
@@ -289,7 +284,7 @@ public class GameplayController {
 				player.move(board.getTileSize() + board.getTileSpacing(), 0);
 			} else {
 				player.setDirection(Entity.Direction.RIGHT);
-				player.setTexture(playerTextureRight);
+				player.setTexture(playerTextureLeft);
 			}
 		}
 		if (board.isObstructed(player.getGoal())){
@@ -299,8 +294,10 @@ public class GameplayController {
 		//update light cooldown
 		if (cooldown) {
 			delayTimer+= dt;
-			if (delayTimer >= TURN_ON_DELAY)
+			if (delayTimer >= TURN_ON_DELAY) {
 				cooldown = false;
+				player.setCooldown(false);
+			}
 		}
 
 		//placing and taking light
@@ -308,6 +305,7 @@ public class GameplayController {
 			doLightInteraction();
 			delayTimer = 0;
 			cooldown = true;
+			player.setCooldown(true);
 		}
 
 		//player-enemy collision
@@ -347,6 +345,7 @@ public class GameplayController {
 		}
 		wonGame = (numLit == enemies.length);
 		player.update();
+		System.out.println(player.getCooldown());
 		board.update();
 	}
 
@@ -358,8 +357,9 @@ public class GameplayController {
 	 */
 	public void reset() {
 		board.reset(walls, litSources, dimSources);
-		player.setPosition(board.boardToScreen(1), board.boardToScreen(1));
+		player.setPosition(board.boardToScreen(4), board.boardToScreen(2));
 		player.setLights(0);
+		player.setCooldown(false);
 		for (int ii = 0; ii < enemyLocations.length-1; ii += 2){
 			enemies[ii/2].setPosition(board.boardToScreen(enemyLocations[ii]), board.boardToScreen(enemyLocations[ii+1]));
 		}
@@ -412,7 +412,7 @@ public class GameplayController {
 	 */
 	public void draw(GameCanvas canvas, float delta) {
 		board.draw(canvas);
-		player.draw(canvas);
+		player.draw(canvas, player.getDirection(), player.getCooldown());
 		for(Enemy enemy : enemies){
 			enemy.draw(canvas);
 		}

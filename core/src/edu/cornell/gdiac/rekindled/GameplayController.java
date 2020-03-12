@@ -244,51 +244,20 @@ public class GameplayController {
 
 		InputController input = InputController.getInstance();
 		input.readInput(bounds, scale);
+		InputController.Move_Direction next_move = input.get_Next_Direction();
 
 		//player movement
-		if (board.isCenterOfTile(player.getPosition())){
-			player.setMoving(false);
-			//reset to center
-			player.setPosition(board.boardToScreen(board.screenToBoard(player.getPosition().x)),
-					board.boardToScreen(board.screenToBoard(player.getPosition().y)));
-		}
-		if(input.didUp()){
-			if(player.getDirection() == Entity.Direction.UP){
-				player.move(0, board.getTileSize() + board.getTileSpacing());
-			} else {
-				player.setDirection(Entity.Direction.UP);
-				player.setTexture(playerTextureBack);
-			}
-
-		}
-		else if (input.didDown()){
-			if(player.getDirection() == Entity.Direction.DOWN){
-				player.move(0, -board.getTileSize() - board.getTileSpacing());
-			} else {
-				player.setDirection(Entity.Direction.DOWN);
-				player.setTexture(playerTextureFront);
-			}
-
-		}
-		else if (input.didLeft()){
-			if(player.getDirection() == Entity.Direction.LEFT){
-				player.move(-board.getTileSize() - board.getTileSpacing(), 0);
-			} else {
-				player.setDirection(Entity.Direction.LEFT);
-				player.setTexture(playerTextureLeft);
-			}
-
-		}
-		else if (input.didRight()){
-			if(player.getDirection() == Entity.Direction.RIGHT) {
-				player.move(board.getTileSize() + board.getTileSpacing(), 0);
-			} else {
-				player.setDirection(Entity.Direction.RIGHT);
-				player.setTexture(playerTextureLeft);
-			}
-		}
-		if (board.isObstructed(player.getGoal())){
-			player.setMoving(false);
+		player.move(next_move, board);
+		//set player texture
+		switch(player.getDirection()){
+			case UP: player.setTexture(playerTextureBack);
+				break;
+			case DOWN: player.setTexture(playerTextureFront);
+				break;
+			case RIGHT: player.setTexture(playerTextureLeft);
+				break;
+			case LEFT: player.setTexture(playerTextureLeft);
+				break;
 		}
 
 		//update light cooldown
@@ -320,19 +289,16 @@ public class GameplayController {
 
 		// Enemy Movement
 		for (AIController controller : controls){
-			controller.move();
+			controller.getEnemy().move(controller.get_Next_Direction(), board);
+			controller.getEnemy().update();
+			board.clearMarks();
 			if(collisions.checkPlayerEnemyCollision()){
 				lostGame = true;
 			}
-			controller.move();
 			if(collisions.checkPlayerEnemyCollision()){
 				lostGame = true;
 			}
-			controller.move();
-
-
 		}
-
 		// Check win Condition
 		int numLit = 0;
 		for (Enemy e : enemies){
@@ -345,10 +311,8 @@ public class GameplayController {
 		}
 		wonGame = (numLit == enemies.length);
 		player.update();
-		System.out.println(player.getCooldown());
 		board.update();
 	}
-
 
 	/**
 	 * Resets the status of the game so that we can play again.

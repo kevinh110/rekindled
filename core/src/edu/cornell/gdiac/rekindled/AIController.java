@@ -10,6 +10,7 @@
  */
 package edu.cornell.gdiac.rekindled;
 
+import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
@@ -19,7 +20,7 @@ import java.util.*;
 /**
  * InputController corresponding to AI control.
  */
-public class AIController {
+public class AIController extends Entity_Controller {
     // taken from InputController in AI Lab
     // Constants for the control codes
     // We would normally use an enum here, but Java enums do not bitmask nicely
@@ -202,7 +203,8 @@ public class AIController {
     /**
      * Returns (delX, delY) representing next direction for this enemy to move
      */
-    public Vector2 getNextDirection(){
+    public Move_Direction get_Next_Direction(){
+        if(board.isLitTile(enemy.getPosition()) || !hasLoS()){ return Move_Direction.NO_MOVE; }
 
         Queue<ArrayList<Integer>> q = new LinkedList<>();
         int[][][] parent = new int[board.getWidth()][board.getHeight()][2];
@@ -218,9 +220,6 @@ public class AIController {
         s.add(sx); s.add(sy);
         board.setVisited(sx,sy); //visit s
         q.add(s);
-
-
-
 
         //BFS
         int[] reachedGoal = new int[2];
@@ -276,16 +275,28 @@ public class AIController {
         int[] root = {sx,sy};
         int[] prev = reachedGoal;
 
+
+
         // If goal not found, don't move
         if (reachedGoal[0] == -1 && reachedGoal[1] == -1){
-            return new Vector2(0, 0);
+            return Move_Direction.NO_MOVE;
         }
 
         while(!Arrays.equals(prev,root) && !Arrays.equals(parent[prev[0]][prev[1]],root))  {
             prev = parent[prev[0]][prev[1]];
         }
-
-        return new Vector2(prev[0] - root[0], prev[1] - root[1]);
+        if(root[0] > prev[0]){
+            return Move_Direction.MOVE_LEFT;
+        } else if(root[0] < prev[0]){
+            return Move_Direction.MOVE_RIGHT;
+        } else if(root[1] > prev[1]){
+            return Move_Direction.MOVE_DOWN;
+        } else if(root[1] < prev[1]){
+            return Move_Direction.MOVE_UP;
+        } else {
+            return Move_Direction.NO_MOVE;
+        }
+//        return new Vector2(prev[0] - root[0], prev[1] - root[1]);
     }
 
     private boolean noEnemyAt(int x, int y){
@@ -311,7 +322,6 @@ public class AIController {
         // Set Current Position to Visited
         int px = board.screenToBoard(player.getPosition().x);
         int py = board.screenToBoard(player.getPosition().y);
-//        System.out.println(px + "," + py);
         s.add(px); s.add(py);
         board.setVisited(px,py); //visit s
         q.add(s);
@@ -359,29 +369,29 @@ public class AIController {
                 }
             }
         }
-//        System.out.println("Result: " + result.get(0) + "," + result.get(1));
     }
+
 
     /** Moves this enemy */
-    public void move(){
-        if (board.isCenterOfTile(enemy.getPosition())) {
-            enemy.setMoving(false);
-        }
-
-        // Calculate direction to move
-        if (!board.isLitTile(enemy.getPosition()) && hasLoS()) {
-            Vector2 dir = getNextDirection();
-            enemy.move(dir.x * (board.getTileSize() + board.getTileSpacing()),
-                    (board.getTileSize() + board.getTileSpacing()) * dir.y);
-        }
-
-        if (board.isObstructed(enemy.getGoal()) || board.isLitTile(enemy.getGoal())) {
-            enemy.setMoving(false);
-        }
-        enemy.update();
-        board.clearMarks();
-
-    }
+//    public void move(){
+//        if (board.isCenterOfTile(enemy.getPosition())) {
+//            enemy.setMoving(false);
+//        }
+//
+//        // Calculate direction to move
+//        if (!board.isLitTile(enemy.getPosition()) && hasLoS()) {
+//            Vector2 dir = getNextDirection();
+//            enemy.move(dir.x * (board.getTileSize() + board.getTileSpacing()),
+//                    (board.getTileSize() + board.getTileSpacing()) * dir.y);
+//        }
+//
+//        if (board.isObstructed(enemy.getGoal()) || board.isLitTile(enemy.getGoal())) {
+//            enemy.setMoving(false);
+//        }
+//        enemy.update();
+//        board.clearMarks();
+//
+//    }
 
     private boolean hasLoS(){
         int idx = 0;
@@ -404,7 +414,6 @@ public class AIController {
             Vector2 enemyPos = new Vector2(board.screenToBoard(enemy.getPosition().x) + .5f,
                     board.screenToBoard(enemy.getPosition().y) + .5f);
             if (Intersector.intersectSegmentPolygon(playerPos,enemyPos, poly)){
-                System.out.println(board.walls[idx] +", " + board.walls[idx+1]);
                 result = false;
             }
             idx +=2;

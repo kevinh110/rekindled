@@ -18,6 +18,8 @@ import com.badlogic.gdx.math.*;
 
 import edu.cornell.gdiac.util.*;
 
+import static edu.cornell.gdiac.rekindled.Entity_Controller.Move_Direction.*;
+
 /**
  * Class for reading player input. 
  *
@@ -25,10 +27,10 @@ import edu.cornell.gdiac.util.*;
  * detected the X-Box controller on start-up.  This class allows us to hot-swap in
  * a controller via the new XBox360Controller class.
  */
-public class InputController {
+public class InputController extends Entity_Controller{
 	/** The singleton instance of the input controller */
 	private static InputController theController = null;
-	
+
 	/** 
 	 * Return the singleton instance of the input controller
 	 *
@@ -221,6 +223,24 @@ public class InputController {
 	public boolean didRight() {
 		return rightPressed;
 	}
+
+	public Move_Direction get_Next_Direction(){
+		if(didDown()){
+			return MOVE_DOWN;
+		}
+		if (didUp()){
+			return MOVE_UP;
+		}
+		if(didRight()){
+			return  MOVE_RIGHT;
+		}
+		if(didLeft()){
+			return  MOVE_LEFT;
+		}
+		return NO_MOVE;
+	}
+
+
 
 	/**
 	 * Returns true if the player wants to go toggle the debug mode.

@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.rekindled;
 
+import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
@@ -56,6 +57,47 @@ public class Entity {
             moving = true;
             goalX = position.x + delX;
             goalY = position.y + delY;
+        }
+    }
+    public void move(Entity_Controller.Move_Direction direction, Board board){
+        if (board.isCenterOfTile(getPosition())){
+            setMoving(false);
+            //reset to center
+            setPosition(board.boardToScreen(board.screenToBoard(getPosition().x)),
+                    board.boardToScreen(board.screenToBoard(getPosition().y)));
+        }
+        switch (direction) {
+            case MOVE_UP:
+                if (getDirection() == Entity.Direction.UP) {
+                    move(0, board.getTileSize() + board.getTileSpacing());
+                } else {
+                    setDirection(Entity.Direction.UP);
+                }
+                break;
+            case MOVE_DOWN:
+                if (getDirection() == Entity.Direction.DOWN) {
+                    move(0, -board.getTileSize() - board.getTileSpacing());
+                } else {
+                    setDirection(Entity.Direction.DOWN);
+                }
+                break;
+            case MOVE_RIGHT:
+                if (getDirection() == Entity.Direction.RIGHT) {
+                    move(board.getTileSize() + board.getTileSpacing(), 0);
+                } else {
+                    setDirection(Entity.Direction.RIGHT);
+                }
+                break;
+            case MOVE_LEFT:
+                if (getDirection() == Entity.Direction.LEFT) {
+                    move(-board.getTileSize() - board.getTileSpacing(), 0);
+                } else {
+                    setDirection(Entity.Direction.LEFT);
+                }
+                break;
+        }
+        if (board.isObstructed(getGoal())){
+            setMoving(false);
         }
     }
 

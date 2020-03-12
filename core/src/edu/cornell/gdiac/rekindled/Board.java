@@ -113,9 +113,6 @@ public class Board {
     private static final String DIM_SOURCE = "images/dimLightSource.png";
     private static final int LIGHT_RADIUS = 2;
 
-
-
-
     // Instance attributes
     /** The board width (in number of tiles) */
     private int width;
@@ -358,12 +355,6 @@ public class Board {
         }
     }
 
-    // METHODS FOR LAB 2
-
-    // CONVERSION METHODS (OPTIONAL)
-    // Use these methods to convert between tile coordinates (int) and
-    // world coordinates (float).
-
     /**
      * Returns the board cell index for a screen position.
      *
@@ -378,10 +369,6 @@ public class Board {
      */
     public int screenToBoard(float f) {
         return (int)(f / (getTileSize() + getTileSpacing()));
-    }
-
-    public Vector2 screenToBoard(Vector2 v){
-        return new Vector2(screenToBoard(v.x), screenToBoard(v.y));
     }
 
     /**

@@ -4,14 +4,14 @@
  * This is the primary class file for running the game.  It is the "static main" of
  * LibGDX.  In the first lab, we extended ApplicationAdapter.  In previous lab
  * we extended Game.  This is because of a weird graphical artifact that we do not
- * understand.  Transparencies (in 3D only) is failing when we use ApplicationAdapter. 
+ * understand.  Transparencies (in 3D only) is failing when we use ApplicationAdapter.
  * There must be some undocumented OpenGL code in setScreen.
  *
  * Author: Walker M. White
  * Based on original PhysicsDemo Lab by Don Holden, 2007
  * LibGDX version, 2/6/2015
  */
- package edu.cornell.gdiac.rekindled;
+package edu.cornell.gdiac.rekindled;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.assets.*;
@@ -21,29 +21,27 @@ import com.badlogic.gdx.assets.loaders.*;
 import com.badlogic.gdx.assets.loaders.resolvers.*;
 
 import edu.cornell.gdiac.util.*;
+import edu.cornell.gdiac.rekindled.*;
 
 /**
- * Root class for a LibGDX.  
- * 
+ * Root class for a LibGDX.
+ *
  * This class is technically not the ROOT CLASS. Each platform has another class above
- * this (e.g. PC games use DesktopLauncher) which serves as the true root.  However, 
- * those classes are unique to each platform, while this class is the same across all 
- * plaforms. In addition, this functions as the root class all intents and purposes, 
- * and you would draw it as a root class in an architecture specification.  
+ * this (e.g. PC games use DesktopLauncher) which serves as the true root.  However,
+ * those classes are unique to each platform, while this class is the same across all
+ * plaforms. In addition, this functions as the root class all intents and purposes,
+ * and you would draw it as a root class in an architecture specification.
  */
 public class GDXRoot extends Game implements ScreenListener {
 	/** AssetManager to load game assets (textures, sounds, etc.) */
 	private AssetManager manager;
 	/** Drawing context to display graphics (VIEW CLASS) */
-	private GameCanvas canvas; 
+	private GameCanvas canvas;
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
 	private LoadingMode loading;
+	/** List of all WorldControllers */
+	private WorldController controller;
 
-	private GameMode gameMode;
-
-	/** Player mode for the the game proper (CONTROLLER CLASS) */
-	private int current;
-	
 	/**
 	 * Creates a new game from the configuration settings.
 	 *
@@ -53,55 +51,54 @@ public class GDXRoot extends Game implements ScreenListener {
 	public GDXRoot() {
 		// Start loading with the asset manager
 		manager = new AssetManager();
-		
+
 		// Add font support to the asset manager
 		FileHandleResolver resolver = new InternalFileHandleResolver();
 		manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
 		manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
 	}
 
-	/** 
+	/**
 	 * Called when the Application is first created.
-	 * 
+	 *
 	 * This is method immediately loads assets for the loading screen, and prepares
 	 * the asynchronous loader for all other assets.
 	 */
 	public void create() {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode(canvas,manager,1);
-		
-		// Initialize the game worlds
-		gameMode = new GameMode(canvas);
-		gameMode.preLoadContent(manager);
-		current = 0;
+
+		// Initialize the three game worlds
+		controller = new GameplayController();
+		controller.preLoadContent(manager);
 		loading.setScreenListener(this);
 		setScreen(loading);
 	}
 
-	/** 
-	 * Called when the Application is destroyed. 
+	/**
+	 * Called when the Application is destroyed.
 	 *
 	 * This is preceded by a call to pause().
 	 */
 	public void dispose() {
 		// Call dispose on our children
 		setScreen(null);
-		gameMode.unloadContent(manager);
-		gameMode.dispose();
+		controller.unloadContent(manager);
+		controller.dispose();
 
 		canvas.dispose();
 		canvas = null;
-	
+
 		// Unload all of the resources
 		manager.clear();
 		manager.dispose();
 		super.dispose();
 	}
-	
+
 	/**
-	 * Called when the Application is resized. 
+	 * Called when the Application is resized.
 	 *
-	 * This can happen at any point during a non-paused state but will never happen 
+	 * This can happen at any point during a non-paused state but will never happen
 	 * before a call to create().
 	 *
 	 * @param width  The new width in pixels
@@ -111,7 +108,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		canvas.resize();
 		super.resize(width,height);
 	}
-	
+
 	/**
 	 * The given screen has made a request to exit its player mode.
 	 *
@@ -122,15 +119,17 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == loading) {
-			gameMode.loadContent(manager);
-			gameMode.setScreenListener(this);
-			setScreen(gameMode);
-			
+			controller.loadContent(manager);
+			controller.setScreenListener(this);
+			controller.setCanvas(canvas);
+			controller.reset();
+			setScreen(controller);
+
 			loading.dispose();
 			loading = null;
-		}
-		if (screen == gameMode){
-			//code for going into menu or something
+		} else if (exitCode == WorldController.EXIT_QUIT) {
+			// We quit the main application
+			Gdx.app.exit();
 		}
 	}
 

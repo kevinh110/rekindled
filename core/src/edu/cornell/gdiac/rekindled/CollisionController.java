@@ -71,23 +71,6 @@ public class CollisionController {
     }
 
     /**
-     * Ch
-     *
-     */
-    public boolean checkPlayerEnemyCollision() {
-        for (Enemy e : enemies) {
-            int enemyBoardX = board.screenToBoard(e.getPosition().x);
-            int enemyBoardY = board.screenToBoard(e.getPosition().y);
-            int playerBoardX = board.screenToBoard(player.getPosition().x);
-            int playerBoardY = board.screenToBoard(player.getPosition().y);
-            if(enemyBoardX == playerBoardX && enemyBoardY == playerBoardY && !e.isLit){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Returns the manhattan distance between two points
      *
      * @return the manhattan distance between two points

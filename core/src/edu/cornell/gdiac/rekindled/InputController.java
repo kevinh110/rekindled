@@ -152,7 +152,7 @@ public class InputController extends Entity_Controller{
 	 * @return true if the secondary action button was pressed.
 	 */
 	public boolean didSecondary() {
-		return secondPressed && !secondPrevious;
+		return secondPressed;
 	}
 
 	/**
@@ -225,6 +225,18 @@ public class InputController extends Entity_Controller{
 	}
 
 	public Move_Direction get_Next_Direction(){
+		if (didUp() && didRight()){
+			return MOVE_DIAG_UP_RIGHT;
+		}
+		if (didUp() && didLeft()){
+			return MOVE_DIAG_UP_LEFT;
+		}
+		if (didDown() && didRight()){
+			return MOVE_DIAG_DOWN_RIGHT;
+		}
+		if (didDown() && didLeft()){
+			return MOVE_DIAG_DOWN_LEFT;
+		}
 		if(didDown()){
 			return MOVE_DOWN;
 		}

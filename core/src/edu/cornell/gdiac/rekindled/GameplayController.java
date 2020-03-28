@@ -17,10 +17,14 @@
 package edu.cornell.gdiac.rekindled;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.graphics.*;
+import edu.cornell.gdiac.rekindled.obstacle.Obstacle;
+import edu.cornell.gdiac.rekindled.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.*;
 
 import java.util.Arrays;
@@ -39,13 +43,73 @@ import java.util.Arrays;
  * This is the purpose of our AssetState variable; it ensures that multiple instances
  * place nicely with the static assets.
  */
-public class GameplayController {
+public class GameplayController extends WorldController implements ContactListener {
 
+	/**
+	 * File storing the players
+	 */
+	private static final String PLAYER_FILE_FRONT = "images/front.png";
+	private static final String PLAYER_FILE_BACK = "images/back.png";
+	private static final String PLAYER_FILE_LEFT = "images/left.png";
+	/**
+	 * File storing the enemy
+	 */
+	private static final String ENEMY_FILE = "images/enemy.png";
+	/**
+	 * File storing the saved enemy
+	 */
+	private static final String SAVED_ENEMY_FILE = "images/savedEnemy.png";
+	/**
+	 * win/loss screens
+	 */
+	private static final String WIN_SCREEN_FILE = "images/winScreen.png";
+	private static final String LOSS_SCREEN_FILE = "images/lossScreen.png";
 
+	/** The file location of the wall*/
+	private static final String WALL_FILE = "images/wall.png";
+
+	private static final String LIT_SOURCE_FILE = "images/litLightSource.png";
+	/** The file location of a dim light source*/
+	private static final String DIM_SOURCE_FILE = "images/dimLightSource.png";
+
+	/**texture region for wall*/
+	private TextureRegion wallTexture;
+	/**
+	 * Textures for player
+	 */
+	private TextureRegion playerTextureLeft;
+	private TextureRegion playerTextureBack;
+	private TextureRegion playerTextureFront;
+	/**
+	 * Texture for enemy
+	 */
+	private TextureRegion enemyTexture;
+	/**
+	 * Texture for saved enemy
+	 */
+	private TextureRegion savedEnemyTexture;
+	private TextureRegion winScreenTexture;
+	private TextureRegion lossScreenTexture;
+
+	/**texture region for dim light source*/;
+	private TextureRegion dimSourceTexture;
+	/**texture region for lit light source*/;
+	private TextureRegion litSourceTexture;
+
+	/** Track asset loading from all instances and subclasses */
+	private AssetState assetState = AssetState.EMPTY;
+
+	// Physics constants for initialization
+	/** The density for all of (external) objects */
+	private static final float BASIC_DENSITY = 0.0f;
+	/** The friction for all of (external) objects */
+	private static final float BASIC_FRICTION = 0.1f;
+	/** The restitution for all of (external) objects */
+	private static final float BASIC_RESTITUTION = 0.1f;
 
 	/**
 	 * Preloads the assets for this controller.
-	 *
+	 * <p>
 	 * To make the game modes more for-loop friendly, we opted for nonstatic loaders
 	 * this time.  However, we still want the assets themselves to be static.  So
 	 * we have an AssetState that determines the current loading state.  If the
@@ -53,7 +117,12 @@ public class GameplayController {
 	 *
 	 * @param manager Reference to global asset manager.
 	 */
-	public void preLoadContent(AssetManager manager, Array<String> assets) {
+	public void preLoadContent(AssetManager manager) {
+		if (assetState != AssetState.EMPTY) {
+			return;
+		}
+		assetState = AssetState.LOADING;
+
 		manager.load(PLAYER_FILE_LEFT, Texture.class);
 		assets.add(PLAYER_FILE_LEFT);
 		manager.load(PLAYER_FILE_BACK, Texture.class);
@@ -68,11 +137,19 @@ public class GameplayController {
 		assets.add(WIN_SCREEN_FILE);
 		manager.load(LOSS_SCREEN_FILE, Texture.class);
 		assets.add(LOSS_SCREEN_FILE);
+		manager.load(WALL_FILE, Texture.class);
+		assets.add(WALL_FILE);
+		manager.load(LIT_SOURCE_FILE, Texture.class);
+		assets.add(LIT_SOURCE_FILE);
+		manager.load(DIM_SOURCE_FILE, Texture.class);
+		assets.add(DIM_SOURCE_FILE);
+
+		super.preLoadContent(manager);
 	}
 
 	/**
 	 * Loads the assets for this controller.
-	 *
+	 * <p>
 	 * To make the game modes more for-loop friendly, we opted for nonstatic loaders
 	 * this time.  However, we still want the assets themselves to be static.  So
 	 * we have an AssetState that determines the current loading state.  If the
@@ -81,60 +158,70 @@ public class GameplayController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void loadContent(AssetManager manager) {
-		playerTextureLeft = createTexture(manager,PLAYER_FILE_LEFT);
-		playerTextureFront = createTexture(manager,PLAYER_FILE_FRONT);
-		playerTextureBack = createTexture(manager,PLAYER_FILE_BACK);
-		player.setTexture(playerTextureLeft);
-		enemyTexture = createTexture(manager,ENEMY_FILE);
-		savedEnemyTexture = createTexture(manager,SAVED_ENEMY_FILE);
-		for(Enemy enemy: enemies) {
-			enemy.setTexture(enemyTexture);
-			enemy.setSecondaryTexture(savedEnemyTexture);
+		if (assetState != AssetState.LOADING) {
+			return;
 		}
-		winScreenTexture = createTexture(manager, WIN_SCREEN_FILE);
-		lossScreenTexture = createTexture(manager, LOSS_SCREEN_FILE);
+		playerTextureLeft = createTexture(manager, PLAYER_FILE_LEFT, false);
+		playerTextureFront = createTexture(manager, PLAYER_FILE_FRONT, false);
+		playerTextureBack = createTexture(manager, PLAYER_FILE_BACK, false);
+		enemyTexture = createTexture(manager, ENEMY_FILE, false);
+		savedEnemyTexture = createTexture(manager, SAVED_ENEMY_FILE, false);
+		winScreenTexture = createTexture(manager, WIN_SCREEN_FILE, false);
+		lossScreenTexture = createTexture(manager, LOSS_SCREEN_FILE, false);
+		wallTexture = createTexture(manager, WALL_FILE, true);
+		dimSourceTexture = createTexture(manager, DIM_SOURCE_FILE, false);
+		litSourceTexture = createTexture(manager, LIT_SOURCE_FILE, false);
+
+		super.loadContent(manager);
+		assetState = AssetState.COMPLETE;
 	}
 
-	private Texture createTexture(AssetManager manager, String file) {
-		if (manager.isLoaded(file)) {
-			Texture texture = manager.get(file, Texture.class);
-			texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-			return texture;
-		}
-		return null;
-	}
 
 	/**
 	 * Unloads the assets for this game.
-	 *
+	 * <p>
 	 * This method erases the static variables.  It also deletes the associated textures
 	 * from the asset manager. If no assets are loaded, this method does nothing.
 	 *
 	 * @param manager Reference to global asset manager.
 	 */
 	public void unloadContent(AssetManager manager, Array<String> assets) {
-		for(String s : assets) {
+		for (String s : assets) {
 			if (manager.isLoaded(s)) {
 				manager.unload(s);
 			}
 		}
 	}
 
-	/** Width of the game world in Box2d units */
-	protected static final float DEFAULT_WIDTH  = 32.0f;
-	/** Height of the game world in Box2d units */
+	/**
+	 * Width of the game world in Box2d units
+	 */
+	protected static final float DEFAULT_WIDTH = 32.0f;
+	/**
+	 * Height of the game world in Box2d units
+	 */
 	protected static final float DEFAULT_HEIGHT = 18.0f;
 
-	/** Reference to the game canvas */
+	/**
+	 * Reference to the game canvas
+	 */
 	protected GameCanvas canvas;
-	/** Listener that will update the player mode when we are done */
+	/**
+	 * Listener that will update the player mode when we are done
+	 */
 	private ScreenListener listener;
 
-	/** The Game Board*/
+	/**
+	 * The Game Board
+	 */
 	private Board board;
-	/** Board width in tiles*/
+	/**
+	 * Board width in tiles
+	 */
 	private static final int BOARD_WIDTH = 16;
-	/** Board Height in tiles*/
+	/**
+	 * Board Height in tiles
+	 */
 	private static final int BOARD_HEIGHT = 9;
 	private static final int TURN_ON_DELAY = 2;
 
@@ -145,94 +232,128 @@ public class GameplayController {
 
 	private Enemy[] enemies;
 
-	/** Stores all the AI controllers */
+	/**
+	 * Stores all the AI controllers
+	 */
 	protected AIController[] controls;
 
-	/** The boundary of the world */
-	protected Rectangle bounds;
-	/** The world scale */
-	protected Vector2 scale;
 
-	/** File storing the players */
-	private static final String PLAYER_FILE_FRONT  = "images/front.png";
-	private static final String PLAYER_FILE_BACK = "images/back.png";
-	private static final String PLAYER_FILE_LEFT = "images/left.png";
+	LightSource[] lights;
 
-	/** Textures for player */
-	private Texture playerTextureLeft;
-	private Texture playerTextureBack;
-	private Texture playerTextureFront;
-
-	/** File storing the enemy */
-	private static final String ENEMY_FILE  = "images/enemy.png";
-	/** File storing the saved enemy */
-	private static final String SAVED_ENEMY_FILE  = "images/savedEnemy.png";
-	/** Texture for enemy */
-	private Texture enemyTexture;
-	/** Texture for saved enemy */
-	private Texture savedEnemyTexture;
-
-	private Texture winScreenTexture;
-	private Texture lossScreenTexture;
-	private static final String WIN_SCREEN_FILE = "images/winScreen.png";
-	private static final String LOSS_SCREEN_FILE = "images/lossScreen.png";
-
-	private int[] walls = {3,2,3,3,3,4,6,2,6,3,6,4};
+	private int[] walls = {3, 2, 3, 3, 3, 4, 6, 2, 6, 3, 6, 4};
 	private int[] dimSources = {};
-	private int[] litSources = {3,7,10,6};
-	private int[] enemyLocations = {1,5,12,3};
+	private int[] litSources = {3, 7, 10, 6};
+	private int[] enemyLocations = {1, 5, 12, 3};
 
 	CollisionController collisions;
 
 	boolean lostGame;
 	boolean wonGame;
 
+	// Since these appear only once, we do not care about the magic numbers.
+	// In an actual game, this information would go in a data file.
+	// Wall vertices
+	private static final float[] WALL1 = {16.0f, 18.0f, 16.0f, 17.0f,  1.0f, 17.0f,
+			1.0f,  1.0f, 16.0f,  1.0f, 16.0f,  0.0f,
+			0.0f,  0.0f,  0.0f, 18.0f};
+
+	private static final float[] WALL2 =  {32.0f, 18.0f, 32.0f,  0.0f, 16.0f,  0.0f,
+			16.0f,  1.0f, 31.0f,  1.0f, 31.0f, 17.0f,
+			16.0f, 17.0f, 16.0f, 18.0f};
 
 	/**
-	 * Creates a new game world with the default values.
-	 *
-	 * The game world is scaled so that the screen coordinates do not agree
-	 * with the Box2d coordinates.  The bounds are in terms of the Box2d
-	 * world, not the screen.
+	 * Creates and initialize a new instance of the rocket lander game
+	 * <p>
+	 * The game has default gravity and other settings
 	 */
-	protected GameplayController(Array<String> assets) {
-		this(new Rectangle(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT), assets);
+	public GameplayController() {
+		setDebug(false);
+		setComplete(false);
+		setFailure(false);
+		world.setContactListener(this);
+
+		enemies = new Enemy[2];
+		lights = new LightSource[1];
 	}
 
 
 	/**
-	 * Creates a new game world
-	 *
-	 * The game world is scaled so that the screen coordinates do not agree
-	 * with the Box2d coordinates.  The bounds are in terms of the Box2d
-	 * world, not the screen.
-	 *
-	 * @param bounds	The game bounds in Box2d coordinates
+	 * Resets the status of the game so that we can play again.
+	 * <p>
+	 * This method disposes of the world and creates a new one.
 	 */
-	protected GameplayController(Rectangle bounds, Array<String> assets) {
-		board = new Board(BOARD_WIDTH, BOARD_HEIGHT, walls, litSources, dimSources);
-		player = new Player(board.boardToScreen(4), board.boardToScreen(2), 1f);
-		enemies = new Enemy[enemyLocations.length/2];
-		for (int ii = 0; ii < enemyLocations.length-1; ii += 2){
-			enemies[ii/2] = new Enemy(board.boardToScreen(enemyLocations[ii]), board.boardToScreen(enemyLocations[ii+1]), 1f);
-		}
-		this.bounds = new Rectangle(bounds);
-		this.scale = new Vector2(1,1);
-		collisions = new CollisionController(board, enemies, player);
-		lostGame = false;
-		wonGame = false;
-		delayTimer = 0;
-		cooldown = false;
+	public void reset() {
+		Vector2 gravity = new Vector2(world.getGravity());
 
-		controls = new AIController[enemies.length];
-		for(int ii = 0; ii < enemies.length; ii++) {
-			controls[ii] = new AIController(enemies[ii],board,player, enemies);
+		for (Obstacle obj : objects) {
+			obj.deactivatePhysics(world);
 		}
+		objects.clear();
+		addQueue.clear();
+		world.dispose();
+
+		world = new World(gravity, false);
+		world.setContactListener(this);
+		setComplete(false);
+		setFailure(false);
+		populateLevel();
+	}
+
+
+	/**
+	 * Lays out the game geography.
+	 */
+	private void populateLevel() {
+
+		lights[0] = new LightSource(5, 5, 1, 1,true);
+		lights[0].setSensor(true);
+		lights[0].setDrawScale(scale);
+		lights[0].setTexture(litSourceTexture);
+		lights[0].setBodyType(BodyDef.BodyType.StaticBody);
+		lights[0].setTextureCache(litSourceTexture, dimSourceTexture);
+		addObject(lights[0]);
+
+
+		for(int i = 0; i < 2; i ++) {
+			enemies[i] = new Enemy(enemyLocations[i], enemyLocations[i+1], 1, 1);
+			enemies[i].setSensor(true);
+			enemies[i].setDrawScale(scale);
+			enemies[i].setTexture(enemyTexture);
+			addObject(enemies[i]);
+		}
+
+		// Create ground pieces
+		PolygonObstacle obj;
+		obj = new PolygonObstacle(WALL1, 0, 0);
+		obj.setBodyType(BodyDef.BodyType.KinematicBody);
+		obj.setDensity(BASIC_DENSITY);
+		obj.setFriction(BASIC_FRICTION);
+		obj.setRestitution(BASIC_RESTITUTION);
+		obj.setDrawScale(scale);
+		obj.setTexture(wallTexture);
+		obj.setName("wall1");
+		addObject(obj);
+
+		obj = new PolygonObstacle(WALL2, 0, 0);
+		obj.setBodyType(BodyDef.BodyType.KinematicBody);
+		obj.setDensity(BASIC_DENSITY);
+		obj.setFriction(BASIC_FRICTION);
+		obj.setRestitution(BASIC_RESTITUTION);
+		obj.setDrawScale(scale);
+		obj.setTexture(wallTexture);
+		obj.setName("wall2");
+		addObject(obj);
+
+		// Add level goal
+		player = new Player(10, 10, 2, 4);
+		player.setDrawScale(scale);
+		player.setTexture(playerTextureFront);
+		addObject(player);
 	}
 
 	/**
 	 * The core gameplay loop of this world.
-	 *
+	 * <p>
 	 * This method contains the specific update code for this mini-game. It does
 	 * not handle collisions, as those are managed by the parent class WorldController.
 	 * This method is called after input is read, but before collisions are resolved.
@@ -240,152 +361,160 @@ public class GameplayController {
 	 *
 	 * @param dt Number of seconds since last animation frame
 	 */
-	public void update(float dt){
+	public void update(float dt) {
 
 		InputController input = InputController.getInstance();
 		input.readInput(bounds, scale);
 		InputController.Move_Direction next_move = input.get_Next_Direction();
 
 		//player movement
-		player.move(next_move, board);
-		//set player texture
-		switch(player.getDirection()){
-			case UP: player.setTexture(playerTextureBack);
-				break;
-			case DOWN: player.setTexture(playerTextureFront);
-				break;
-			case RIGHT: player.setTexture(playerTextureLeft);
-				break;
-			case LEFT: player.setTexture(playerTextureLeft);
-				break;
-		}
+		player.move(next_move);
 
-		//update light cooldown
-		if (cooldown) {
-			delayTimer+= dt;
-			if (delayTimer >= TURN_ON_DELAY) {
-				cooldown = false;
-				player.setCooldown(false);
-			}
-		}
-
+		player.updateCooldown(dt);
 		//placing and taking light
-		if (input.didSecondary() && board.inLightInteractRange(player.getPosition().x, player.getPosition().y) && !cooldown) {
-			doLightInteraction();
-			delayTimer = 0;
-			cooldown = true;
-			player.setCooldown(true);
-		}
-
-		//player-enemy collision
-		if(collisions.checkPlayerEnemyCollision()){
-			lostGame = true;
-		}
-
-		player.update();
-		board.clearLight();
-		if (player.hasLightRadius())
-			board.dimTiles(player.getPosition());
-
-		// Enemy Movement
-		for (AIController controller : controls){
-			controller.getEnemy().move(controller.get_Next_Direction(), board);
-			controller.getEnemy().update();
-			board.clearMarks();
-			if(collisions.checkPlayerEnemyCollision()){
-				lostGame = true;
-			}
-			if(collisions.checkPlayerEnemyCollision()){
-				lostGame = true;
+		if (input.didSecondary() && player.getTouchingLight() && !player.getCooldown()) {
+			player.takeLight();
+			for (LightSource light : lights){
+				light.toggleLit();
 			}
 		}
+
 		// Check win Condition
 		int numLit = 0;
 		for (Enemy e : enemies){
-			if (board.isLitTile(e.getPosition())){
-				numLit++;
-				e.setIsLit(true);
-			}
-			else
-				e.setIsLit(false);
+			if (e.getIsLit())
+				numLit ++;
 		}
 		wonGame = (numLit == enemies.length);
-		player.update();
-		board.update();
 	}
 
-	/**
-	 * Resets the status of the game so that we can play again.
-	 *
-	 * This method disposes of the world and creates a new one.
-	 */
-	public void reset() {
-		board.reset(walls, litSources, dimSources);
-		player.setPosition(board.boardToScreen(4), board.boardToScreen(2));
-		player.setLights(0);
-		player.setCooldown(false);
-		for (int ii = 0; ii < enemyLocations.length-1; ii += 2){
-			enemies[ii/2].setPosition(board.boardToScreen(enemyLocations[ii]), board.boardToScreen(enemyLocations[ii+1]));
-		}
-		lostGame = false;
-		wonGame = false;
-		cooldown = false;
-	}
-
-	public boolean isAlive(){
+	public boolean isAlive() {
 		return true;
 	}
 
-	public boolean won(){
+	public boolean won() {
 		return wonGame;
 	}
 
-	public boolean lost(){
+	public boolean lost() {
 		return lostGame;
 	}
 
-	/** Handles Lux's light interactions (placing and taking)
-	 *
-	 */
-	public void doLightInteraction() {
-		//find whether or not lux is in range of a light source
-		Vector2 pos = player.getPosition();
 
-		Vector2 source = board.getInteractedSource(pos.x, pos.y);
-		System.out.println(source.x);
-		System.out.println(source.y);
-			//take light, place light
-		if (board.getSourceOn(source) && player.hasSpace()) {
-			board.turnSourceOff(source);
-			player.increaseLights();
-		} else if (!board.getSourceOn(source) && player.hasLights()) {
-			board.turnSourceOn(source);
-			player.decreaseLights();
+	/// CONTACT LISTENER METHODS
+
+	/**
+	 * Callback method for the start of a collision
+	 * <p>
+	 * This method is called when we first get a collision between two objects.  We use
+	 * this method to test if it is the "right" kind of collision.  In particular, we
+	 * use it to test if we made it to the win door.
+	 *
+	 * @param contact The two bodies that collided
+	 */
+	public void beginContact(Contact contact) {
+		Fixture fix1 = contact.getFixtureA();
+		Fixture fix2 = contact.getFixtureB();
+
+		Body body1 = fix1.getBody();
+		Body body2 = fix2.getBody();
+
+		try {
+			Obstacle bd1 = (Obstacle)body1.getUserData();
+			Obstacle bd2 = (Obstacle)body2.getUserData();
+
+
+			// See if we lost.
+			for (Enemy enemy : enemies) {
+				if ((bd1 == player && bd2 == enemy) || (bd1 == enemy &&  bd2 == player)){
+					lostGame = true;
+					System.out.println("enemy contact");
+				}
+			}
+
+			//Update touching lights
+			for (LightSource light : lights) {
+				if((bd1 == player && bd2 == light) || (bd1 == light && bd2 == player)){
+					player.setTouchingLight(true);
+					light.setTouchingPlayer(true);
+					System.out.println("touching light");
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+
+
 	}
 
 	/**
-	 * Draw the physics objects to the canvas
-	 *
-	 * For simple worlds, this method is enough by itself.  It will need
-	 * to be overriden if the world needs fancy backgrounds or the like.
-	 *
-	 * The method draws all objects in the order that they were added.
-	 *
-	 * @param delta The drawing context
+	 * Callback method for the start of a collision
+	 * <p>
+	 * This method is called when two objects cease to touch.  We do not use it.
 	 */
-	public void draw(GameCanvas canvas, float delta) {
-		board.draw(canvas);
-		player.draw(canvas, player.getDirection(), player.getCooldown());
-		for(Enemy enemy : enemies){
-			enemy.draw(canvas);
+	public void endContact(Contact contact) {
+
+		Fixture fix1 = contact.getFixtureA();
+		Fixture fix2 = contact.getFixtureB();
+
+		Body body1 = fix1.getBody();
+		Body body2 = fix2.getBody();
+
+		try {
+			Obstacle bd1 = (Obstacle)body1.getUserData();
+			Obstacle bd2 = (Obstacle)body2.getUserData();
+
+			//Update touching lights
+			for (LightSource light : lights) {
+				if((bd1 == player && bd2 == light) || (bd1 == light && bd2 == player)){
+					player.setTouchingLight(false);
+					light.setTouchingPlayer(false);
+					System.out.println("no longer touching light");
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		if(wonGame){
-			canvas.draw(winScreenTexture, 450, 350);
-		}
-		if(lostGame){
-			canvas.draw(lossScreenTexture, 350, 300);
-		}
+
+	}
+
+	private Vector2 cache = new Vector2();
+
+	/**
+	 * Unused ContactListener method
+	 */
+	public void postSolve(Contact contact, ContactImpulse impulse) {
+	}
+
+	/**
+	 * Handles any modifications necessary before collision resolution
+	 * <p>
+	 * This method is called just before Box2D resolves a collision.  We use this method
+	 * to implement sound on contact, using the algorithms outlined similar to those in
+	 * Ian Parberry's "Introduction to Game Physics with Box2D".
+	 * <p>
+	 * However, we cannot use the proper algorithms, because LibGDX does not implement
+	 * b2GetPointStates from Box2D.  The danger with our approximation is that we may
+	 * get a collision over multiple frames (instead of detecting the first frame), and
+	 * so play a sound repeatedly.  Fortunately, the cooldown hack in SoundController
+	 * prevents this from happening.
+	 *
+	 * @param contact     The two bodies that collided
+	 * @param oldManifold The collision manifold before contact
+	 */
+
+	public void preSolve(Contact contact, Manifold oldManifold) {
+		float speed = 0;
+
+		// Use Ian Parberry's method to compute a speed threshold
+		Body body1 = contact.getFixtureA().getBody();
+		Body body2 = contact.getFixtureB().getBody();
+		WorldManifold worldManifold = contact.getWorldManifold();
+		Vector2 wp = worldManifold.getPoints()[0];
+		cache.set(body1.getLinearVelocityFromWorldPoint(wp));
+		cache.sub(body2.getLinearVelocityFromWorldPoint(wp));
+		speed = cache.dot(worldManifold.getNormal());
 
 	}
 }

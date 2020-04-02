@@ -38,8 +38,6 @@ public class Player extends FeetHitboxObstacle {
     private static final float DEFAULT_RESTITUTION = 0.4f;
     /** The thrust factor to convert player input into thrust */
     private static final float DEFAULT_THRUST = 30.0f;
-    /** The number of frames for the afterburner */
-    public static final int FIRE_FRAMES = 4;
 
     /** The force to apply to this rocket */
     private Vector2 force;
@@ -196,6 +194,11 @@ public class Player extends FeetHitboxObstacle {
         touchingLight = false;
     }
 
+    public Player(float x, float y, float width, float height, int lights) {
+        this(x,y,width,height);
+        lightCounter = lights;
+    }
+
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
      *
@@ -306,7 +309,7 @@ public class Player extends FeetHitboxObstacle {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
-        super.draw(canvas);  // Ship
+        super.draw(canvas);  // Player
         // Flames
         if (mainBurner != null) {
             float offsety = mainBurner.getRegionHeight()-origin.y;

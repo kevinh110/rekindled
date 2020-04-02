@@ -26,6 +26,7 @@ import com.badlogic.gdx.graphics.*;
 import edu.cornell.gdiac.rekindled.obstacle.Obstacle;
 import edu.cornell.gdiac.rekindled.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.*;
+import javafx.scene.effect.Light;
 
 import java.util.Arrays;
 
@@ -72,6 +73,7 @@ public class GameplayController extends WorldController implements ContactListen
 	/** The file location of a dim light source*/
 	private static final String DIM_SOURCE_FILE = "images/dimLightSource.png";
 
+
 	/**texture region for wall*/
 	private TextureRegion wallTexture;
 	/**
@@ -91,9 +93,9 @@ public class GameplayController extends WorldController implements ContactListen
 	private TextureRegion winScreenTexture;
 	private TextureRegion lossScreenTexture;
 
-	/**texture region for dim light source*/;
+	/**texture region for dim light source*/
 	private TextureRegion dimSourceTexture;
-	/**texture region for lit light source*/;
+	/**texture region for lit light source*/
 	private TextureRegion litSourceTexture;
 
 	/** Track asset loading from all instances and subclasses */
@@ -106,6 +108,8 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final float BASIC_FRICTION = 0.1f;
 	/** The restitution for all of (external) objects */
 	private static final float BASIC_RESTITUTION = 0.1f;
+
+
 
 	/**
 	 * Preloads the assets for this controller.
@@ -216,13 +220,14 @@ public class GameplayController extends WorldController implements ContactListen
 	 */
 	private Board board;
 	/**
-	 * Board width in tiles
+	 * Board width in Box2D Units
 	 */
-	private static final int BOARD_WIDTH = 16;
+	private float BOARD_WIDTH;
 	/**
-	 * Board Height in tiles
+	 * Board Height in box2D Units
 	 */
-	private static final int BOARD_HEIGHT = 9;
+	private float BOARD_HEIGHT;
+
 	private static final int TURN_ON_DELAY = 2;
 
 	private float delayTimer;
@@ -238,28 +243,76 @@ public class GameplayController extends WorldController implements ContactListen
 	protected AIController[] controls;
 
 
-	LightSource[] lights;
 
-	private int[] walls = {3, 2, 3, 3, 3, 4, 6, 2, 6, 3, 6, 4};
+	private LightSource[] lights;
+
+
 	private int[] dimSources = {};
 	private int[] litSources = {3, 7, 10, 6};
 	private int[] enemyLocations = {1, 5, 12, 3};
+
+	private int[] spawn;
+	private int initLights;
+	private int[] walls;
 
 	CollisionController collisions;
 
 	boolean lostGame;
 	boolean wonGame;
 
-	// Since these appear only once, we do not care about the magic numbers.
-	// In an actual game, this information would go in a data file.
-	// Wall vertices
-	private static final float[] WALL1 = {16.0f, 18.0f, 16.0f, 17.0f,  1.0f, 17.0f,
-			1.0f,  1.0f, 16.0f,  1.0f, 16.0f,  0.0f,
-			0.0f,  0.0f,  0.0f, 18.0f};
+	/** The reader to process JSON files */
+	private JsonReader jsonReader;
+	/** The JSON defining the level model */
+	private JsonValue  levelFormat;
 
-	private static final float[] WALL2 =  {32.0f, 18.0f, 32.0f,  0.0f, 16.0f,  0.0f,
-			16.0f,  1.0f, 31.0f,  1.0f, 31.0f, 17.0f,
-			16.0f, 17.0f, 16.0f, 18.0f};
+
+	public void parseJson(){
+		float[] dim = levelFormat.get("dimension").asFloatArray();
+		BOARD_WIDTH = dim[0];
+		BOARD_HEIGHT = dim[1];
+		spawn = levelFormat.get("spawn").asIntArray();
+		initLights = levelFormat.getInt("init_lights");
+
+		// Parse Lights
+		JsonValue lights_json = levelFormat.get("lights");
+		lights = new LightSource[lights_json.size];
+		JsonValue light = lights_json.child();
+		int idx = 0;
+		while (light != null){
+			int[] pos = light.get("position").asIntArray();
+			lights[idx] = new LightSource(pos[0], pos[1], 1, 1,light.getBoolean("lit"));
+			idx++;
+			light = light.next();
+		}
+
+		// Parse Enemies
+		JsonValue enemies_json = levelFormat.get("enemies");
+		enemies = new Enemy[enemies_json.size];
+		JsonValue enemy = enemies_json.child();
+		idx = 0;
+		while (enemy != null){
+			int[] pos = enemy.get("position").asIntArray();
+			JsonValue wander = enemy.get("wander");
+			enemies[idx] = new Enemy(pos[0], pos[1], 1, 1, enemy.getInt("type"));
+			enemies[idx].setWander(wander);
+			idx++;
+			enemy = enemy.next();
+		}
+
+		// Parse Walls; dumb format
+		JsonValue walls_json = levelFormat.get("walls");
+		walls = new int[walls_json.size * 2];
+		JsonValue wall = walls_json.child();
+		idx = 0;
+		while (wall != null){
+			int[] pos = wall.get("position").asIntArray();
+			walls[idx] = pos[0];
+			walls[idx + 1] = pos[1];
+			idx += 2;
+			wall = wall.next();
+		}
+	}
+
 
 	/**
 	 * Creates and initialize a new instance of the rocket lander game
@@ -267,13 +320,14 @@ public class GameplayController extends WorldController implements ContactListen
 	 * The game has default gravity and other settings
 	 */
 	public GameplayController() {
+		jsonReader = new JsonReader();
 		setDebug(false);
 		setComplete(false);
 		setFailure(false);
 		world.setContactListener(this);
 
-		enemies = new Enemy[2];
-		lights = new LightSource[1];
+//		enemies = new Enemy[10];
+//		lights = new LightSource[10];
 	}
 
 
@@ -291,11 +345,14 @@ public class GameplayController extends WorldController implements ContactListen
 		objects.clear();
 		addQueue.clear();
 		world.dispose();
-
 		world = new World(gravity, false);
 		world.setContactListener(this);
 		setComplete(false);
 		setFailure(false);
+
+		// Reload the level json
+		levelFormat = jsonReader.parse(Gdx.files.internal("jsons/level.json"));
+		parseJson();
 		populateLevel();
 	}
 
@@ -305,26 +362,46 @@ public class GameplayController extends WorldController implements ContactListen
 	 */
 	private void populateLevel() {
 
-		lights[0] = new LightSource(5, 5, 1, 1,true);
-		lights[0].setSensor(true);
-		lights[0].setDrawScale(scale);
-		lights[0].setTexture(litSourceTexture);
-		lights[0].setBodyType(BodyDef.BodyType.StaticBody);
-		lights[0].setTextureCache(litSourceTexture, dimSourceTexture);
-		addObject(lights[0]);
+		for (int i = 0; i < lights.length; i++){
+			lights[i].setSensor(true);
+			lights[i].setDrawScale(scale);
+			lights[i].setTexture(litSourceTexture);
+			lights[i].setBodyType(BodyDef.BodyType.StaticBody);
+			lights[i].setTextureCache(litSourceTexture, dimSourceTexture);
+			addObject(lights[i]);
+		}
 
-
-		for(int i = 0; i < 2; i ++) {
-			enemies[i] = new Enemy(enemyLocations[i], enemyLocations[i+1], 1, 1);
+		for(int i = 0; i < enemies.length; i ++) {
 			enemies[i].setSensor(true);
 			enemies[i].setDrawScale(scale);
 			enemies[i].setTexture(enemyTexture);
 			addObject(enemies[i]);
 		}
 
-		// Create ground pieces
+		// Add Walls
 		PolygonObstacle obj;
-		obj = new PolygonObstacle(WALL1, 0, 0);
+		for (int i = 0; i < walls.length; i+=2){
+			float[] vertices = {
+					walls[i], walls[i+1],
+					walls[i] + 1, walls[i + 1],
+					walls[i] + 1, walls[i + 1] + 1,
+					walls[i], walls[i + 1] + 1
+			};
+			obj = new PolygonObstacle(vertices, 0, 0);
+			obj.setBodyType(BodyDef.BodyType.KinematicBody);
+			obj.setDensity(BASIC_DENSITY);
+			obj.setFriction(BASIC_FRICTION);
+			obj.setRestitution(BASIC_RESTITUTION);
+			obj.setDrawScale(scale);
+			obj.setTexture(wallTexture);
+			addObject(obj);
+		}
+
+		// Create border pieces
+		float[] border1 = {BOARD_WIDTH / 2f, BOARD_HEIGHT, BOARD_WIDTH / 2f, BOARD_HEIGHT - 1f, 1.0f, BOARD_HEIGHT - 1f,
+				1.0f,  1.0f, BOARD_WIDTH / 2f,  1.0f, BOARD_WIDTH / 2,  0.0f, 0.0f,  0.0f,  0.0f, BOARD_HEIGHT};
+
+		obj = new PolygonObstacle(border1, 0, 0);
 		obj.setBodyType(BodyDef.BodyType.KinematicBody);
 		obj.setDensity(BASIC_DENSITY);
 		obj.setFriction(BASIC_FRICTION);
@@ -334,7 +411,11 @@ public class GameplayController extends WorldController implements ContactListen
 		obj.setName("wall1");
 		addObject(obj);
 
-		obj = new PolygonObstacle(WALL2, 0, 0);
+		float[] border2 = {BOARD_WIDTH, BOARD_HEIGHT, BOARD_WIDTH,  0.0f, BOARD_WIDTH / 2f,  0.0f,
+				BOARD_WIDTH / 2f,  1.0f, BOARD_WIDTH - 1f,  1.0f, BOARD_WIDTH - 1f, BOARD_HEIGHT - 1f,
+				BOARD_WIDTH / 2f, BOARD_HEIGHT - 1f, BOARD_WIDTH / 2f, BOARD_HEIGHT};
+
+		obj = new PolygonObstacle(border2, 0, 0);
 		obj.setBodyType(BodyDef.BodyType.KinematicBody);
 		obj.setDensity(BASIC_DENSITY);
 		obj.setFriction(BASIC_FRICTION);
@@ -344,8 +425,8 @@ public class GameplayController extends WorldController implements ContactListen
 		obj.setName("wall2");
 		addObject(obj);
 
-		// Add level goal
-		player = new Player(10, 10, 2, 4);
+		// Add Player
+		player = new Player(spawn[0], spawn[1], 2, 4, initLights);
 		player.setDrawScale(scale);
 		player.setTexture(playerTextureFront);
 		addObject(player);

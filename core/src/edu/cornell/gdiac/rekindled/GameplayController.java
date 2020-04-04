@@ -16,6 +16,7 @@
  */
 package edu.cornell.gdiac.rekindled;
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
@@ -26,8 +27,6 @@ import com.badlogic.gdx.graphics.*;
 import edu.cornell.gdiac.rekindled.obstacle.Obstacle;
 import edu.cornell.gdiac.rekindled.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.*;
-
-import java.util.Arrays;
 
 /**
  * Base class for a world-specific controller.
@@ -55,9 +54,6 @@ public class GameplayController extends WorldController implements ContactListen
 	 * File storing the enemy
 	 */
 	private static final String ENEMY_FILE = "images/enemy.png";
-	/**
-	 * File storing the saved enemy
-	 */
 	private static final String SAVED_ENEMY_FILE = "images/savedEnemy.png";
 	/**
 	 * win/loss screens
@@ -67,9 +63,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 	/** The file location of the wall*/
 	private static final String WALL_FILE = "images/wall.png";
-
 	private static final String LIT_SOURCE_FILE = "images/litLightSource.png";
-	/** The file location of a dim light source*/
 	private static final String DIM_SOURCE_FILE = "images/dimLightSource.png";
 
 	/**texture region for wall*/
@@ -84,16 +78,13 @@ public class GameplayController extends WorldController implements ContactListen
 	 * Texture for enemy
 	 */
 	private TextureRegion enemyTexture;
-	/**
-	 * Texture for saved enemy
-	 */
 	private TextureRegion savedEnemyTexture;
+
 	private TextureRegion winScreenTexture;
 	private TextureRegion lossScreenTexture;
 
 	/**texture region for dim light source*/;
 	private TextureRegion dimSourceTexture;
-	/**texture region for lit light source*/;
 	private TextureRegion litSourceTexture;
 
 	/** Track asset loading from all instances and subclasses */
@@ -238,7 +229,9 @@ public class GameplayController extends WorldController implements ContactListen
 	protected AIController[] controls;
 
 
-	LightSource[] lights;
+	LightSourceObject[] lights;
+	private RayHandler rayHandler;
+	private OrthographicCamera rayCamera;
 
 	private int[] walls = {3, 2, 3, 3, 3, 4, 6, 2, 6, 3, 6, 4};
 	private int[] dimSources = {};
@@ -261,6 +254,7 @@ public class GameplayController extends WorldController implements ContactListen
 			16.0f,  1.0f, 31.0f,  1.0f, 31.0f, 17.0f,
 			16.0f, 17.0f, 16.0f, 18.0f};
 
+	private static final float AMBIANCE = 0.1f;
 	/**
 	 * Creates and initialize a new instance of the rocket lander game
 	 * <p>
@@ -273,7 +267,7 @@ public class GameplayController extends WorldController implements ContactListen
 		world.setContactListener(this);
 
 		enemies = new Enemy[2];
-		lights = new LightSource[1];
+		lights = new LightSourceObject[1];
 	}
 
 
@@ -305,13 +299,7 @@ public class GameplayController extends WorldController implements ContactListen
 	 */
 	private void populateLevel() {
 
-		lights[0] = new LightSource(5, 5, 1, 1,true);
-		lights[0].setSensor(true);
-		lights[0].setDrawScale(scale);
-		lights[0].setTexture(litSourceTexture);
-		lights[0].setBodyType(BodyDef.BodyType.StaticBody);
-		lights[0].setTextureCache(litSourceTexture, dimSourceTexture);
-		addObject(lights[0]);
+
 
 
 		for(int i = 0; i < 2; i ++) {
@@ -344,11 +332,39 @@ public class GameplayController extends WorldController implements ContactListen
 		obj.setName("wall2");
 		addObject(obj);
 
+		// Add ambient lighting
+		initLighting();
+
+		lights[0] = new LightSourceObject(5, 5, 1, 1,true);
+		LightSourceLight light = new LightSourceLight(rayHandler, 5, 5);
+		lights[0].addLight(light);
+		lights[0].setSensor(true);
+		lights[0].setDrawScale(scale);
+		lights[0].setTexture(litSourceTexture);
+		lights[0].setBodyType(BodyDef.BodyType.StaticBody);
+		lights[0].setTextureCache(litSourceTexture, dimSourceTexture);
+		addObject(lights[0]);
+
 		// Add level goal
 		player = new Player(10, 10, 2, 4);
 		player.setDrawScale(scale);
 		player.setTexture(playerTextureFront);
 		addObject(player);
+	}
+
+	public void initLighting() {
+		rayCamera = new OrthographicCamera(bounds.width,bounds.height);
+		rayCamera.position.set(bounds.width/2.0f, bounds.height/2.0f, 0);
+		rayCamera.update();
+
+		RayHandler.setGammaCorrection(true);
+		RayHandler.useDiffuseLight(true);
+		rayHandler = new RayHandler(world, Gdx.graphics.getWidth(),  Gdx.graphics.getHeight());
+		rayHandler.setCombinedMatrix(rayCamera);
+
+		rayHandler.setAmbientLight(AMBIANCE, AMBIANCE, AMBIANCE, AMBIANCE);
+		rayHandler.setBlur(true);
+		rayHandler.setBlurNum(3);
 	}
 
 	/**
@@ -363,6 +379,9 @@ public class GameplayController extends WorldController implements ContactListen
 	 */
 	public void update(float dt) {
 
+		if (rayHandler != null)
+			rayHandler.update();
+
 		InputController input = InputController.getInstance();
 		input.readInput(bounds, scale);
 		InputController.Move_Direction next_move = input.get_Next_Direction();
@@ -374,7 +393,7 @@ public class GameplayController extends WorldController implements ContactListen
 		//placing and taking light
 		if (input.didSecondary() && player.getTouchingLight() && !player.getCooldown()) {
 			player.takeLight();
-			for (LightSource light : lights){
+			for (LightSourceObject light : lights){
 				light.toggleLit();
 			}
 		}
@@ -386,6 +405,18 @@ public class GameplayController extends WorldController implements ContactListen
 				numLit ++;
 		}
 		wonGame = (numLit == enemies.length);
+	}
+
+	@Override
+	public void render(float delta) {
+		if (isActive()) {
+            if (preUpdate(delta)) {
+                update(delta); // This is the one that must be defined.
+                postUpdate(delta);
+            }
+            draw(delta);
+            rayHandler.render();
+        }
 	}
 
 	public boolean isAlive() {
@@ -433,7 +464,7 @@ public class GameplayController extends WorldController implements ContactListen
 			}
 
 			//Update touching lights
-			for (LightSource light : lights) {
+			for (LightSourceObject light : lights) {
 				if((bd1 == player && bd2 == light) || (bd1 == light && bd2 == player)){
 					player.setTouchingLight(true);
 					light.setTouchingPlayer(true);
@@ -466,7 +497,7 @@ public class GameplayController extends WorldController implements ContactListen
 			Obstacle bd2 = (Obstacle)body2.getUserData();
 
 			//Update touching lights
-			for (LightSource light : lights) {
+			for (LightSourceObject light : lights) {
 				if((bd1 == player && bd2 == light) || (bd1 == light && bd2 == player)){
 					player.setTouchingLight(false);
 					light.setTouchingPlayer(false);

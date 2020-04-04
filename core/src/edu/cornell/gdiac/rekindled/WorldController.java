@@ -576,15 +576,16 @@ public abstract class WorldController implements Screen {
      *
      * @param delta Number of seconds since last animation frame
      */
-    public void render(float delta) {
-        if (active) {
-            if (preUpdate(delta)) {
-                update(delta); // This is the one that must be defined.
-                postUpdate(delta);
-            }
-            draw(delta);
-        }
-    }
+    public abstract void render(float delta);
+//    {
+//        if (active) {
+//            if (preUpdate(delta)) {
+//                update(delta); // This is the one that must be defined.
+//                postUpdate(delta);
+//            }
+//            draw(delta);
+//        }
+//    }
 
     /**
      * Called when the Screen is paused.

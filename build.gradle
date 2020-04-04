@@ -42,15 +42,15 @@ project(":desktop") {
 
 
     dependencies {
-        compileOnly 'org.projectlombok:lombok:1.18.12'
-        annotationProcessor 'org.projectlombok:lombok:1.18.12'
         implementation project(":core")
         api "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
+        api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+        api "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-controllers-desktop:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-controllers-platform:$gdxVersion:natives-desktop"
-        api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+        
     }
 }
 
@@ -59,12 +59,12 @@ project(":core") {
 
 
     dependencies {
-        compileOnly 'org.projectlombok:lombok:1.18.12'
-        annotationProcessor 'org.projectlombok:lombok:1.18.12'
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
-        api "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
+        api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
+        api "com.badlogicgames.gdx:gdx-ai:$aiVersion"
         
     }
 }

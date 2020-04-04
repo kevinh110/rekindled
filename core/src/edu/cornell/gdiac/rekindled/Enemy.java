@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.rekindled.obstacle.BoxObstacle;
 import edu.cornell.gdiac.rekindled.obstacle.FeetHitboxObstacle;
 import edu.cornell.gdiac.util.FilmStrip;
@@ -56,6 +57,10 @@ public class Enemy extends FeetHitboxObstacle {
     /** The number of frames for the afterburner */
     public static final int SPEED = 5;
 
+    private int type;
+
+    private int[][] wander;
+
     private boolean isLit;
 
     public boolean getIsLit(){
@@ -63,6 +68,27 @@ public class Enemy extends FeetHitboxObstacle {
     }
     public void setIsLit(boolean value){
         isLit = value;
+    }
+
+    public int getType(){
+        return type;
+    }
+
+    public void setWander(int[][] path){
+        this.wander = path;
+    }
+
+    public void setWander(JsonValue pathJson){
+        this.wander = new int[pathJson.size][2];
+        JsonValue coord = pathJson.child();
+        int idx = 0;
+        while (coord != null){
+            this.wander[idx] = coord.asIntArray();
+            coord = coord.next();
+            idx++;
+        }
+
+
     }
 
     /**
@@ -172,6 +198,11 @@ public class Enemy extends FeetHitboxObstacle {
         setFriction(DEFAULT_FRICTION);
         setRestitution(DEFAULT_RESTITUTION);
         setName("rocket");
+    }
+
+    public Enemy(float x, float y, float width, float height, int type) {
+        this(x,y,width,height);
+        this.type = type;
     }
 
     /**

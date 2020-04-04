@@ -4,6 +4,7 @@ import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.physics.box2d.Filter;
+import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
 
 public class LightSourceLight extends PointLight {
     /** The default distance for a point source light */
@@ -29,32 +30,13 @@ public class LightSourceLight extends PointLight {
      * @param rayHandler	a non-null instance of RayHandler
      * @param rays			the number of rays
      */
-    public LightSourceLight(RayHandler rayHandler, float x, float y) {
-        super(rayHandler, 256, null, DEFAULT_DISTANCE, x, y);
+    public LightSourceLight(RayHandler rayHandler) {
+        super(rayHandler, 512, null, DEFAULT_DISTANCE, 0, 0);
+        System.out.println(this.softShadowLength);
+        this.setSoftnessLength(0f);
     }
 
 
-    /**
-     * Creates light shaped as a circle with the given radius, color and position.
-     *
-     * RayHandler is NOT allowed to be null.  This is the source of many design problems.
-     *
-     * The number of rays determines how realistic the light looks.  More rays will
-     * decrease performance.  The number of rays cannot be less than MIN_RAYS.
-     *
-     * The soft shadow length is set to distance * 0.1f.  This is why it ignores thin
-     * walls, and is not particularly useful.
-     *
-     * @param rayHandler	a non-null instance of RayHandler
-     * @param rays			the number of rays
-     * @param color			the light color, or null for default
-     * @param distance		the light radius
-     * @param x				the horizontal position in world coordinates
-     * @param y				the vertical position in world coordinates
-     */
-    public LightSourceLight(RayHandler rayHandler, int rays, Color color, float distance, float x, float y) {
-        super(rayHandler, rays, color, distance, x, y);
-    }
 
 
     /**

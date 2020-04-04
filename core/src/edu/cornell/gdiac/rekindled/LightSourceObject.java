@@ -19,6 +19,7 @@ public class LightSourceObject extends BoxObstacle {
 
     public void addLight(LightSourceLight light) {
         this.light = light;
+        light.setPosition(this.getX(), this.getY());
         this.light.setActive(isLit);
     }
 

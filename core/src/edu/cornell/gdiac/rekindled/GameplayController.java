@@ -238,12 +238,6 @@ public class GameplayController extends WorldController implements ContactListen
 	LightSourceObject[] lights;
 	private RayHandler rayHandler;
 	private OrthographicCamera rayCamera;
-
-
-	private int[] dimSources = {};
-	private int[] litSources = {3, 7, 10, 6};
-	private int[] enemyLocations = {1, 5, 12, 3};
-
 	private int[] spawn;
 	private int initLights;
 	private int[] walls;
@@ -281,6 +275,7 @@ public class GameplayController extends WorldController implements ContactListen
 		// Parse Enemies
 		JsonValue enemies_json = levelFormat.get("enemies");
 		enemies = new Enemy[enemies_json.size];
+		controls = new AIController[enemies_json.size];
 		JsonValue enemy = enemies_json.child();
 		idx = 0;
 		while (enemy != null){
@@ -288,6 +283,7 @@ public class GameplayController extends WorldController implements ContactListen
 			JsonValue wander = enemy.get("wander");
 			enemies[idx] = new Enemy(pos[0], pos[1], 1, 1, enemy.getInt("type"));
 			enemies[idx].setWander(wander);
+			controls[idx] = new AIController(enemies[idx], board, player, enemies, getWorldStep());
 			idx++;
 			enemy = enemy.next();
 		}
@@ -307,7 +303,7 @@ public class GameplayController extends WorldController implements ContactListen
 	}
 
 
-	private static final float AMBIANCE = 0.1f;
+	private static final float AMBIANCE = 0.5f;
 	/**
 	 * Creates and initialize a new instance of the rocket lander game
 	 * <p>
@@ -319,13 +315,6 @@ public class GameplayController extends WorldController implements ContactListen
 		setComplete(false);
 		setFailure(false);
 		world.setContactListener(this);
-
-
-		enemies = new Enemy[2];
-		lights = new LightSourceObject[1];
-
-//		enemies = new Enemy[10];
-//		lights = new LightSourceObject[10];
 
 	}
 
@@ -368,8 +357,13 @@ public class GameplayController extends WorldController implements ContactListen
 
 			lights[i].setSensor(true);
 			lights[i].setDrawScale(scale);
-			lights[i].setTexture(litSourceTexture);
 			lights[i].setBodyType(BodyDef.BodyType.StaticBody);
+			if (lights[i].isLit()){
+				lights[i].setTexture(litSourceTexture);
+			}
+			else {
+				lights[i].setTexture(dimSourceTexture);
+			}
 			lights[i].setTextureCache(litSourceTexture, dimSourceTexture);
 			addObject(lights[i]);
 
@@ -429,21 +423,6 @@ public class GameplayController extends WorldController implements ContactListen
 		obj.setName("wall2");
 		addObject(obj);
 
-		// Add ambient lighting
-		//initLighting();
-
-		lights[0] = new LightSourceObject(5, 5, 1, 1,true);
-		LightSourceLight light = new LightSourceLight(rayHandler);
-		lights[0].addLight(light);
-		lights[0].setSensor(true);
-		lights[0].setDrawScale(scale);
-		lights[0].setTexture(litSourceTexture);
-		lights[0].setBodyType(BodyDef.BodyType.StaticBody);
-		lights[0].setTextureCache(litSourceTexture, dimSourceTexture);
-		addObject(lights[0]);
-
-
-
 		// Add Player
 		player = new Player(spawn[0], spawn[1], 2, 4, initLights);
 		player.setDrawScale(scale);
@@ -497,6 +476,14 @@ public class GameplayController extends WorldController implements ContactListen
 				light.toggleLit();
 			}
 		}
+
+		// Do enemy movement
+		// Enemy Movement
+		for (AIController controller : controls){
+			controller.move();
+//			System.out.println(controller.getState());
+		}
+//		System.out.println("---------");
 
 		// Check win Condition
 		int numLit = 0;

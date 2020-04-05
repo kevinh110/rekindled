@@ -60,6 +60,8 @@ public class Enemy extends FeetHitboxObstacle {
     private int type;
 
     private int[][] wander;
+    private int pointer = 0; // Points to the current goal in wander
+    private boolean forward = true; //Indicates if we are going forward in wander or backward
 
     private boolean isLit;
 
@@ -73,6 +75,23 @@ public class Enemy extends FeetHitboxObstacle {
     public int getType(){
         return type;
     }
+
+    public int getPointer(){return pointer;}
+
+    public int[] getWanderGoal(){
+        return wander[pointer];
+    }
+
+    public void updateWanderGoal(){
+        if (pointer == wander.length - 1){
+            forward = false;
+        }
+        else if (pointer == 0){
+            forward = true;
+        }
+        if (forward) {pointer++;} else {pointer--;}
+    }
+
 
     public void setWander(int[][] path){
         this.wander = path;
@@ -227,6 +246,47 @@ public class Enemy extends FeetHitboxObstacle {
 
         return true;
     }
+
+    public void moveOnTile(int goalX, int goalY, float delta){
+        Vector2 pos = getPosition();
+        if (goalX == pos.x && goalY < pos.y) { // Move down
+            float newPosY = pos.y - SPEED * delta;
+            if (goalY > newPosY){
+                body.setTransform(goalX, goalY, 0);
+            }
+            else{
+                body.setLinearVelocity(0, -SPEED);
+            }
+        }
+        else if (goalX == pos.x && goalY > pos.y) { // Move up
+            float newPosY = pos.y + SPEED * delta;
+            if (goalY < newPosY){
+                body.setTransform(goalX, goalY, 0);
+            }
+            else {
+                body.setLinearVelocity(0, SPEED);
+            }
+        }
+        else if (goalX > pos.x && goalY == pos.y) { // Move right
+            float newPosX = pos.x + SPEED * delta;
+            if (goalX < newPosX){
+                body.setTransform(goalX, goalY, 0);
+            }
+            else {
+                body.setLinearVelocity(SPEED, 0);
+            }
+        }
+        else if (goalX < pos.x && goalY == pos.y) { // Move left
+            float newPosX = pos.x - SPEED * delta;
+            if (goalX > newPosX){
+                body.setTransform(goalX, goalY, 0);
+            }
+            else {
+                body.setLinearVelocity(-SPEED, 0);
+            }
+        }
+    }
+
 
     public void move(InputController.Move_Direction move){
         if (move == Entity_Controller.Move_Direction.MOVE_DOWN) {

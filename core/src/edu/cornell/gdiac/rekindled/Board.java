@@ -119,8 +119,7 @@ public class Board {
     /** The board height (in number of tiles) */
     private int height;
 
-    /** Walls in index coordinates.
-     * VERY BAD DESIGN. JUST NEEDED FOR LINE OF SIGHT IN AI CONTROLLER
+    /** Walls in index coordinates.`Used for Line of sight calculations.
      */
     public int[] walls;
 
@@ -155,10 +154,11 @@ public class Board {
      * @param width Board width in tiles
      * @param height Board height in tiles
      */
-    public Board(int width, int height, int[] walls, int[] litSources, int[] dimSources) {
+
+    public Board(int width, int height){
         this.width = width;
         this.height = height;
-        this.walls = walls;
+
         this.darkTile = new Texture(DARK_TILE);
         this.lightTile = new Texture(LIGHT_TILE);
         this.wallTexture = new Texture(WALL);
@@ -174,16 +174,41 @@ public class Board {
         Vector2 temp = new Vector2();
         this.lightSources = new LinkedList<>();
 
-
+        // Init Tiles
         tiles = new TileState[width][height];
         for (int x = 0; x < width; x++){
             for (int y = 0; y < height; y++){
                 tiles[x][y] = new TileState();
             }
         }
+             // Set perimeter as wall
+        for (int x = 0; x < tiles.length; x++){
+            tiles[x][0].setWall();
+            tiles[x][this.height - 1].setWall();
+        }
+        for (int y = 0; y < tiles[0].length; y++){
+            tiles[0][y].setWall();
+            tiles[this.width - 1][y].setWall();
+        }
+
+        // Resets visited/goal flags of tiles only. Used for pathfinding.
+        // I don't know if this needs to be here
+        resetTiles();
+
+
+
+    }
+    public Board(int width, int height, int[] walls, int[] litSources, int[] dimSources) {
+        this(width, height);
+        Vector2 temp = new Vector2();
+        this.lightSources = new LinkedList<>();
+
+        // Set walls
         for(int ii = 0; ii < walls.length-1; ii += 2){
             tiles[walls[ii]][walls[ii+1]].setWall();
         }
+
+        // Set lit sources
         for(int ii = 0; ii < litSources.length-1; ii += 2){
             lightSources.add(litSources[ii]);
             lightSources.add(litSources[ii + 1]);
@@ -192,23 +217,15 @@ public class Board {
             temp.set(litSources[ii], litSources[ii+1]);
             updateLitTiles(temp);
         }
+
+        // Set dim sources
         for(int ii = 0; ii < dimSources.length-1; ii += 2){
             lightSources.add(dimSources[ii]);
             lightSources.add(dimSources[ii + 1]);
             tiles[dimSources[ii]][dimSources[ii+1]].setDimLightSource();
         }
 
-
-        //temp code for perimeter
-        for (int x = 0; x < tiles.length; x++){
-            tiles[x][0].setWall();
-            tiles[x][8].setWall();
-        }
-        for (int y = 0; y < tiles[0].length; y++){
-            tiles[0][y].setWall();
-            tiles[15][y].setWall();
-        }
-
+        // Resets visited/goal flags of tiles only. Used for pathfinding.
         resetTiles();
     }
 

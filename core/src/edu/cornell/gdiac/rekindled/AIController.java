@@ -25,7 +25,6 @@ public class AIController extends Entity_Controller {
     // Constants for the control codes
     // We would normally use an enum here, but Java enums do not bitmask nicely
     /** Do not do anything */
-    public static final int CONTROL_NO_ACTION  = 0x00;
 
     /**
      * Enumeration to encode the finite state machine.
@@ -54,12 +53,14 @@ public class AIController extends Entity_Controller {
     /** The enemy's current state in the FSM */
     private FSMState state;
     /** The enemy's next action. */
-    private int move; // A ControlCode
+    private Move_Direction move; // A ControlCode
     /** The number of ticks since we started this controller */
     private long ticks;
+
     private Enemy[] enemies;
 
     // Custom fields for AI algorithms
+    public float delta;
 
     /**
      * Creates an AIController for an enemy.
@@ -75,12 +76,21 @@ public class AIController extends Entity_Controller {
         this.enemies = enemies;
 
         state = FSMState.SPAWN;
-        move  = CONTROL_NO_ACTION;
+        move = Move_Direction.NO_MOVE;
         ticks = 0;
 
         // Select an initial target
         target = false;
 //        selectTarget();
+    }
+
+    public AIController(Enemy enemy, Board board, Player player, Enemy[] enemies, float del){
+        this(enemy, board, player, enemies);
+        delta = del;
+    }
+
+    public FSMState getState(){
+        return this.state;
     }
 
     /**
@@ -102,7 +112,7 @@ public class AIController extends Entity_Controller {
      *
      * @return the action selected by this InputController
      */
-    public int getAction() {
+    public Move_Direction getAction() {
         // Increment the number of ticks.
         ticks++;
 
@@ -112,11 +122,11 @@ public class AIController extends Entity_Controller {
             changeStateIfApplicable();
 
             // Pathfinding
+            setGoals();
+            move = get_Next_Direction();
         }
 
-        int action = move;
-
-        return action;
+        return move;
     }
 
     // FSM Code for Targeting (MODIFY ALL THE FOLLOWING METHODS)
@@ -131,6 +141,7 @@ public class AIController extends Entity_Controller {
      * target gets out of range.
      */
     private void changeStateIfApplicable() {
+        System.out.println("Changing state");
         // Add initialization code as necessary
         Vector2 current_pos = enemy.getPosition();
 
@@ -371,6 +382,21 @@ public class AIController extends Entity_Controller {
         }
     }
 
+    public void move(){
+        state = FSMState.WANDER; // temp code; state change on yet implemented
+
+        switch (state) {
+            case WANDER:
+                int[] goal = enemy.getWanderGoal();
+                Vector2 pos = enemy.getPosition();
+                if (pos.x == goal[0] && pos.y == goal[1]){
+                    enemy.updateWanderGoal();
+                    goal = enemy.getWanderGoal();
+                }
+                enemy.moveOnTile(goal[0], goal[1], delta);
+        }
+    }
+
 
     /** Moves this enemy */
 //    public void move(){
@@ -390,7 +416,6 @@ public class AIController extends Entity_Controller {
 //        }
 //        enemy.update();
 //        board.clearMarks();
-//
 //    }
 
     private boolean hasLoS(){

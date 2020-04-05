@@ -50,7 +50,8 @@ project(":desktop") {
         api "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-controllers-desktop:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-controllers-platform:$gdxVersion:natives-desktop"
-        
+        api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
+
     }
 }
 

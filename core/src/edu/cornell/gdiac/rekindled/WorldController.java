@@ -212,6 +212,16 @@ public abstract class WorldController implements Screen {
     /** Countdown active for winning or losing */
     private int countdown;
 
+
+    /**
+     * Returns the world step of this world
+     *
+     * @return the world step of this world
+     */
+    public float getWorldStep(){
+        return WORLD_STEP;
+    }
+
     /**
      * Returns true if debug mode is active.
      *

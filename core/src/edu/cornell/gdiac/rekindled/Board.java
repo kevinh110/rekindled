@@ -57,10 +57,6 @@ public class Board {
         public boolean goal = false;
         /** Has this tile been visited (used for pathfinding)? */
         public boolean visited = false;
-        /** Is this tile falling */
-        public boolean falling = false;
-        /** How far the tile has fallen */
-        public float fallAmount = 0;
 
         public final int lightRadius = 3;
 
@@ -98,7 +94,7 @@ public class Board {
     /** Space to leave open between tiles */
     private static final float TILE_SPACE = 0;
     /** The dimensions of a single tile */
-    private static final int TILE_WIDTH = 64; // MUST BE 2X VALUE IN GAMECANVAS
+    private static final int TILE_WIDTH = 32; // MUST BE 2X VALUE IN GAMECANVAS
 
     //images
     /** The file location of the light tile*/
@@ -198,6 +194,7 @@ public class Board {
 
 
     }
+
     public Board(int width, int height, int[] walls, int[] litSources, int[] dimSources) {
         this(width, height);
         Vector2 temp = new Vector2();
@@ -229,17 +226,44 @@ public class Board {
         resetTiles();
     }
 
-    /**
-     * Resets the values of all the tiles on screen.
-     */
+    public Board(int width, int height, int[] walls, LightSourceObject[] lights) {
+        this(width, height);
+        Vector2 temp;
+        this.lightSources = new LinkedList<>();
+
+        // Set walls
+        for(int ii = 0; ii < walls.length-1; ii += 2){
+            tiles[walls[ii]][walls[ii+1]].setWall();
+        }
+
+        // Set light sources
+        for (LightSourceObject light : lights) {
+            temp = light.getPosition();
+            lightSources.add((int) temp.x);
+            lightSources.add((int) temp.y);
+            if (light.isLit()){
+                tiles[(int) temp.x][(int) temp.y].setLitLightSource();
+                updateLitTiles(temp);
+            }
+            else {
+                tiles[(int) temp.x][(int) temp.y].setDimLightSource();
+            }
+        }
+
+        // Resets visited/goal flags of tiles only. Used for pathfinding.
+        resetTiles();
+
+    }
+
+        /**
+         * Resets the values of all the tiles on screen.
+         */
     public void resetTiles() {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 TileState tile = tiles[x][y];
                 tile.goal = false;
                 tile.visited = false;
-                tile.fallAmount = 0.0f;
-                tile.falling = false;
             }
         }
     }
@@ -258,6 +282,22 @@ public class Board {
         }
         for(int ii = 0; ii < dimSources.length-1; ii += 2){
             tiles[dimSources[ii]][dimSources[ii+1]].setDimLightSource();
+        }
+    }
+
+    public void reset(int[] walls, LightSourceObject[] lights){
+        for(int ii = 0; ii < walls.length-1; ii += 2){
+            tiles[walls[ii]][walls[ii+1]].setWall();
+        }
+        Vector2 temp;
+        for (LightSourceObject light : lights){
+            temp = light.getPosition();
+            if (light.isLit()){
+                tiles[(int) temp.x][(int) temp.y].setLitLightSource();
+            }
+            else {
+                tiles[(int) temp.x][(int) temp.y].setDimLightSource();
+            }
         }
     }
 
@@ -353,22 +393,17 @@ public class Board {
         TileState tile = tiles[x][y];
 
         // Compute drawing coordinates
-        float sx = boardToScreen(x);
-        float sy = boardToScreen(y);
+        float sx = boardToScreenCenter(x);
+        float sy = boardToScreenCenter(y);
 
-        if(tile.isWall)
-            canvas.draw(wallRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
-        else if (tile.isLitTile)
+        if (tile.isLitTile){
             canvas.draw(lightRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
+        }
         else if (tile.isDimTile)
             canvas.draw(darkRegion, Color.YELLOW,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2, darkRegion.getRegionWidth(), darkRegion.getRegionHeight());
-        else
+        else {
             canvas.draw(darkRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
-        if (tile.isLightSource){
-            if(tile.isLitLightSource)
-                canvas.draw(litSourceRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
-            else
-                canvas.draw(dimSourceRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
+
         }
     }
 
@@ -415,6 +450,16 @@ public class Board {
      */
     public float boardToScreen(int n) {
         return (float) (n + 0.5f) * (getTileSize() + getTileSpacing());
+    }
+
+    /**
+     * the same as board to screen but assumes grids are drawn from center.
+     * May break other things.
+     * @param n
+     * @return
+     */
+    public float boardToScreenCenter(int n) {
+        return (float) (n) * (getTileSize() + getTileSpacing());
     }
 
     /**
@@ -632,7 +677,7 @@ public class Board {
 
     public void turnSourceOn(Vector2 source) {
         tiles[(int)source.x][(int)source.y].isLitLightSource = true;
-        //updateLitTiles(source);
+//        updateLitTiles(source);
     }
 
     private void updateLitTiles(Vector2 source) {

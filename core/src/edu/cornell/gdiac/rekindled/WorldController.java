@@ -540,10 +540,11 @@ public abstract class WorldController implements Screen {
      * The method draws all objects in the order that they were added.
      *
      */
-    public void draw(float delta) {
+    public void draw(float delta, Board board) {
         canvas.clear();
 
         canvas.begin();
+        board.draw(canvas);
         for(Obstacle obj : objects) {
             obj.draw(canvas);
         }

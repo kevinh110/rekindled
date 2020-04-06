@@ -316,7 +316,6 @@ public class GameplayController extends WorldController implements ContactListen
 		setComplete(false);
 		setFailure(false);
 		world.setContactListener(this);
-
 	}
 
 
@@ -343,6 +342,7 @@ public class GameplayController extends WorldController implements ContactListen
 		levelFormat = jsonReader.parse(Gdx.files.internal("jsons/level.json"));
 		parseJson();
 		populateLevel();
+		board.reset(walls, lights);
 	}
 
 
@@ -429,6 +429,9 @@ public class GameplayController extends WorldController implements ContactListen
 		player.setDrawScale(scale);
 		player.setTexture(playerTextureFront);
 		addObject(player);
+
+		// Make Board
+		board = new Board((int) BOARD_WIDTH, (int) BOARD_HEIGHT, walls, lights);
 	}
 
 	public void initLighting() {
@@ -470,6 +473,7 @@ public class GameplayController extends WorldController implements ContactListen
 		player.move(next_move);
 
 		player.updateCooldown(dt);
+
 		//placing and taking light
 		if (input.didSecondary() && player.getTouchingLight() && !player.getCooldown()) {
 			player.takeLight();
@@ -493,6 +497,10 @@ public class GameplayController extends WorldController implements ContactListen
 				numLit ++;
 		}
 		wonGame = (numLit == enemies.length);
+
+		//Update board
+		board.update();
+
 	}
 
 	@Override
@@ -502,7 +510,7 @@ public class GameplayController extends WorldController implements ContactListen
                 update(delta); // This is the one that must be defined.
                 postUpdate(delta);
             }
-            draw(delta);
+            draw(delta, board);
             rayHandler.render();
         }
 	}

@@ -32,7 +32,7 @@ public class LightSourceObject extends BoxObstacle {
         return isLit;
     }
 
-    public void toggleLit(){
+    public boolean toggleLit(){
         if(touchingPlayer) {
             isLit = !isLit;
             light.setActive(isLit);
@@ -41,7 +41,9 @@ public class LightSourceObject extends BoxObstacle {
                 this.setTexture(litTexture);
             else
                 this.setTexture(dimTexture);
+            return true;
         }
+        return false;
     }
 
     public void setTouchingPlayer(boolean value){

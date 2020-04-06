@@ -680,6 +680,10 @@ public class Board {
 //        updateLitTiles(source);
     }
 
+    public void toggleSource(Vector2 source){
+        tiles[(int) source.x][(int) source.y].isLitLightSource = !tiles[(int)source.x][(int)source.y].isLitLightSource;
+    }
+
     private void updateLitTiles(Vector2 source) {
         int x = (int) source.x;
         int y = (int) source.y;

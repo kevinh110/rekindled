@@ -478,7 +478,9 @@ public class GameplayController extends WorldController implements ContactListen
 		if (input.didSecondary() && player.getTouchingLight() && !player.getCooldown()) {
 			player.takeLight();
 			for (LightSourceObject light : lights){
-				light.toggleLit();
+				if (light.toggleLit()){ // Changes texture if applicable
+					board.toggleSource(light.getPosition());
+				};
 			}
 		}
 

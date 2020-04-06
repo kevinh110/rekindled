@@ -83,6 +83,9 @@ public class Enemy extends FeetHitboxObstacle {
     }
 
     public void updateWanderGoal(){
+        if (wander.length == 1){ // Handle Edge case with Stationary Enemy
+            return;
+        }
         if (pointer == wander.length - 1){
             forward = false;
         }

@@ -24,6 +24,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.graphics.*;
+import edu.cornell.gdiac.rekindled.obstacle.BoxObstacle;
 import edu.cornell.gdiac.rekindled.obstacle.Obstacle;
 import edu.cornell.gdiac.rekindled.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.*;
@@ -377,7 +378,7 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 
 		// Add Walls
-		PolygonObstacle obj;
+		BoxObstacle obj;
 		for (int i = 0; i < walls.length; i+=2){
 			float[] vertices = {
 					walls[i], walls[i+1],
@@ -385,7 +386,7 @@ public class GameplayController extends WorldController implements ContactListen
 					walls[i] + 1, walls[i + 1] + 1,
 					walls[i], walls[i + 1] + 1
 			};
-			obj = new PolygonObstacle(vertices, 0, 0);
+			obj = new BoxObstacle(walls[i], walls[i + 1], 1, 1);
 			obj.setBodyType(BodyDef.BodyType.KinematicBody);
 			obj.setDensity(BASIC_DENSITY);
 			obj.setFriction(BASIC_FRICTION);
@@ -396,32 +397,32 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 
 		// Create border pieces
-		float[] border1 = {BOARD_WIDTH / 2f, BOARD_HEIGHT, BOARD_WIDTH / 2f, BOARD_HEIGHT - 1f, 1.0f, BOARD_HEIGHT - 1f,
-				1.0f,  1.0f, BOARD_WIDTH / 2f,  1.0f, BOARD_WIDTH / 2,  0.0f, 0.0f,  0.0f,  0.0f, BOARD_HEIGHT};
-
-		obj = new PolygonObstacle(border1, 0, 0);
-		obj.setBodyType(BodyDef.BodyType.KinematicBody);
-		obj.setDensity(BASIC_DENSITY);
-		obj.setFriction(BASIC_FRICTION);
-		obj.setRestitution(BASIC_RESTITUTION);
-		obj.setDrawScale(scale);
-		obj.setTexture(wallTexture);
-		obj.setName("wall1");
-		addObject(obj);
+		float[] border1 = {BOARD_WIDTH / 2f, BOARD_HEIGHT, BOARD_WIDTH / 2f, BOARD_HEIGHT - 0.5f, 0.5f, BOARD_HEIGHT - 0.5f,
+				0.5f,  0.5f, BOARD_WIDTH / 2f,  0.5f, BOARD_WIDTH / 2,  0.0f, 0.0f,  0.0f,  0.0f, BOARD_HEIGHT};
+		PolygonObstacle wall;
+		wall = new PolygonObstacle(border1, 0, 0);
+		wall.setBodyType(BodyDef.BodyType.KinematicBody);
+		wall.setDensity(BASIC_DENSITY);
+		wall.setFriction(BASIC_FRICTION);
+		wall.setRestitution(BASIC_RESTITUTION);
+		wall.setDrawScale(scale);
+		wall.setTexture(wallTexture);
+		wall.setName("wall1");
+		addObject(wall);
 
 		float[] border2 = {BOARD_WIDTH, BOARD_HEIGHT, BOARD_WIDTH,  0.0f, BOARD_WIDTH / 2f,  0.0f,
-				BOARD_WIDTH / 2f,  1.0f, BOARD_WIDTH - 1f,  1.0f, BOARD_WIDTH - 1f, BOARD_HEIGHT - 1f,
-				BOARD_WIDTH / 2f, BOARD_HEIGHT - 1f, BOARD_WIDTH / 2f, BOARD_HEIGHT};
+				BOARD_WIDTH / 2f,  0.5f, BOARD_WIDTH - 0.5f,  0.5f, BOARD_WIDTH - 0.5f, BOARD_HEIGHT - 0.5f,
+				BOARD_WIDTH / 2f, BOARD_HEIGHT - 0.5f, BOARD_WIDTH / 2f, BOARD_HEIGHT};
 
-		obj = new PolygonObstacle(border2, 0, 0);
-		obj.setBodyType(BodyDef.BodyType.KinematicBody);
-		obj.setDensity(BASIC_DENSITY);
-		obj.setFriction(BASIC_FRICTION);
-		obj.setRestitution(BASIC_RESTITUTION);
-		obj.setDrawScale(scale);
-		obj.setTexture(wallTexture);
-		obj.setName("wall2");
-		addObject(obj);
+		wall = new PolygonObstacle(border2, 0, 0);
+		wall.setBodyType(BodyDef.BodyType.KinematicBody);
+		wall.setDensity(BASIC_DENSITY);
+		wall.setFriction(BASIC_FRICTION);
+		wall.setRestitution(BASIC_RESTITUTION);
+		wall.setDrawScale(scale);
+		wall.setTexture(wallTexture);
+		wall.setName("wall2");
+		addObject(wall);
 
 		// Add Player
 		player = new Player(spawn[0], spawn[1], 2, 4, initLights);

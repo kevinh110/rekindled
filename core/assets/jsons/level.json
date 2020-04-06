@@ -49,19 +49,11 @@
     },
     {
       "position": [
-        27,
-        5
+        20,
+        15
       ],
       "type": 0,
       "wander": [
-        [
-          27,
-          5
-        ],
-        [
-          27,
-          15
-        ],
         [
           20,
           15
@@ -72,14 +64,21 @@
   "walls": [
     {
       "position": [
-        6,
-        4
+        5,
+        6
       ],
       "movable": false
     },
     {
       "position": [
-        6,
+        5,
+        5
+      ],
+      "movable": false
+    },
+    {
+      "position": [
+        2,
         5
       ],
       "movable": false

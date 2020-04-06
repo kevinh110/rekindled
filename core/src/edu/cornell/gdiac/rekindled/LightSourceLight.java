@@ -8,7 +8,7 @@ import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
 
 public class LightSourceLight extends PointLight {
     /** The default distance for a point source light */
-    public static float DEFAULT_DISTANCE = 5f;
+    public static float DEFAULT_DISTANCE = 2f;
 
     /** Copy of the collision filter.  Necessary because the original version is private */
     protected Filter collisions;

@@ -2,57 +2,19 @@ package edu.cornell.gdiac.rekindled;
 
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.physics.box2d.Filter;
-import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
 
-public class LightSourceLight extends PointLight {
+public class AuraLight extends PointLight {
     /** The default distance for a point source light */
-    public static float DEFAULT_DISTANCE = 7.5f;
+    public static float DEFAULT_DISTANCE = 5f;
 
     /** Copy of the collision filter.  Necessary because the original version is private */
     protected Filter collisions;
 
-    /**
-     * Creates light shaped as a circle with default radius, color and position.
-     *
-     * The default radius is DEFAULT_DISTANCE, while the default color is DEFAULT_COLOR
-     * in LightSource.  The default position is the origin.
-     *
-     * RayHandler is NOT allowed to be null.  This is the source of many design problems.
-     *
-     * The number of rays determines how realistic the light looks.  More rays will
-     * decrease performance.  The number of rays cannot be less than MIN_RAYS.
-     *
-     * The soft shadow length is set to distance * 0.1f.  This is why it ignores thin
-     * walls, and is not particularly useful.
-     *
-     * @param rayHandler	a non-null instance of RayHandler
-     * @param rays			the number of rays
-     */
-    public LightSourceLight(RayHandler rayHandler) {
-        super(rayHandler, 512, null, DEFAULT_DISTANCE, 0, 0);
+    public AuraLight (RayHandler handler) {
+        super(handler, 512, null, DEFAULT_DISTANCE, 0, 0);
         this.setSoftnessLength(0f);
-        Filter filter = new Filter();
-        filter.maskBits = Filters.BIT_WALL;
-        this.setContactFilter(filter);
     }
-
-
-
-
-    /**
-     * Returns the direction of this light in degrees
-     *
-     * The angle is measured from the right horizontal, as normal.  If the light
-     * does not have a direction, this value is 0.
-     *
-     * @return the direction of this light in degrees
-     */
-    public float getDirection() {
-        return direction;
-    }
-
 
     public Filter getContactFilter() {
         return collisions;
@@ -90,4 +52,5 @@ public class LightSourceLight extends PointLight {
         collisions.maskBits = maskBits;
         super.setContactFilter(collisions);
     }
+
 }

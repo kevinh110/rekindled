@@ -30,6 +30,9 @@ import edu.cornell.gdiac.rekindled.obstacle.BoxObstacle;
 import edu.cornell.gdiac.rekindled.obstacle.Obstacle;
 import edu.cornell.gdiac.rekindled.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.*;
+import javafx.util.Pair;
+import java.util.LinkedList;
+
 
 /**
  * Base class for a world-specific controller.
@@ -102,6 +105,8 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final float BASIC_FRICTION = 0.1f;
 	/** The restitution for all of (external) objects */
 	private static final float BASIC_RESTITUTION = 0.1f;
+
+	private static final float THROWN_LIGHT_RADIUS = 5f;
 
 
 
@@ -244,6 +249,7 @@ public class GameplayController extends WorldController implements ContactListen
 	private int[] spawn;
 	private int initLights;
 	private int[] walls;
+	private LinkedList<Pair<LightSourceLight, Long>> thrownLights;
 
 	CollisionController collisions;
 
@@ -371,6 +377,8 @@ public class GameplayController extends WorldController implements ContactListen
 			addObject(lights[i]);
 
 		}
+		//initialize thrown lights
+		thrownLights = new LinkedList<>();
 
 		for(int i = 0; i < enemies.length; i ++) {
 
@@ -484,6 +492,12 @@ public class GameplayController extends WorldController implements ContactListen
 		input.readInput(bounds, scale);
 		InputController.Move_Direction next_move = input.get_Next_Direction();
 
+		//remove old thrown light
+		if(!thrownLights.isEmpty() && System.currentTimeMillis() - thrownLights.get(0).getValue() > 2000L){
+			LightSourceLight light = thrownLights.pop().getKey();
+			light.setActive(false);
+		}
+
 		//player movement
 		player.move(next_move);
 
@@ -499,10 +513,32 @@ public class GameplayController extends WorldController implements ContactListen
 			}
 		}
 
+		//throw light
+		if(input.didSecondary() && player.lightCounter > 0 && !player.getTouchingLight()){
+			LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius
+			light.setPosition(player.getX(), player.getY());
+			thrownLights.add(new Pair<>(light, System.currentTimeMillis()));
+			player.lightCounter = player.lightCounter - 1;
+
+			//find enemies in range
+			for(Enemy e: enemies){
+				float distance = player.getPosition().dst(e.getPosition());
+				if(distance <= THROWN_LIGHT_RADIUS){
+					float dx =  e.getPosition().x - player.getX();
+					float dy = e.getPosition().y - player.getY();
+					float ratio = THROWN_LIGHT_RADIUS / distance;
+
+					Vector2 new_pos = new Vector2((dx * ratio) + player.getX(), (dy * ratio) + player.getY());
+					e.setPosition(new_pos);
+
+				}
+			}
+		}
+
 		// Do enemy movement
 		// Enemy Movement
 		for (AIController controller : controls){
-			controller.move();
+			//controller.move();
 			controller.getEnemy().updateAura();
 //			System.out.println(controller.getState());
 		}

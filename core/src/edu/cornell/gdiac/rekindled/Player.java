@@ -70,6 +70,9 @@ public class Player extends FeetHitboxObstacle {
     /** Cache object for right afterburner origin */
     public Vector2 rghtOrigin = new Vector2();
 
+    private Texture mainTexture;
+    private Entity.Direction direction;
+    private Vector2 position;
 
     /** The number of frames for the afterburner */
     public static final int SPEED = 5;
@@ -312,16 +315,5 @@ public class Player extends FeetHitboxObstacle {
      */
     public void draw(GameCanvas canvas) {
         super.draw(canvas);  // Player
-        // Flames
-        if (mainBurner != null) {
-            float offsety = mainBurner.getRegionHeight()-origin.y;
-            canvas.draw(mainBurner,Color.WHITE,origin.x,offsety,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
-        }
-        if (leftBurner != null) {
-            canvas.draw(leftBurner,Color.WHITE,leftOrigin.x,leftOrigin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
-        }
-        if (rghtBurner != null) {
-            canvas.draw(rghtBurner,Color.WHITE,rghtOrigin.x,rghtOrigin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
-        }
     }
 }

@@ -3,6 +3,7 @@ package edu.cornell.gdiac.rekindled;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.rekindled.obstacle.BoxObstacle;
@@ -217,6 +218,9 @@ public class Enemy extends FeetHitboxObstacle {
         setFriction(DEFAULT_FRICTION);
         setRestitution(DEFAULT_RESTITUTION);
         setName("rocket");
+        Filter filter = new Filter();
+        filter.categoryBits = Filters.BIT_ENEMY;
+        this.setFilterData(filter);
     }
 
     public Enemy(float x, float y, float width, float height, int type) {

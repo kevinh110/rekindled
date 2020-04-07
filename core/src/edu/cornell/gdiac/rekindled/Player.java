@@ -192,6 +192,8 @@ public class Player extends FeetHitboxObstacle {
         delayTimer = 0;
         cooldown = false;
         touchingLight = false;
+
+        this.getFilterData().categoryBits = Constants.BIT_PLAYER;
     }
 
     public Player(float x, float y, float width, float height, int lights) {

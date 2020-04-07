@@ -94,7 +94,7 @@ public class Board {
     /** Space to leave open between tiles */
     private static final float TILE_SPACE = 0;
     /** The dimensions of a single tile */
-    private static final int TILE_WIDTH = 32; // MUST BE 2X VALUE IN GAMECANVAS
+    private static final int TILE_WIDTH = 64; // MUST BE 2X VALUE IN GAMECANVAS
 
     //images
     /** The file location of the light tile*/
@@ -396,15 +396,17 @@ public class Board {
         float sx = boardToScreenCenter(x);
         float sy = boardToScreenCenter(y);
 
-        if (tile.isLitTile){
-            canvas.draw(lightRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
-        }
-        else if (tile.isDimTile)
-            canvas.draw(darkRegion, Color.YELLOW,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2, darkRegion.getRegionWidth(), darkRegion.getRegionHeight());
-        else {
-            canvas.draw(darkRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
+        canvas.draw(lightRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
 
-        }
+//        if (tile.isLitTile){
+//            canvas.draw(lightRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
+//        }
+//        else if (tile.isDimTile)
+//            canvas.draw(darkRegion, Color.YELLOW,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2, darkRegion.getRegionWidth(), darkRegion.getRegionHeight());
+//        else {
+//            canvas.draw(darkRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
+//
+//        }
     }
 
     /**

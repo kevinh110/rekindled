@@ -550,6 +550,8 @@ public abstract class WorldController implements Screen {
         }
         canvas.end();
 
+        //render
+
         if (debug) {
             canvas.beginDebug();
             for(Obstacle obj : objects) {
@@ -558,7 +560,7 @@ public abstract class WorldController implements Screen {
             canvas.endDebug();
         }
 
-        // Final message
+//         Final message
         if (complete && !failed) {
             canvas.begin(); // DO NOT SCALE
             canvas.end();

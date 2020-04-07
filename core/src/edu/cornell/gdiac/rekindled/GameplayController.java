@@ -24,11 +24,12 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.graphics.*;
+import edu.cornell.gdiac.rekindled.light.AuraLight;
+import edu.cornell.gdiac.rekindled.light.LightSourceLight;
 import edu.cornell.gdiac.rekindled.obstacle.BoxObstacle;
 import edu.cornell.gdiac.rekindled.obstacle.Obstacle;
 import edu.cornell.gdiac.rekindled.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.*;
-import javafx.scene.effect.Light;
 
 /**
  * Base class for a world-specific controller.
@@ -237,7 +238,8 @@ public class GameplayController extends WorldController implements ContactListen
 
 
 	LightSourceObject[] lights;
-	private RayHandler rayHandler;
+	private RayHandler sourceRayHandler;
+	private RayHandler auraRayHandler;
 	private OrthographicCamera rayCamera;
 	private int[] spawn;
 	private int initLights;
@@ -353,7 +355,7 @@ public class GameplayController extends WorldController implements ContactListen
 		initLighting();
 		for (int i = 0; i < lights.length; i++){
 
-			LightSourceLight light_s = new LightSourceLight(rayHandler);
+			LightSourceLight light_s = new LightSourceLight(sourceRayHandler);
 			lights[i].addLight(light_s);
 
 			lights[i].setSensor(true);
@@ -371,6 +373,10 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 
 		for(int i = 0; i < enemies.length; i ++) {
+
+			AuraLight light_a = new AuraLight(auraRayHandler);
+			enemies[i].addAura(light_a);
+
 			enemies[i].setSensor(true);
 			enemies[i].setDrawScale(scale);
 			enemies[i].setTexture(enemyTexture);
@@ -441,13 +447,20 @@ public class GameplayController extends WorldController implements ContactListen
 
 		RayHandler.setGammaCorrection(true);
 		RayHandler.useDiffuseLight(true);
-		rayHandler = new RayHandler(world, Gdx.graphics.getWidth(),  Gdx.graphics.getHeight());
-		rayHandler.setCombinedMatrix(rayCamera);
+		sourceRayHandler = new RayHandler(world, Gdx.graphics.getWidth(),  Gdx.graphics.getHeight());
+		auraRayHandler = new RayHandler(world, Gdx.graphics.getWidth(),  Gdx.graphics.getHeight());
+		sourceRayHandler.setCombinedMatrix(rayCamera);
+		auraRayHandler.setCombinedMatrix(rayCamera);
 
-		rayHandler.setAmbientLight(AMBIANCE, AMBIANCE, AMBIANCE, AMBIANCE);
-		rayHandler.setShadows(true);
-		rayHandler.setBlur(true);
-		rayHandler.setBlurNum(3);
+		sourceRayHandler.setAmbientLight(AMBIANCE, AMBIANCE, AMBIANCE, AMBIANCE);
+		sourceRayHandler.setShadows(true);
+		sourceRayHandler.setBlur(true);
+		sourceRayHandler.setBlurNum(3);
+
+		auraRayHandler.setAmbientLight(AMBIANCE, AMBIANCE, AMBIANCE, AMBIANCE);
+		auraRayHandler.setShadows(true);
+		auraRayHandler.setBlur(true);
+		auraRayHandler.setBlurNum(3);
 	}
 
 	/**
@@ -462,8 +475,10 @@ public class GameplayController extends WorldController implements ContactListen
 	 */
 	public void update(float dt) {
 
-		if (rayHandler != null)
-			rayHandler.update();
+		if (sourceRayHandler != null && auraRayHandler != null) {
+			auraRayHandler.update();
+			sourceRayHandler.update();
+		}
 
 		InputController input = InputController.getInstance();
 		input.readInput(bounds, scale);
@@ -488,6 +503,7 @@ public class GameplayController extends WorldController implements ContactListen
 		// Enemy Movement
 		for (AIController controller : controls){
 			controller.move();
+			controller.getEnemy().updateAura();
 //			System.out.println(controller.getState());
 		}
 //		System.out.println("---------");
@@ -513,7 +529,10 @@ public class GameplayController extends WorldController implements ContactListen
                 postUpdate(delta);
             }
             draw(delta, board);
-            rayHandler.render();
+			auraRayHandler.render();
+            sourceRayHandler.render();
+
+
         }
 	}
 

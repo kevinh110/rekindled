@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
-import edu.cornell.gdiac.rekindled.obstacle.BoxObstacle;
+import edu.cornell.gdiac.rekindled.light.AuraLight;
 import edu.cornell.gdiac.rekindled.obstacle.FeetHitboxObstacle;
 import edu.cornell.gdiac.util.FilmStrip;
 
@@ -24,6 +24,8 @@ public class Enemy extends FeetHitboxObstacle {
 
     /** The force to apply to this rocket */
     private Vector2 force;
+
+    private AuraLight light;
 
     /** The texture filmstrip for the left animation node */
     FilmStrip mainBurner;
@@ -220,6 +222,8 @@ public class Enemy extends FeetHitboxObstacle {
         setFriction(DEFAULT_FRICTION);
         setRestitution(DEFAULT_RESTITUTION);
         setName("rocket");
+
+        this.getFilterData().categoryBits = Constants.BIT_ENEMY;
     }
 
     public Enemy(float x, float y, float width, float height, int type) {
@@ -339,6 +343,16 @@ public class Enemy extends FeetHitboxObstacle {
         // Apply force to the rocket BODY, not the rocket
         body.applyForce(force, getPosition(), true);
         //#endregion
+    }
+
+    public void addAura(AuraLight light) {
+        this.light = light;
+        this.light.setPosition(this.getPosition());
+        this.light.setActive(true);
+    }
+
+    public void updateAura() {
+        this.light.setPosition(this.getPosition());
     }
 
     /**

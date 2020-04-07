@@ -1,7 +1,7 @@
 package edu.cornell.gdiac.rekindled;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import edu.cornell.gdiac.rekindled.light.LightSourceLight;
 import edu.cornell.gdiac.rekindled.obstacle.BoxObstacle;
 
 public class LightSourceObject extends BoxObstacle {

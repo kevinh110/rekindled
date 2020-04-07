@@ -36,6 +36,13 @@ public class LightSourceLight extends PointLight {
         this.setSoftnessLength(0f);
     }
 
+    public LightSourceLight(RayHandler rayHandler, float radius){
+        super(rayHandler, 512, null, radius, 0, 0);
+        this.setSoftnessLength(0f);
+
+
+    }
+
 
 
 

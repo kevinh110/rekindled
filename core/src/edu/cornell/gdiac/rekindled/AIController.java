@@ -36,6 +36,12 @@ public class AIController extends Entity_Controller {
         WANDER,
         /** The enemy has a target, but must get closer */
         CHASE,
+        /** The enemy goes to last target without searching for a new target */
+        GOTO,
+        /** the enemy waits for a while before returning to spawn point */
+        WAIT,
+        /** the enemy returns to its wander path */
+        RETURN,
         /** The enemy is inside a lit-up light source */
         LIT
     }
@@ -48,14 +54,16 @@ public class AIController extends Entity_Controller {
     private Board board;
     /** The player */
     private Player player;
-    /** Whether the player is currently a target or not */
-    private boolean target;
     /** The enemy's current state in the FSM */
     private FSMState state;
-    /** The enemy's next action. */
-    private Move_Direction move; // A ControlCode
     /** The number of ticks since we started this controller */
     private long ticks;
+    /** The enemies next goal tile. This is a tile adjacent to at least one axis */
+    private int[] goal;
+    /** The target tile the enemy eventually would like to reach */
+    private int[] target;
+    /** How many ticks to wait before returning to wander */
+    private final int WAIT_TIME = 300;
 
     private Enemy[] enemies;
 
@@ -76,12 +84,9 @@ public class AIController extends Entity_Controller {
         this.enemies = enemies;
 
         state = FSMState.SPAWN;
-        move = Move_Direction.NO_MOVE;
+        Vector2 pos = enemy.getPosition();
+        goal = new int[]{(int) pos.x, (int) pos.y};
         ticks = 0;
-
-        // Select an initial target
-        target = false;
-//        selectTarget();
     }
 
     public AIController(Enemy enemy, Board board, Player player, Enemy[] enemies, float del){
@@ -99,35 +104,7 @@ public class AIController extends Entity_Controller {
      */
     public Enemy getEnemy() { return this.enemy; }
 
-    /**
-     * Returns the action selected by this InputController
-     *
-     * The returned int is a bit-vector of more than one possible input
-     * option. This is why we do not use an enumeration of Control Codes;
-     * Java does not (nicely) provide bitwise operation support for enums.
-     *
-     * This function tests the environment and uses the FSM to chose the next
-     * action of the ship. This function SHOULD NOT need to be modified.  It
-     * just contains code that drives the functions that you need to implement.
-     *
-     * @return the action selected by this InputController
-     */
-    public Move_Direction getAction() {
-        // Increment the number of ticks.
-        ticks++;
 
-        // Do not need to rework ourselves every frame. Just every 10 ticks.
-        if( ticks % 10 == 0) {
-            // Process the FSM
-            changeStateIfApplicable();
-
-            // Pathfinding
-            setGoals();
-            move = get_Next_Direction();
-        }
-
-        return move;
-    }
 
     // FSM Code for Targeting (MODIFY ALL THE FOLLOWING METHODS)
 
@@ -141,66 +118,72 @@ public class AIController extends Entity_Controller {
      * target gets out of range.
      */
     private void changeStateIfApplicable() {
-        System.out.println("Changing state");
         // Add initialization code as necessary
-        Vector2 current_pos = enemy.getPosition();
-
+        Vector2 pos = enemy.getPosition();
         // Next state depends on current state.
+        if (board.isLitTileBoard((int) pos.x, (int) pos.y)){
+            state = FSMState.LIT;
+            return;
+        }
+
         switch (state) {
-            case SPAWN: // Do not pre-empt with FSMState in a case
-                // Insert checks and spawning-to-??? transition code here
-                //#region PUT YOUR CODE HERE
-                if(board.isLitLightSource(current_pos)){
-                    state = FSMState.LIT;
-                } else {
-                    if (target) {
-                        // has target
-                        state = FSMState.CHASE;
-                    } else {
-                        // has no target, start WANDERing
-                        state = FSMState.WANDER;
+            case SPAWN:
+                if (hasLoS()) {// has LoS
+                    state = FSMState.CHASE;
+                } else { // no line of sight; wander
+                    state = FSMState.WANDER;
+                }
+                break;
+
+            case WANDER:
+                if (hasLoS()) {// has target
+                    state = FSMState.CHASE;
+                }
+                break;
+
+            case CHASE:
+                if (!hasLoS()) {
+                    // has no target
+                    state = FSMState.GOTO;
+                }   // else: has target, keep chasing
+
+                break;
+
+            case GOTO:
+                if (hasLoS()){
+                    state = FSMState.CHASE;
+                }
+                else if (pos.x == target[0] && pos.y == target[1]){
+                    state = FSMState.WAIT;
+                }
+
+                break;
+
+            case WAIT:
+                if (hasLoS()){
+                    state = FSMState.CHASE;
+                }
+                else {
+                    ticks++;
+                    if (ticks % WAIT_TIME == 0){
+                        state = FSMState.RETURN;
                     }
                 }
-                //#endregion
                 break;
 
-            case WANDER: // Do not pre-empt with FSMState in a case
-                // Insert checks and moving-to-??? transition code here
-                //#region PUT YOUR CODE HERE
-                // select target
-                if(board.isLitLightSource(current_pos)){
-                    state = FSMState.LIT;
-                } else {
-                    if (target) {
-                        // has target
-                        state = FSMState.CHASE;
-                    } // else: no target, stay in WANDER
+            case RETURN:
+                if (hasLoS()){
+                    state = FSMState.CHASE;
                 }
-                //#endregion
-                break;
-
-            case CHASE: // Do not pre-empt with FSMState in a case
-                // insert checks and chasing-to-??? transition code here
-                //#region PUT YOUR CODE HERE
-                if(board.isLitLightSource(current_pos)){
-                    state = FSMState.LIT;
-                } else {
-                    if (!target) {
-                        // has no target
-                        state = FSMState.WANDER;
-                    }   // else: has target, keep chasing
-                }
-                //#endregion
-                break;
-
-            case LIT: // Do not pre-empt with FSMState in a case
-                // insert checks and attacking-to-??? transition code here
-                //#region PUT YOUR CODE HERE
-
-                if(!board.isLitLightSource(current_pos)){
+                else if (pos.x == target[0] && pos.y == target[1]){
                     state = FSMState.WANDER;
-                } //else stay LIT
-                //#endregion
+                }
+                break;
+
+            case LIT:
+                if(!board.isLitTileBoard((int) pos.x,(int) pos.y)){
+                    state = FSMState.RETURN;
+                }
                 break;
 
             default:
@@ -211,22 +194,34 @@ public class AIController extends Entity_Controller {
         }
     }
 
+    public int[] getChaseGoal(){
+        // Set Goal
+        setChaseGoalTiles();
+        board.clearVisited();
+        return bfs();
+    }
+
+    public int[] getReturnGoal(){
+        // Set Goal
+        setReturnGoalTiles();
+        board.clearVisited();
+        return bfs();
+    }
+
     /**
-     * Returns (delX, delY) representing next direction for this enemy to move
+     *  Runs breadth first search
+     * @return int[] representing the next direction
      */
-    public Move_Direction get_Next_Direction(){
-        if(board.isLitTile(enemy.getPosition()) || !hasLoS()){ return Move_Direction.NO_MOVE; }
+    public int[]  bfs(){
+        Vector2 pos = enemy.getPosition();
+        int[] root = {Math.round(pos.x), Math.round(pos.y)};
 
         Queue<ArrayList<Integer>> q = new LinkedList<>();
         int[][][] parent = new int[board.getWidth()][board.getHeight()][2];
 
-        // Set Goal
-        setGoals();
-        board.clearVisited();
-
         // Get the tile for this enemy
-        int sx = board.screenToBoard(enemy.getPosition().x);
-        int sy = board.screenToBoard(enemy.getPosition().y);
+        int sx = root[0];
+        int sy = root[1];
         ArrayList<Integer> s = new ArrayList<Integer>();
         s.add(sx); s.add(sy);
         board.setVisited(sx,sy); //visit s
@@ -283,37 +278,29 @@ public class AIController extends Entity_Controller {
                 parent[xIdx][yIdx-1][1] = yIdx;
             }
         }
-        int[] root = {sx,sy};
         int[] prev = reachedGoal;
-
-
 
         // If goal not found, don't move
         if (reachedGoal[0] == -1 && reachedGoal[1] == -1){
-            return Move_Direction.NO_MOVE;
+            target = root;
+            board.clearMarks();
+            return root;
         }
+
+        target = reachedGoal;
 
         while(!Arrays.equals(prev,root) && !Arrays.equals(parent[prev[0]][prev[1]],root))  {
             prev = parent[prev[0]][prev[1]];
         }
-        if(root[0] > prev[0]){
-            return Move_Direction.MOVE_LEFT;
-        } else if(root[0] < prev[0]){
-            return Move_Direction.MOVE_RIGHT;
-        } else if(root[1] > prev[1]){
-            return Move_Direction.MOVE_DOWN;
-        } else if(root[1] < prev[1]){
-            return Move_Direction.MOVE_UP;
-        } else {
-            return Move_Direction.NO_MOVE;
-        }
-//        return new Vector2(prev[0] - root[0], prev[1] - root[1]);
+        board.clearMarks();
+        return prev;
     }
 
     private boolean noEnemyAt(int x, int y){
         for (Enemy e : enemies){
             if (e != enemy){
-                if (board.screenToBoard(e.getPosition().x) == x && board.screenToBoard(e.getPosition().y) == y){
+                Vector2 pos = e.getPosition();
+                if (pos.x == x && pos.y == y){
                     return false;
                 }
             }
@@ -321,18 +308,20 @@ public class AIController extends Entity_Controller {
         return true;
     }
 
+
+
     /**
      * Sets goal for this enemy.
      * If player is on unlit tile, goal is player pos
      * Else, goal is nearest unlit tile to player
      */
-    private void setGoals(){
+    private void setChaseGoalTiles(){
         Queue<ArrayList<Integer>> q = new LinkedList<>();
         ArrayList<Integer> s = new ArrayList<Integer>();
 
         // Set Current Position to Visited
-        int px = board.screenToBoard(player.getPosition().x);
-        int py = board.screenToBoard(player.getPosition().y);
+        int px = (int) player.getPosition().x;
+        int py = (int) player.getPosition().y;
         s.add(px); s.add(py);
         board.setVisited(px,py); //visit s
         q.add(s);
@@ -382,62 +371,80 @@ public class AIController extends Entity_Controller {
         }
     }
 
-    public void move(){
-        state = FSMState.WANDER; // temp code; state change on yet implemented
-
-        switch (state) {
-            case WANDER:
-                int[] goal = enemy.getWanderGoal();
-                Vector2 pos = enemy.getPosition();
-                if (pos.x == goal[0] && pos.y == goal[1]){
-                    enemy.updateWanderGoal();
-                    goal = enemy.getWanderGoal();
-                }
-                enemy.moveOnTile(goal[0], goal[1], delta);
+    public void setReturnGoalTiles(){
+        int[][] wander_path = enemy.getWanderPath();
+        for (int[] pos : wander_path){
+            board.setGoal(pos[0], pos[1]);
         }
     }
 
+    /**
+     *
+     * @param x x-coord
+     * @param y y-coord
+     * @return true if both x and y are within 0001 of the nearest integer
+     */
+    private boolean isCentered(float x, float y){
+        if (x - Math.floor(x) < .00001 || Math.ceil(x) - x < .00001){
+            return y - Math.floor(y) < .00001 || Math.ceil(y) - y < .00001;
+        }
+        return false;
+    }
 
-    /** Moves this enemy */
-//    public void move(){
-//        if (board.isCenterOfTile(enemy.getPosition())) {
-//            enemy.setMoving(false);
-//        }
-//
-//        // Calculate direction to move
-//        if (!board.isLitTile(enemy.getPosition()) && hasLoS()) {
-//            Vector2 dir = getNextDirection();
-//            enemy.move(dir.x * (board.getTileSize() + board.getTileSpacing()),
-//                    (board.getTileSize() + board.getTileSpacing()) * dir.y);
-//        }
-//
-//        if (board.isObstructed(enemy.getGoal()) || board.isLitTile(enemy.getGoal())) {
-//            enemy.setMoving(false);
-//        }
-//        enemy.update();
-//        board.clearMarks();
-//    }
+    public void move(){
+        Vector2 pos = enemy.getPosition();
+        if (isCentered(pos.x, pos.y)){
+            enemy.setPosition(Math.round(pos.x), Math.round(pos.y)); // Center pos to account for slight drift
+            pos = enemy.getPosition();
+            changeStateIfApplicable();
+            System.out.println("State: " + state);
+            switch (state) {
+                case WANDER:
+                    if (pos.x == goal[0] && pos.y == goal[1]){
+                        enemy.updateWanderGoal();
+                    }
+                    goal = enemy.getWanderGoal();
+
+                    break;
+
+                case CHASE:
+                    goal = getChaseGoal();
+                    break;
+
+                case GOTO:
+                    board.setGoal(target[0], target[1]);
+                    goal = bfs();
+                    break;
+
+                case WAIT:
+                case LIT:
+                    goal[0] = (int) pos.x;
+                    goal[1] = (int) pos.y;
+                    break;
+
+                case RETURN:
+                    goal = getReturnGoal();
+                    break;
+            }
+        }
+        enemy.moveOnTile(goal[0], goal[1], delta);
+    }
 
     private boolean hasLoS(){
         int idx = 0;
         boolean result = true;
         while (idx < board.walls.length - 1){
             float[] vertices = new float[] {
-//                    board.walls[idx] + .01f, board.walls[idx+1] + .01f,
-//                    board.walls[idx] + .01f, board.walls[idx+1] + .99f,
-//                    board.walls[idx] + .99f, board.walls[idx + 1] + .01f,
-//                    board.walls[idx] + .99f, board.walls[idx + 1] + .99f
-
                     board.walls[idx] , board.walls[idx+1] ,
                     board.walls[idx], board.walls[idx+1] + 1f,
                     board.walls[idx] + 1f, board.walls[idx + 1] ,
                     board.walls[idx] + 1f, board.walls[idx + 1] + 1f
             };
             Polygon poly = new Polygon(vertices);
-            Vector2 playerPos = new Vector2(board.screenToBoard(player.getPosition().x) + .5f,
-                    board.screenToBoard(player.getPosition().y) + .5f);
-            Vector2 enemyPos = new Vector2(board.screenToBoard(enemy.getPosition().x) + .5f,
-                    board.screenToBoard(enemy.getPosition().y) + .5f);
+            Vector2 playerPos = new Vector2(player.getPosition().x + .5f,
+                    player.getPosition().y + .5f);
+            Vector2 enemyPos = new Vector2(enemy.getPosition().x + .5f,
+                    enemy.getPosition().y + .5f);
             if (Intersector.intersectSegmentPolygon(playerPos,enemyPos, poly)){
                 result = false;
             }
@@ -445,9 +452,4 @@ public class AIController extends Entity_Controller {
         }
         return result;
     }
-
-
-    //#region PUT YOUR CODE HERE
-
-    //#endregion
 }

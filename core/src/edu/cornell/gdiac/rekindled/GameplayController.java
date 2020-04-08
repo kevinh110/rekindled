@@ -244,7 +244,6 @@ public class GameplayController extends WorldController implements ContactListen
 
 	LightSourceObject[] lights;
 	private RayHandler sourceRayHandler;
-	private RayHandler auraRayHandler;
 	private OrthographicCamera rayCamera;
 	private int[] spawn;
 	private int initLights;
@@ -312,7 +311,7 @@ public class GameplayController extends WorldController implements ContactListen
 	}
 
 
-	private static final float AMBIANCE = 1.0f;
+	private static final float AMBIANCE = 0.2f;
 	/**
 	 * Creates and initialize a new instance of the rocket lander game
 	 * <p>
@@ -382,7 +381,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 		for(int i = 0; i < enemies.length; i ++) {
 
-			AuraLight light_a = new AuraLight(auraRayHandler);
+			AuraLight light_a = new AuraLight(sourceRayHandler, false);
 			enemies[i].addAura(light_a);
 
 			enemies[i].setSensor(true);
@@ -440,6 +439,8 @@ public class GameplayController extends WorldController implements ContactListen
 
 		// Add Player
 		player = new Player(spawn[0], spawn[1], 2, 4, initLights);
+		AuraLight light_a = new AuraLight(sourceRayHandler, true);
+		player.addAura(light_a);
 		player.setDrawScale(scale);
 		player.setTexture(playerTextureFront);
 		addObject(player);
@@ -463,19 +464,12 @@ public class GameplayController extends WorldController implements ContactListen
 		RayHandler.setGammaCorrection(true);
 		RayHandler.useDiffuseLight(true);
 		sourceRayHandler = new RayHandler(world, Gdx.graphics.getWidth(),  Gdx.graphics.getHeight());
-		auraRayHandler = new RayHandler(world, Gdx.graphics.getWidth(),  Gdx.graphics.getHeight());
 		sourceRayHandler.setCombinedMatrix(rayCamera);
-		auraRayHandler.setCombinedMatrix(rayCamera);
 
 		sourceRayHandler.setAmbientLight(AMBIANCE, AMBIANCE, AMBIANCE, AMBIANCE);
 		sourceRayHandler.setShadows(true);
 		sourceRayHandler.setBlur(true);
 		sourceRayHandler.setBlurNum(3);
-
-		auraRayHandler.setAmbientLight(AMBIANCE, AMBIANCE, AMBIANCE, AMBIANCE);
-		auraRayHandler.setShadows(true);
-		auraRayHandler.setBlur(true);
-		auraRayHandler.setBlurNum(3);
 	}
 
 	/**
@@ -490,8 +484,7 @@ public class GameplayController extends WorldController implements ContactListen
 	 */
 	public void update(float dt) {
 
-		if (sourceRayHandler != null && auraRayHandler != null) {
-			auraRayHandler.update();
+		if (sourceRayHandler != null) {
 			sourceRayHandler.update();
 		}
 
@@ -507,7 +500,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 		//player movement
 		player.move(next_move);
-
+		player.updateAura();
 		player.updateCooldown(dt);
 
 		//placing and taking light
@@ -572,7 +565,6 @@ public class GameplayController extends WorldController implements ContactListen
                 postUpdate(delta);
             }
             draw(delta, board);
-			auraRayHandler.render();
             sourceRayHandler.render();
 
 

@@ -400,7 +400,7 @@ public class GameplayController extends WorldController implements ContactListen
 					walls[i] + 1, walls[i + 1] + 1,
 					walls[i], walls[i + 1] + 1
 			};
-			obj = new BoxObstacle(walls[i], walls[i + 1], 2, 2);
+			obj = new BoxObstacle(walls[i], walls[i + 1], 1, 1);
 			obj.setBodyType(BodyDef.BodyType.KinematicBody);
 			obj.setDensity(BASIC_DENSITY);
 			obj.setFriction(BASIC_FRICTION);

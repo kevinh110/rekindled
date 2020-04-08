@@ -358,13 +358,16 @@ public class GameCanvas {
     	active = DrawPass.STANDARD;
     }
 
+    public void setProjection() {
+		spriteBatch.setProjectionMatrix(camera.combined);
+	}
 	/**
 	 * Start a standard drawing sequence.
 	 *
 	 * Nothing is flushed to the graphics card until the method end() is called.
 	 */
     public void begin() {
-		spriteBatch.setProjectionMatrix(camera.combined);
+//		spriteBatch.setProjectionMatrix(camera.combined);
     	spriteBatch.begin();
     	active = DrawPass.STANDARD;
     }

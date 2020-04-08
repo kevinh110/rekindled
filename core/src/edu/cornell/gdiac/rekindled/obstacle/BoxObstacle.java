@@ -144,7 +144,9 @@ public class BoxObstacle extends SimpleObstacle {
 		geometry = null;
 		
 		// Initialize
-		resize(width, height);	
+		resize(width, height);
+
+		this.getFilterData().categoryBits =  Constants.BIT_WALL;
 	}
 	
 	/**

@@ -24,11 +24,15 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.graphics.*;
+import edu.cornell.gdiac.rekindled.light.AuraLight;
+import edu.cornell.gdiac.rekindled.light.LightSourceLight;
 import edu.cornell.gdiac.rekindled.obstacle.BoxObstacle;
 import edu.cornell.gdiac.rekindled.obstacle.Obstacle;
 import edu.cornell.gdiac.rekindled.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.*;
-import javafx.scene.effect.Light;
+import javafx.util.Pair;
+import java.util.LinkedList;
+
 
 /**
  * Base class for a world-specific controller.
@@ -101,6 +105,8 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final float BASIC_FRICTION = 0.1f;
 	/** The restitution for all of (external) objects */
 	private static final float BASIC_RESTITUTION = 0.1f;
+
+	private static final float THROWN_LIGHT_RADIUS = 5f;
 
 
 
@@ -237,11 +243,13 @@ public class GameplayController extends WorldController implements ContactListen
 
 
 	LightSourceObject[] lights;
-	private RayHandler rayHandler;
+	private RayHandler sourceRayHandler;
+	private RayHandler auraRayHandler;
 	private OrthographicCamera rayCamera;
 	private int[] spawn;
 	private int initLights;
 	private int[] walls;
+	private LinkedList<Pair<LightSourceLight, Long>> thrownLights;
 
 	CollisionController collisions;
 
@@ -353,8 +361,7 @@ public class GameplayController extends WorldController implements ContactListen
 		initLighting();
 		for (int i = 0; i < lights.length; i++){
 
-			LightSourceLight light_s = new LightSourceLight(rayHandler);
-			light_s.setColor(1, 1, 1, 1);
+			LightSourceLight light_s = new LightSourceLight(sourceRayHandler);
 			lights[i].addLight(light_s);
 
 			lights[i].setSensor(true);
@@ -370,8 +377,14 @@ public class GameplayController extends WorldController implements ContactListen
 			addObject(lights[i]);
 
 		}
+		//initialize thrown lights
+		thrownLights = new LinkedList<>();
 
 		for(int i = 0; i < enemies.length; i ++) {
+
+			AuraLight light_a = new AuraLight(auraRayHandler);
+			enemies[i].addAura(light_a);
+
 			enemies[i].setSensor(true);
 			enemies[i].setDrawScale(scale);
 			enemies[i].setTexture(enemyTexture);
@@ -449,13 +462,20 @@ public class GameplayController extends WorldController implements ContactListen
 
 		RayHandler.setGammaCorrection(true);
 		RayHandler.useDiffuseLight(true);
-		rayHandler = new RayHandler(world, Gdx.graphics.getWidth(),  Gdx.graphics.getHeight());
-		rayHandler.setCombinedMatrix(rayCamera);
+		sourceRayHandler = new RayHandler(world, Gdx.graphics.getWidth(),  Gdx.graphics.getHeight());
+		auraRayHandler = new RayHandler(world, Gdx.graphics.getWidth(),  Gdx.graphics.getHeight());
+		sourceRayHandler.setCombinedMatrix(rayCamera);
+		auraRayHandler.setCombinedMatrix(rayCamera);
 
-		rayHandler.setAmbientLight(AMBIANCE, AMBIANCE, AMBIANCE, AMBIANCE);
-		rayHandler.setShadows(true);
-		rayHandler.setBlur(true);
-		rayHandler.setBlurNum(3);
+		sourceRayHandler.setAmbientLight(AMBIANCE, AMBIANCE, AMBIANCE, AMBIANCE);
+		sourceRayHandler.setShadows(true);
+		sourceRayHandler.setBlur(true);
+		sourceRayHandler.setBlurNum(3);
+
+		auraRayHandler.setAmbientLight(AMBIANCE, AMBIANCE, AMBIANCE, AMBIANCE);
+		auraRayHandler.setShadows(true);
+		auraRayHandler.setBlur(true);
+		auraRayHandler.setBlurNum(3);
 	}
 
 	/**
@@ -470,12 +490,20 @@ public class GameplayController extends WorldController implements ContactListen
 	 */
 	public void update(float dt) {
 
-		if (rayHandler != null)
-			rayHandler.update();
+		if (sourceRayHandler != null && auraRayHandler != null) {
+			auraRayHandler.update();
+			sourceRayHandler.update();
+		}
 
 		InputController input = InputController.getInstance();
 		input.readInput(bounds, scale);
 		InputController.Move_Direction next_move = input.get_Next_Direction();
+
+		//remove old thrown light
+		if(!thrownLights.isEmpty() && System.currentTimeMillis() - thrownLights.get(0).getValue() > 2000L){
+			LightSourceLight light = thrownLights.pop().getKey();
+			light.setActive(false);
+		}
 
 		//player movement
 		player.move(next_move);
@@ -492,10 +520,33 @@ public class GameplayController extends WorldController implements ContactListen
 			}
 		}
 
+		//throw light
+		if(input.didSecondary() && player.lightCounter > 0 && !player.getTouchingLight()){
+			LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius
+			light.setPosition(player.getX(), player.getY());
+			thrownLights.add(new Pair<>(light, System.currentTimeMillis()));
+			player.lightCounter = player.lightCounter - 1;
+
+			//find enemies in range
+			for(Enemy e: enemies){
+				float distance = player.getPosition().dst(e.getPosition());
+				if(distance <= THROWN_LIGHT_RADIUS){
+					float dx =  e.getPosition().x - player.getX();
+					float dy = e.getPosition().y - player.getY();
+					float ratio = THROWN_LIGHT_RADIUS / distance;
+
+					Vector2 new_pos = new Vector2((dx * ratio) + player.getX(), (dy * ratio) + player.getY());
+					e.setPosition(new_pos);
+
+				}
+			}
+		}
+
 		// Do enemy movement
 		// Enemy Movement
 		for (AIController controller : controls){
-			controller.move();
+			//controller.move();
+			controller.getEnemy().updateAura();
 //			System.out.println(controller.getState());
 		}
 //		System.out.println("---------");
@@ -521,7 +572,10 @@ public class GameplayController extends WorldController implements ContactListen
                 postUpdate(delta);
             }
             draw(delta, board);
-            rayHandler.render();
+			auraRayHandler.render();
+            sourceRayHandler.render();
+
+
         }
 	}
 

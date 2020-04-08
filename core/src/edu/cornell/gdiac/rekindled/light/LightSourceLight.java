@@ -1,14 +1,16 @@
-package edu.cornell.gdiac.rekindled;
+package edu.cornell.gdiac.rekindled.light;
 
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
+import edu.cornell.gdiac.rekindled.Constants;
 
 public class LightSourceLight extends PointLight {
     /** The default distance for a point source light */
-    public static float DEFAULT_DISTANCE = 5f;
+    public static float DEFAULT_DISTANCE = 8f;
+    public static float BRIGHTNESS = 1f;
 
     /** Copy of the collision filter.  Necessary because the original version is private */
     protected Filter collisions;
@@ -32,7 +34,16 @@ public class LightSourceLight extends PointLight {
      */
     public LightSourceLight(RayHandler rayHandler) {
         super(rayHandler, 512, null, DEFAULT_DISTANCE, 0, 0);
-        System.out.println(this.softShadowLength);
+        this.setSoftnessLength(0f);
+        this.setColor(BRIGHTNESS, BRIGHTNESS, BRIGHTNESS, BRIGHTNESS);
+
+        Filter filter = new Filter();
+        filter.maskBits = Constants.BIT_WALL;
+        this.setContactFilter(filter);
+    }
+
+    public LightSourceLight(RayHandler rayHandler, float radius){
+        super(rayHandler, 512, null, radius, 0, 0);
         this.setSoftnessLength(0f);
     }
 

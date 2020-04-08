@@ -3,10 +3,10 @@ package edu.cornell.gdiac.rekindled;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.rekindled.light.AuraLight;
+import edu.cornell.gdiac.rekindled.light.SightConeLight;
 import edu.cornell.gdiac.rekindled.obstacle.FeetHitboxObstacle;
 import edu.cornell.gdiac.util.FilmStrip;
 
@@ -26,7 +26,7 @@ public class Enemy extends FeetHitboxObstacle {
     /** The force to apply to this rocket */
     private Vector2 force;
 
-    private AuraLight light;
+    private SightConeLight sight;
 
     /** The texture filmstrip for the left animation node */
     FilmStrip mainBurner;
@@ -58,7 +58,10 @@ public class Enemy extends FeetHitboxObstacle {
 
 
     /** The number of frames for the afterburner */
+    // DEFAULT - 5
     public static final int SPEED = 5;
+
+    public int facingDirection;
 
     private int type;
 
@@ -229,6 +232,7 @@ public class Enemy extends FeetHitboxObstacle {
         setName("rocket");
 
         this.getFilterData().categoryBits = Constants.BIT_ENEMY;
+        facingDirection = Constants.BACK;
     }
 
     public Enemy(float x, float y, float width, float height, int type) {
@@ -285,6 +289,7 @@ public class Enemy extends FeetHitboxObstacle {
             else{
                 setPosition(goalX, newPosY);
             }
+            facingDirection = Constants.FORWARD;
         }
         else if (pos.x == goalX && goalY > pos.y) { // Move up
 //            System.out.println("move up");
@@ -295,6 +300,7 @@ public class Enemy extends FeetHitboxObstacle {
             else {
                 setPosition(goalX, newPosY);
             }
+            facingDirection = Constants.BACK;
         }
         else if (goalX > pos.x && goalY == pos.y) { // Move right
 //            System.out.println("move right");
@@ -305,6 +311,7 @@ public class Enemy extends FeetHitboxObstacle {
             else {
                 setPosition(newPosX, goalY);
             }
+            facingDirection = Constants.RIGHT;
         }
         else if (goalX < pos.x && goalY == pos.y) { // Move left
 //            System.out.println("move left");
@@ -315,6 +322,7 @@ public class Enemy extends FeetHitboxObstacle {
             else {
                 setPosition(newPosX, goalY);
             }
+            facingDirection = Constants.LEFT;
         }
     }
 
@@ -322,15 +330,19 @@ public class Enemy extends FeetHitboxObstacle {
     public void move(InputController.Move_Direction move){
         if (move == Entity_Controller.Move_Direction.MOVE_DOWN) {
             body.setLinearVelocity(0, -SPEED);
+            facingDirection = Constants.BACK;
         }
         else if (move == Entity_Controller.Move_Direction.MOVE_UP) {
             body.setLinearVelocity(0, SPEED);
+            facingDirection = Constants.FORWARD;
         }
         else if (move == Entity_Controller.Move_Direction.MOVE_RIGHT) {
             body.setLinearVelocity(SPEED, 0);
+            facingDirection = Constants.RIGHT;
         }
         else if (move == Entity_Controller.Move_Direction.MOVE_LEFT) {
             body.setLinearVelocity(-SPEED, 0);
+            facingDirection = Constants.LEFT;
         }
         else if (move == Entity_Controller.Move_Direction.MOVE_DIAG_DOWN_LEFT) {
             body.setLinearVelocity(-(float)Math.sqrt(SPEED*SPEED/2), -(float)Math.sqrt(SPEED*SPEED/2));
@@ -350,14 +362,24 @@ public class Enemy extends FeetHitboxObstacle {
     }
 
 
-    public void addAura(AuraLight light) {
-        this.light = light;
-        this.light.setPosition(this.getPosition());
-        this.light.setActive(true);
+    public void addSight(SightConeLight light) {
+        this.sight = light;
+        this.sight.setPosition(this.getPosition());
+        this.sight.setActive(true);
+
+        updateSightCone();
     }
 
-    public void updateAura() {
-        this.light.setPosition(this.getPosition());
+    public void updateSightCone() {
+        this.sight.setPosition(this.getPosition());
+
+        float angle =
+                (facingDirection == Constants.FORWARD) ? 270.0f :
+                (facingDirection == Constants.BACK) ? 90.f :
+                (facingDirection == Constants.LEFT) ? 180.f:
+                0f;
+
+        this.sight.setDirection(angle);
     }
 
     /**
@@ -378,5 +400,10 @@ public class Enemy extends FeetHitboxObstacle {
         if (rghtBurner != null) {
             canvas.draw(rghtBurner,Color.WHITE,rghtOrigin.x,rghtOrigin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
         }
+    }
+
+
+    public boolean inSight(Vector2 position) {
+        return this.sight.contains(position.x, position.y);
     }
 }

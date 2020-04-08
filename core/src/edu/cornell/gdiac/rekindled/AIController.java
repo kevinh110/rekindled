@@ -117,7 +117,7 @@ public class AIController extends Entity_Controller {
      * in the ATTACK state, we may want to switch to the CHASE state if the
      * target gets out of range.
      */
-    private void changeStateIfApplicable() {
+    private void changeStateIfApplicable(boolean playerLit) {
         // Add initialization code as necessary
         Vector2 pos = enemy.getPosition();
         // Next state depends on current state.
@@ -128,7 +128,7 @@ public class AIController extends Entity_Controller {
 
         switch (state) {
             case SPAWN:
-                if (hasLoS()) {// has LoS
+                if (hasLoS(playerLit)) {// has LoS
                     state = FSMState.CHASE;
                 } else { // no line of sight; wander
                     state = FSMState.WANDER;
@@ -136,13 +136,13 @@ public class AIController extends Entity_Controller {
                 break;
 
             case WANDER:
-                if (hasLoS()) {// has target
+                if (hasLoS(playerLit)) {// has target
                     state = FSMState.CHASE;
                 }
                 break;
 
             case CHASE:
-                if (!hasLoS()) {
+                if (!hasLoS(playerLit)) {
                     // has no target
                     state = FSMState.GOTO;
                 }   // else: has target, keep chasing
@@ -150,7 +150,7 @@ public class AIController extends Entity_Controller {
                 break;
 
             case GOTO:
-                if (hasLoS()){
+                if (hasLoS(playerLit)){
                     state = FSMState.CHASE;
                 }
                 else if (pos.x == target[0] && pos.y == target[1]){
@@ -160,7 +160,7 @@ public class AIController extends Entity_Controller {
                 break;
 
             case WAIT:
-                if (hasLoS()){
+                if (hasLoS(playerLit)){
                     state = FSMState.CHASE;
                 }
                 else {
@@ -172,7 +172,7 @@ public class AIController extends Entity_Controller {
                 break;
 
             case RETURN:
-                if (hasLoS()){
+                if (hasLoS(playerLit)){
                     state = FSMState.CHASE;
                 }
                 else if (pos.x == target[0] && pos.y == target[1]){
@@ -391,12 +391,12 @@ public class AIController extends Entity_Controller {
         return false;
     }
 
-    public void move(){
+    public void move(boolean playerLit){
         Vector2 pos = enemy.getPosition();
         if (isCentered(pos.x, pos.y)){
             enemy.setPosition(Math.round(pos.x), Math.round(pos.y)); // Center pos to account for slight drift
             pos = enemy.getPosition();
-            changeStateIfApplicable();
+            changeStateIfApplicable(playerLit);
             System.out.println("State: " + state);
             switch (state) {
                 case WANDER:
@@ -430,26 +430,29 @@ public class AIController extends Entity_Controller {
         enemy.moveOnTile(goal[0], goal[1], delta);
     }
 
-    private boolean hasLoS(){
-        int idx = 0;
-        boolean result = true;
-        while (idx < board.walls.length - 1){
-            float[] vertices = new float[] {
-                    board.walls[idx] , board.walls[idx+1] ,
-                    board.walls[idx], board.walls[idx+1] + 1f,
-                    board.walls[idx] + 1f, board.walls[idx + 1] ,
-                    board.walls[idx] + 1f, board.walls[idx + 1] + 1f
-            };
-            Polygon poly = new Polygon(vertices);
-            Vector2 playerPos = new Vector2(player.getPosition().x + .5f,
-                    player.getPosition().y + .5f);
-            Vector2 enemyPos = new Vector2(enemy.getPosition().x + .5f,
-                    enemy.getPosition().y + .5f);
-            if (Intersector.intersectSegmentPolygon(playerPos,enemyPos, poly)){
-                result = false;
+    private boolean hasLoS(boolean playerLit){
+        if (playerLit) {
+            int idx = 0;
+            boolean result = true;
+            while (idx < board.walls.length - 1) {
+                float[] vertices = new float[]{
+                        board.walls[idx], board.walls[idx + 1],
+                        board.walls[idx], board.walls[idx + 1] + 1f,
+                        board.walls[idx] + 1f, board.walls[idx + 1],
+                        board.walls[idx] + 1f, board.walls[idx + 1] + 1f
+                };
+                Polygon poly = new Polygon(vertices);
+                Vector2 playerPos = new Vector2(player.getPosition().x + .5f,
+                        player.getPosition().y + .5f);
+                Vector2 enemyPos = new Vector2(enemy.getPosition().x + .5f,
+                        enemy.getPosition().y + .5f);
+                if (Intersector.intersectSegmentPolygon(playerPos, enemyPos, poly)) {
+                    result = false;
+                }
+                idx += 2;
             }
-            idx +=2;
+            return result;
         }
-        return result;
+        return enemy.inSight(player.getPosition());
     }
 }

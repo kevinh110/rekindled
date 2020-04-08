@@ -26,6 +26,7 @@ import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.graphics.*;
 import edu.cornell.gdiac.rekindled.light.AuraLight;
 import edu.cornell.gdiac.rekindled.light.LightSourceLight;
+import edu.cornell.gdiac.rekindled.light.SightConeLight;
 import edu.cornell.gdiac.rekindled.obstacle.BoxObstacle;
 import edu.cornell.gdiac.rekindled.obstacle.Obstacle;
 import edu.cornell.gdiac.rekindled.obstacle.PolygonObstacle;
@@ -381,8 +382,8 @@ public class GameplayController extends WorldController implements ContactListen
 
 		for(int i = 0; i < enemies.length; i ++) {
 
-			AuraLight light_a = new AuraLight(sourceRayHandler, false);
-			enemies[i].addAura(light_a);
+			SightConeLight sight = new SightConeLight(sourceRayHandler);
+			enemies[i].addSight(sight);
 
 			enemies[i].setSensor(true);
 			enemies[i].setDrawScale(scale);
@@ -439,7 +440,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 		// Add Player
 		player = new Player(spawn[0], spawn[1], 2, 4, initLights);
-		AuraLight light_a = new AuraLight(sourceRayHandler, true);
+		AuraLight light_a = new AuraLight(sourceRayHandler);
 		player.addAura(light_a);
 		player.setDrawScale(scale);
 		player.setTexture(playerTextureFront);
@@ -538,8 +539,8 @@ public class GameplayController extends WorldController implements ContactListen
 		// Do enemy movement
 		// Enemy Movement
 		for (AIController controller : controls){
-			//controller.move();
-			controller.getEnemy().updateAura();
+			controller.move(insideLightSource(player.getPosition()));
+			controller.getEnemy().updateSightCone();
 //			System.out.println(controller.getState());
 		}
 //		System.out.println("---------");
@@ -581,6 +582,14 @@ public class GameplayController extends WorldController implements ContactListen
 
 	public boolean lost() {
 		return lostGame;
+	}
+
+	public boolean insideLightSource(Vector2 pos) {
+		for (LightSourceObject l : lights) {
+			if (l.contains(pos))
+				return true;
+		}
+		return false;
 	}
 
 

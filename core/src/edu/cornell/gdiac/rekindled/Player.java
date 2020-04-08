@@ -327,4 +327,6 @@ public class Player extends FeetHitboxObstacle {
     public void updateAura() {
         this.aura.setPosition(this.getPosition());
     }
+
+
 }

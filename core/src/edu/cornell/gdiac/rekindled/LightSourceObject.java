@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.rekindled;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.rekindled.light.LightSourceLight;
 import edu.cornell.gdiac.rekindled.obstacle.BoxObstacle;
 
@@ -44,6 +45,10 @@ public class LightSourceObject extends BoxObstacle {
             return true;
         }
         return false;
+    }
+
+    public boolean contains(Vector2 pos) {
+        return this.light.contains(pos.x, pos.y);
     }
 
     public void setTouchingPlayer(boolean value){

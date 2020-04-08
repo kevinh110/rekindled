@@ -30,15 +30,13 @@ public class AuraLight extends PointLight {
      * @param rayHandler	a non-null instance of RayHandler
      * @param rays			the number of rays
      */
-    public AuraLight(RayHandler rayHandler, boolean player) {
+    public AuraLight(RayHandler rayHandler) {
         super(rayHandler, 512, null, DEFAULT_DISTANCE, 0, 0);
         System.out.println(this.softShadowLength);
         this.setSoftnessLength(0f);
 
-        if (player)
-            this.setColor(1f, 1f, 0, 1f);
-        else
-            this.setColor(1f, 0, 0, 1f);
+        this.setColor(1f, 1f, 0, 1f);
+
 
         Filter filter = new Filter();
         filter.maskBits = 0;

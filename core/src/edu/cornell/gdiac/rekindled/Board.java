@@ -204,6 +204,7 @@ public class Board {
         for(int ii = 0; ii < walls.length-1; ii += 2){
             tiles[walls[ii]][walls[ii+1]].setWall();
         }
+        this.walls = walls;
 
         // Set lit sources
         for(int ii = 0; ii < litSources.length-1; ii += 2){
@@ -235,6 +236,7 @@ public class Board {
         for(int ii = 0; ii < walls.length-1; ii += 2){
             tiles[walls[ii]][walls[ii+1]].setWall();
         }
+        this.walls = walls;
 
         // Set light sources
         for (LightSourceObject light : lights) {
@@ -403,7 +405,6 @@ public class Board {
             canvas.draw(darkRegion, Color.YELLOW,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2, darkRegion.getRegionWidth(), darkRegion.getRegionHeight());
         else {
             canvas.draw(darkRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
-
         }
     }
 

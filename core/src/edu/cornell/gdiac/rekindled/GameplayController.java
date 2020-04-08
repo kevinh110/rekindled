@@ -261,11 +261,25 @@ public class GameplayController extends WorldController implements ContactListen
 		spawn = levelFormat.get("spawn").asIntArray();
 		initLights = levelFormat.getInt("init_lights");
 
+		// Parse Walls; dumb format
+		int idx = 0;
+		JsonValue walls_json = levelFormat.get("walls");
+		walls = new int[walls_json.size * 2];
+		JsonValue wall = walls_json.child();
+		idx = 0;
+		while (wall != null){
+			int[] pos = wall.get("position").asIntArray();
+			walls[idx] = pos[0];
+			walls[idx + 1] = pos[1];
+			idx += 2;
+			wall = wall.next();
+		}
+
 		// Parse Lights
 		JsonValue lights_json = levelFormat.get("lights");
 		lights = new LightSourceObject[lights_json.size];
 		JsonValue light = lights_json.child();
-		int idx = 0;
+		idx = 0;
 		while (light != null){
 			int[] pos = light.get("position").asIntArray();
 			lights[idx] = new LightSourceObject(pos[0], pos[1], 1, 1,light.getBoolean("lit"));
@@ -284,27 +298,13 @@ public class GameplayController extends WorldController implements ContactListen
 			JsonValue wander = enemy.get("wander");
 			enemies[idx] = new Enemy(pos[0], pos[1], 1, 1, enemy.getInt("type"));
 			enemies[idx].setWander(wander);
-			controls[idx] = new AIController(enemies[idx], board, player, enemies, getWorldStep());
 			idx++;
 			enemy = enemy.next();
-		}
-
-		// Parse Walls; dumb format
-		JsonValue walls_json = levelFormat.get("walls");
-		walls = new int[walls_json.size * 2];
-		JsonValue wall = walls_json.child();
-		idx = 0;
-		while (wall != null){
-			int[] pos = wall.get("position").asIntArray();
-			walls[idx] = pos[0];
-			walls[idx + 1] = pos[1];
-			idx += 2;
-			wall = wall.next();
 		}
 	}
 
 
-	private static final float AMBIANCE = 0.5f;
+	private static final float AMBIANCE = 1.0f;
 	/**
 	 * Creates and initialize a new instance of the rocket lander game
 	 * <p>
@@ -354,6 +354,7 @@ public class GameplayController extends WorldController implements ContactListen
 		for (int i = 0; i < lights.length; i++){
 
 			LightSourceLight light_s = new LightSourceLight(rayHandler);
+			light_s.setColor(1, 1, 1, 1);
 			lights[i].addLight(light_s);
 
 			lights[i].setSensor(true);
@@ -432,6 +433,13 @@ public class GameplayController extends WorldController implements ContactListen
 
 		// Make Board
 		board = new Board((int) BOARD_WIDTH, (int) BOARD_HEIGHT, walls, lights);
+
+		// Make AI Controllers
+		for (int idx = 0; idx < enemies.length; idx++){
+			controls[idx] = new AIController(enemies[idx], board, player, enemies, getWorldStep());
+		}
+
+
 	}
 
 	public void initLighting() {

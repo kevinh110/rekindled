@@ -82,6 +82,10 @@ public class Enemy extends FeetHitboxObstacle {
         return wander[pointer];
     }
 
+    public int[][] getWanderPath(){
+        return wander;
+    }
+
     public void updateWanderGoal(){
         if (wander.length == 1){ // Handle Edge case with Stationary Enemy
             return;
@@ -246,46 +250,65 @@ public class Enemy extends FeetHitboxObstacle {
         // Insert code here to prevent the body from rotating
         body.setFixedRotation(true);
         //#endregion
-
         return true;
     }
 
+
+
     public void moveOnTile(int goalX, int goalY, float delta){
         Vector2 pos = getPosition();
-        if (goalX == pos.x && goalY < pos.y) { // Move down
+        float diffX = Math.abs(goalX - pos.x);
+        float diffY = Math.abs(goalY - pos.y);
+
+        // Fix Drift; This is a makeshift fix to a Box2D bug where
+        // setting pos to (x, 4) actually sets to (x, 3.99998)
+        if (diffX < .0001){
+            setPosition(goalX, pos.y);
+        }
+        pos = getPosition();
+        if (diffY < .0001){
+            setPosition(pos.x, goalY);
+        }
+        pos = getPosition();
+
+        if (pos.x == goalX && goalY < pos.y) { // Move down
+//            System.out.println("move down");
             float newPosY = pos.y - SPEED * delta;
             if (goalY > newPosY){
-                body.setTransform(goalX, goalY, 0);
+                setPosition(goalX, goalY);
             }
             else{
-                body.setLinearVelocity(0, -SPEED);
+                setPosition(goalX, newPosY);
             }
         }
-        else if (goalX == pos.x && goalY > pos.y) { // Move up
+        else if (pos.x == goalX && goalY > pos.y) { // Move up
+//            System.out.println("move up");
             float newPosY = pos.y + SPEED * delta;
             if (goalY < newPosY){
-                body.setTransform(goalX, goalY, 0);
+                setPosition(goalX, goalY);
             }
             else {
-                body.setLinearVelocity(0, SPEED);
+                setPosition(goalX, newPosY);
             }
         }
         else if (goalX > pos.x && goalY == pos.y) { // Move right
+//            System.out.println("move right");
             float newPosX = pos.x + SPEED * delta;
             if (goalX < newPosX){
-                body.setTransform(goalX, goalY, 0);
+                setPosition(goalX, goalY);
             }
             else {
-                body.setLinearVelocity(SPEED, 0);
+                setPosition(newPosX, goalY);
             }
         }
         else if (goalX < pos.x && goalY == pos.y) { // Move left
+//            System.out.println("move left");
             float newPosX = pos.x - SPEED * delta;
             if (goalX > newPosX){
-                body.setTransform(goalX, goalY, 0);
+                setPosition(goalX, goalY);
             }
             else {
-                body.setLinearVelocity(-SPEED, 0);
+                setPosition(newPosX, goalY);
             }
         }
     }
@@ -321,25 +344,6 @@ public class Enemy extends FeetHitboxObstacle {
         }
     }
 
-    /**
-     * Applies the force to the body of this ship
-     *
-     * This method should be called after the force attribute is set.
-     */
-    public void applyForce() {
-        if (!isActive()) {
-            return;
-        }
-
-        // Orient the force with rotation.
-        affineCache.setToRotationRad(getAngle());
-        affineCache.applyTo(force);
-
-        //#region INSERT CODE HERE
-        // Apply force to the rocket BODY, not the rocket
-        body.applyForce(force, getPosition(), true);
-        //#endregion
-    }
 
     /**
      * Draws the physics object.

@@ -16,6 +16,7 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
 
+import edu.cornell.gdiac.rekindled.light.AuraLight;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.rekindled.*;
 import edu.cornell.gdiac.rekindled.obstacle.*;
@@ -84,6 +85,7 @@ public class Player extends FeetHitboxObstacle {
     private static final int TURN_ON_DELAY = 2;
 
     private boolean touchingLight;
+    private AuraLight aura;
 
     /**
      * Returns the force applied to this rocket.
@@ -315,5 +317,14 @@ public class Player extends FeetHitboxObstacle {
      */
     public void draw(GameCanvas canvas) {
         super.draw(canvas);  // Player
+    }
+
+    public void addAura(AuraLight a) {
+        this.aura = a;
+        updateAura();
+    }
+
+    public void updateAura() {
+        this.aura.setPosition(this.getPosition());
     }
 }

@@ -4,7 +4,7 @@
 
 The editor is pretty straight forward to use, but here are some things to note:
 
-### *Menu*
+### Menu
 
 **'new'**: requires you to specify width and height. By default creates a border of walls, which are not included in the "walls" attribute of the resulting JSON.
 
@@ -12,7 +12,7 @@ The editor is pretty straight forward to use, but here are some things to note:
 
 **'copy'**: copies the resulting JSON string to your clipboard. Paste it onto a blank notepad (or similar) to see it.
 
-### *Tools*
+### Tools
 
 **'brush'**: allows you to occupy a single square on the grid with the selected letter.
 
@@ -22,7 +22,7 @@ The editor is pretty straight forward to use, but here are some things to note:
 
 **'Number of Enemies'**: specify the number of enemies this level has. This is important because each enemy is labeled E1, E2, E3, ..., etc. and each have their wander path boxes @1, @2, @3, ..., etc. Click 'Apply' to see the specified number of enemy letters appear in the Enemies Palette just below.
 
-### *When Setting Wander Paths*
+### When Setting Wander Paths
 
 Only select the squares that are the edges of the wander paths. For example, if enemy 1 (E1) has wander path of a straight line, then only two squares (at the two endpoints of the straight path) should be highlighted with '@1'. Do not fill up the entire length of the line with '@1' squares.
 
@@ -34,13 +34,16 @@ In contrast, if 'E' exists on the grid but the corresponding '@' is missing, the
 
 Put simply: a wander path without its owner is not possible but an enemy without a wander path is possible.
 
-### *Bordered Walls*
+### Bordered Walls
 
 As of now, all levels are assumed to have walls as border. Thus the bordering squares are not taken into account when creating the resulting JSON. This means whatever letter you put on the border squares, it will not show up in the JSON. For example, if you place the player 'P' on a border square, the "spawn" attribute in the JSON will end up with an empty string.
 
-### *Refresh to Reset to Default Template*
+### Refresh to Reset to Default Template
 
 If you wish to return to the default level, simply refresh.
+
+
+
 
 
 ---

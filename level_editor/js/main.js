@@ -1,21 +1,8 @@
-/*==============================================================================
-.                                                                               .
-.                                 WARNING                                      .
-.   I am extremely new to all of this, so the code below is certainly not      .
-.   even close to being a good way to achieve any of the things I wanted,      .
-.   and is instead mostly a mess of spaghetti and hacky workarounds.           .
-.   (The same obviously goes for the other parts of this project)              .
-.                                                                              .
-==============================================================================*/
-/*==============================================================================
-.                                                                              .
-.                             ANOTHER WARNING                                  .
-.   There are very few comments (two, to be precise), and I don't feel         .
-.   like many are needed for any single section of the code, but if the        .
-.   bigger picture seems obscure, please refer to the project's wiki,          .
-.   you will find a brief overview of how things fit together there.           .
-.                                                                              .
-==============================================================================*/
+/* 
+  Based on code by misha-codes: https://github.com/misha-codes/eloquent-javascript--level-editor
+  This Javascript file has been heavily edited from the original code to fit ReKindle.
+*/
+
 /*//////////////////////////////////////////////////////////////////////////////
 -                                   MENU                                       -
 //////////////////////////////////////////////////////////////////////////////*/
@@ -101,6 +88,7 @@ function confirmOpen() {
   let width = 32;
   let height = 18;
   let player = [];
+  let numInitLights = 0;
   let walls = [];
   let enemies = [];
   let litLights = [];
@@ -108,27 +96,81 @@ function confirmOpen() {
 
   let level = document.querySelector('textarea').value.trim().split('\n');
   for (let i = 0; i < level.length; i++) {
-    // if (level[i].length != level[i + 1].length) {
-    //   info.textContent = 'error: irregular grid detected';
-    //   return;
-    // }
 
     // Parse Dimension
     if (level[i].search(/dimension/) > -1){
       let match = level[i].match(/([0-9]+),([0-9]+)/g)[0].split(',');
-      width = match[0];
-      height = match[1];
-      console.log(width);
-      console.log(height);
+      width = Number(match[0]);
+      height = Number(match[1]);
+      // console.log('width: '+width);
+      // console.log('height: '+height);
     }
 
     // Parse Player
     if (level[i].search(/spawn/) > -1){
       let match = level[i].match(/([0-9]+),([0-9]+)/g)[0].split(',');
-      player.push(match[0]);
-      player.push(match[1]);
-      console.log(player);
+      player.push(Number(match[0]));
+      player.push(Number(match[1]));
+      // console.log('spawn: '+player);
     }
+
+    // Parse Init Lights
+    if (level[i].search(/init_lights/) > -1){
+      let match = level[i].match(/[0-9]+/)[0];
+      numInitLights = Number(match);
+      // console.log('init_lights: '+numInitLights);
+    }
+
+    // Parse Lights
+    if (level[i].search(/\"lights\"/) > -1){
+      if(level[i].search(/\]/) == -1){
+        let a = i+1;
+        while (level[a].search(/\{/) > -1){
+          if (level[a].search(/position/) > -1){
+            let match = level[a].match(/([0-9]+),([0-9]+)/g)[0].split(',');
+            let lit = level[a].match(/true|false/)[0];
+            if(lit == 'true') litLights.push([Number(match[0]),Number(match[1])]);
+            else dimLights.push([Number(match[0]),Number(match[1])]);
+            // console.log(match);
+          }
+          a += 1;
+        }
+      }
+      // console.log('lit lights:');
+      // console.log(litLights);
+      // console.log('dim lights:');
+      // console.log(dimLights);
+      // console.log('lit lights: '+litLights);
+      // console.log('dim lights: '+dimLights);
+    } 
+
+    //Parse Enemies
+    if (level[i].search(/enemies/) > -1){
+      if(level[i].search(/\]/) == -1){
+        let a = i+1;
+        while (level[a].search(/\{/) > -1){
+          if (level[a].search(/position/) > -1){
+            let pos = level[a].match(/([0-9]+),([0-9]+)/g)[0].split(',');
+            pos = [Number(pos[0]),Number(pos[1])];
+            let type = level[a].match(/\"type\"\: [0-9]+/)[0];
+            type = Number(type.match(/[0-9]+/)[0]);
+            let wander = level[a].match(/\[(\[([0-9]+),([0-9]+)\]\,)+(\[([0-9]+),([0-9]+)\])+\]/)[0].split('],[');
+            for(let i=0;i<wander.length;i++){
+              wander[i] = wander[i].match(/([0-9]+),([0-9]+)/g)[0].split(',');
+              wander[i] = [Number(wander[i][0]),Number(wander[i][1])];
+            }
+            // console.log(pos);
+            // console.log(type);
+            // console.log(wander);
+            enemies.push([pos,type,wander]);
+          }
+          a += 1;
+        }
+      }
+      // console.log('enemies:');
+      // console.log(enemies);
+    }
+  
 
     // Parse Walls
     if (level[i].search(/walls/) > -1){
@@ -137,31 +179,106 @@ function confirmOpen() {
         while (level[a].search(/\{/) > -1){
           if (level[a].search(/position/) > -1){
             let match = level[a].match(/([0-9]+),([0-9]+)/g)[0].split(',');
-            walls.push(match);
+            walls.push([Number(match[0]),Number(match[1])]);
             // console.log(match);
           }
           a += 1;
         }
       }
-      console.log(walls);
+      // console.log('walls:');
+      // console.log(walls);
     } 
   }
+
+  // set number of init lights
+  document.querySelector('#initLightsCurrent').textContent = "Currently: "+numInitLights;
+  document.querySelector('#initLightsInput').value = numInitLights;
+
+  // set number of enemies
+  document.querySelector('#numEnemiesInput').value = enemies.length;
+  createEnemyPalettePanel(enemies.length);
+
 
   removeCurrentDialog();
   renderView(width, height);
 
   let cells = Array.from(document.querySelectorAll('.cell'));
-  let content = level.join('');
+  // let content = level.join('');
+  let content = [];
+  for(let j=0;j<height;j++){
+    content[j] = [];
+    if(j==0 || j == height-1){
+      for(let i=0;i<width;i++){
+        content[j].push('W');
+      }
+    } else{
+      content[j].push('W');
+      for(let i=1;i<width-1;i++){
+          content[j].push('.');
+      }
+      content[j].push('W');
+    }
+  }
+
+  // add player
+  // console.log(player);
+  content[height-player[1]][player[0]-1] = 'P';
+
+  // add lights
+  for(let i=0;i<litLights.length;i++){
+    // console.log(litLights[i]);
+    content[height-litLights[i][1]][litLights[i][0]-1] = 'L';
+  }
+  for(let i=0;i<dimLights.length;i++){
+    // console.log(dimLights[i]);
+    content[height-dimLights[i][1]][dimLights[i][0]-1] = 'U';
+  }
+
+  // add walls
+  for(let i=0;i<walls.length;i++){
+    // console.log(walls[i]);
+    content[height-walls[i][1]][walls[i][0]-1] = 'W';
+  }
+
+  // add enemies
+  for(let i=0;i<enemies.length;i++){
+    // console.log("enemies");
+    // console.log(enemies[i]);
+    content[height-enemies[i][0][1]][enemies[i][0][0]-1] = 'E'+(i+1);
+    for(let j=0;j<enemies[i][2].length;j++){
+      content[height-enemies[i][2][j][1]][enemies[i][2][j][0]-1] = '@'+(i+1);
+    }
+  }
+  // console.log(content);
+
+  // convert to 1d array
+  content1d = [];
+  for(let j=0;j<height;j++){
+    for(let i=0;i<width;i++){
+      content1d.push(content[j][i]);
+    }
+  }
+  // console.log(content1d);
+
+
+
 
   try {
     cells.forEach((cell, i) => {
-      let char = content[i];
+      let char = content1d[i];
       if (!PALETTE.hasOwnProperty(char)) {
-        throw new Error(`error: invalid character: '${char}'`);
+        if(char.search(/E/)==-1 && char.search(/@/)==-1){
+          throw new Error(`error: invalid character: '${char}'`);
+        }
       }
-      if (char == '#') cell.style.color = 'rgb(64, 64, 64)';
       cell.textContent = char;
-      cell.style.backgroundColor = PALETTE[char].color;
+      if(char.search(/E/)>-1){
+        cell.style.backgroundColor = PALETTE['E'].color;
+      } else if(char.search(/\@/)>-1){
+        cell.style.backgroundColor = PALETTE['@'].color;
+      } else {
+        cell.style.backgroundColor = PALETTE[char].color;
+      }
     });
   }
   catch (e) {
@@ -177,6 +294,8 @@ menu.appendChild(copyButton);
 function copyLevel() {
   let level = '{\n';
   let enemies = '[\n';
+  let enemiesArray = [];
+  let wanderPaths = [];
   let player = '';
   let lights = '[\n';
   let walls = '[\n';
@@ -185,42 +304,81 @@ function copyLevel() {
   let width = document.querySelector('#view > div').childNodes.length;
   level += '"dimension": ['+width+','+height+'], \n';
   let j = height;
-  // level += j+' ';
+
   cells.forEach((cell, i) => {
-    // level += cell.textContent;
     if ((i + 1) % width != 0 && (i + 1) % width != 1 && j != height && j != 1){
-    if (cell.textContent == 'P'){
-      player = '['+((i%width)+1)+','+j+']';
+      if (cell.textContent == 'P'){
+        player = '['+((i%width)+1)+','+j+']';
+      }
+      if (cell.textContent.search(/E/)>-1){
+        let idx = cell.textContent.match(/[0-9]+/)[0];
+        // console.log(idx);
+        enemiesArray[idx] = [(i%width)+1,j];
+        // console.log(enemiesArray[idx]);
+        // console.log(enemiesArray);
+      }
+      if (cell.textContent == 'L'){
+        if (lights != '[\n') lights += ', \n';
+        lights += '{"position": ['+((i%width)+1)+','+j+'],"lit": true}';
+      }
+      if (cell.textContent == 'U'){
+        if (lights != '[\n') lights += ', \n';
+        lights += '{"position": ['+((i%width)+1)+','+j+'],"lit": false}';
+      }
+      if (cell.textContent == 'W'){
+        if (walls != '[\n') walls += ', \n';
+        walls += '{"position": ['+((i%width)+1)+','+j+'],"movable": false}';
+      }
     }
-    if (cell.textContent == 'E'){
-      if (enemies != '[\n') enemies += ', \n';
-      enemies += '{"position": ['+((i%width)+1)+','+j+'],"type": 0,"wander": [[4,15],[10,15],[10,5]]}';
-    }
-    if (cell.textContent == 'L'){
-      if (lights != '[\n') lights += ', \n';
-      lights += '{"position": ['+((i%width)+1)+','+j+'],"lit": true}';
-    }
-    if (cell.textContent == 'U'){
-      if (lights != '[\n') lights += ', \n';
-      lights += '{"position": ['+((i%width)+1)+','+j+'],"lit": false}';
-    }
-    if (cell.textContent == 'W'){
-      if (walls != '[\n') walls += ', \n';
-      walls += '{"position": ['+((i%width)+1)+','+j+'],"movable": false}';
-    }
-  }
     if ((i + 1) % width == 0) {
-      // level += '\n';
       j -= 1;
-      // level += j+' ';
     }
   });
-  // level += '\n';
+
+  for(let i=0;i<enemiesArray.length;i++){
+    wanderPaths.push([]);
+  }
+
+  j = height;
+  cells.forEach((cell, i) => {
+    if ((i + 1) % width != 0 && (i + 1) % width != 1 && j != height && j != 1){
+      if (cell.textContent.search(/\@/)>-1){
+        // console.log(cell.textContent);
+        // console.log(cell.textContent.match(/[0-9]+/)[0]);
+        // console.log(wanderPaths);
+        wanderPaths[cell.textContent.match(/[0-9]+/)[0]].push([((i%width)+1),j]);
+      }
+    }
+    if ((i + 1) % width == 0) {
+      j -= 1;
+    }
+  });
+
+  // create enemies string from the array
+  for(let i=1;i<enemiesArray.length;i++){
+    if (enemies != '[\n') enemies += ', \n';
+    // console.log(i);
+    // console.log(enemiesArray[i]);
+    enemies += '{"position": ['+enemiesArray[i][0]+','+enemiesArray[i][1]+'],"type": 0,"wander": [';
+    // console.log(wanderPaths[i]);
+    if(wanderPaths[i].length >0){
+      // console.log("inside if");
+      enemies += '['+wanderPaths[i][0]+']';
+      for(let j=1;j<wanderPaths[i].length;j++){
+        enemies += ',['+wanderPaths[i][j]+']';
+      }
+    }
+    enemies += ']}';
+  }
+
   enemies += '\n]';
   lights += '\n]';
   walls += '\n]';
+  let initLights = document.querySelector('#initLightsCurrent').textContent;
+  initLights = initLights.match(/[0-9]+/)[0];
+  // console.log(initLights);
   level += '"spawn": '+player+', \n';
-  level += '"init_lights": 0, \n';
+  level += '"init_lights": '+initLights+', \n';
   level += '"lights": '+lights+', \n';
   level += '"enemies": '+enemies+', \n';
   level += '"walls": '+walls+'\n';
@@ -235,21 +393,12 @@ function copyLevel() {
 -                          PALETTE & EDITING TOOLS                             -
 //////////////////////////////////////////////////////////////////////////////*/
 const PALETTE = {
-  // '.': {color: 'rgb(52, 166, 251)', help: 'empty'},
-  // '#': {color: 'rgb(255, 255, 255)', help: 'wall'},
-  // '@': {color: 'rgb(64, 64, 64)', help: 'player'},
-  // 'o': {color: 'rgb(241, 229, 89)', help: 'coin'},
-  // '+': {color: 'rgb(255, 100, 100)', help: 'lava'},
-  // '=': {color: 'rgb(255, 100, 100)', help: 'moving lava (horizontal)'},
-  // '|': {color: 'rgb(255, 100, 100)', help: 'moving lava (vertical)'},
-  // 'v': {color: 'rgb(255, 100, 100)', help: 'dripping lava'},
-  // 'M': {color: 'rgb(128, 0, 128)', help: 'monster'}
   '.': {color: 'rgb(255, 255, 255)', help: 'empty'},
   'W': {color: 'rgb(139,69,19)', help: 'wall'},
-  'P': {color: 'rgb(52, 166, 251)', help: 'player'},
-  'E': {color: 'rgb(255, 100, 100)', help: 'enemy'},
   'U': {color: 'rgb(169,169,169)', help: 'unlit light source'},
   'L': {color: 'rgb(241, 229, 89)', help: 'lit light source'},
+  'P': {color: 'rgb(52, 166, 251)', help: 'player'},
+  'E': {color: 'rgb(255, 100, 100)', help: 'enemy'},
   '@': {color: 'rgb(255, 100, 100)', help: 'enemy wander path'}
 };
 const TOOLS = [
@@ -261,13 +410,13 @@ let mouseTool = {tool: brush, char: '.'};
 
 function applyEdit(cell, char) {
   cell.textContent = char;
-  cell.style.backgroundColor = PALETTE[char].color;
-  // if (cell.style.backgroundColor == 'rgb(255, 255, 255)') {
-  //   cell.style.color = 'rgb(64, 64, 64)';
-  // }
-  // else {
-  //   cell.style.color = 'rgb(255, 255, 255)';
-  // }
+  if(char.search(/E/)>-1){
+    cell.style.backgroundColor = PALETTE['E'].color;
+  } else if(char.search(/\@/)>-1){
+    cell.style.backgroundColor = PALETTE['@'].color;
+  } else {
+    cell.style.backgroundColor = PALETTE[char].color;
+  }
   cell.style.color = 'rgb(255, 255, 255)';
 }
 function brush(event) {
@@ -370,15 +519,16 @@ palettePanel.style.paddingTop = '1px';
 palettePanel.style.paddingBottom = palettePanel.style.paddingTop;
 for (let i = 0, row = document.createElement('div'); i < chars.length; i++) {
   let char = chars[i];
-  let button = createButton({'textContent': char}, () => {
-    paletteButtons.forEach(b => b.className = 'palette');
-    button.className = 'palette selected';
-    mouseTool.char = button.textContent;
-  }, 'palette', PALETTE[char].help);
+  if(char.search(/E/)==-1 && char.search(/\@/)==-1){
+    let button = createButton({'textContent': char}, () => {
+      paletteButtons.forEach(b => b.className = 'palette');
+      button.className = 'palette selected';
+      mouseTool.char = button.textContent;
+    }, 'palette', PALETTE[char].help);
 
-  paletteButtons.push(button);
-  row.appendChild(button);
-
+    paletteButtons.push(button);
+    row.appendChild(button);
+  }
   if ((i + 1) % 4 == 0 || i == chars.length - 1) {
     palettePanel.appendChild(row);
     row = document.createElement('div');
@@ -484,6 +634,97 @@ info.readOnly = true;
 infoPanel.appendChild(info);
 toolbar.appendChild(infoPanel);
 
+let addSettingsPanel = document.createElement('div');
+addSettingsPanel.style.paddingTop = '1px';
+
+let initLightsPanel = document.createElement('div');
+initLightsPanel.style.padding = '5px';
+initLightsPanel.style.backgroundColor = 'rgb(241, 229, 89)';
+let initLightsField = document.createElement('p');
+initLightsField.className = 'fieldname';
+initLightsField.textContent = "Number Init Lights";
+initLightsPanel.appendChild(initLightsField);
+let initLightsInput = document.createElement('input');
+initLightsInput.className = 'numberInput';
+initLightsInput.id = 'initLightsInput';
+initLightsInput.setAttribute("type", "number");
+initLightsInput.setAttribute("value", "0");
+initLightsPanel.appendChild(initLightsInput);
+let initLightsApply = createButton({'textContent': 'Apply'}, () => {
+  document.querySelector('#initLightsCurrent').textContent = "Currently: "+initLightsInput.value;
+}, 'applyButton', '');
+initLightsPanel.appendChild(initLightsApply);
+let initLightsCurrent = document.createElement('p');
+initLightsCurrent.id = 'initLightsCurrent';
+initLightsCurrent.className = 'fieldname';
+initLightsCurrent.textContent = "Currently: 0";
+initLightsPanel.appendChild(initLightsCurrent);
+addSettingsPanel.appendChild(initLightsPanel);
+
+let numEnemiesPanel = document.createElement('div');
+numEnemiesPanel.style.padding = '5px';
+numEnemiesPanel.style.marginTop = '1px';
+numEnemiesPanel.style.backgroundColor = 'rgb(255, 100, 100)';
+let numEnemiesField = document.createElement('p');
+numEnemiesField.className = 'fieldname';
+numEnemiesField.style.color = 'black';
+numEnemiesField.textContent = "Number of Enemies";
+numEnemiesPanel.appendChild(numEnemiesField);
+let numEnemiesInput = document.createElement('input');
+numEnemiesInput.className = 'numberInput';
+numEnemiesInput.id = 'numEnemiesInput';
+numEnemiesInput.setAttribute("type", "number");
+numEnemiesInput.setAttribute("value", "2");
+numEnemiesPanel.appendChild(numEnemiesInput);
+let numEnemiesApply = createButton({'textContent': 'Apply'}, () => {
+  createEnemyPalettePanel(numEnemiesInput.value);
+}, 'applyButton', '');
+numEnemiesPanel.appendChild(numEnemiesApply);
+addSettingsPanel.appendChild(numEnemiesPanel);
+
+toolbar.appendChild(addSettingsPanel);
+
+
+function createEnemyPalettePanel(numEnemies){
+  if(document.querySelector('#enemyPalette')){
+    document.querySelector('#enemyPalette').remove();
+  }
+  let enemyPalettePanel = document.createElement('div');
+  enemyPalettePanel.id = 'enemyPalette';
+  enemyPalettePanel.style.borderTop = '1px solid rgb(64, 64, 64)';
+  enemyPalettePanel.style.borderBottom = enemyPalettePanel.style.borderTop;
+  enemyPalettePanel.style.paddingTop = '1px';
+  enemyPalettePanel.style.paddingBottom = enemyPalettePanel.style.paddingTop;
+  for (let i = 0, row = document.createElement('div'); i < numEnemies; i++) {
+    let char = 'E'+(i+1);
+    let button = createButton({'textContent': char}, () => {
+      paletteButtons.forEach(b => b.className = 'palette');
+      button.className = 'palette selected';
+      mouseTool.char = button.textContent;
+    }, 'palette', PALETTE['E'].help+' '+(i+1));
+
+    paletteButtons.push(button);
+    row.appendChild(button);
+
+    let char2 = '@'+(i+1);
+    let button2 = createButton({'textContent': char2}, () => {
+      paletteButtons.forEach(b => b.className = 'palette');
+      button2.className = 'palette selected';
+      mouseTool.char = button2.textContent;
+    }, 'palette', PALETTE['@'].help+' '+(i+1));
+
+    paletteButtons.push(button2);
+    row.appendChild(button2);
+
+    if ((i + 1) % 4 == 0 || i == numEnemies-1) {
+      enemyPalettePanel.appendChild(row);
+      row = document.createElement('div');
+    }
+  }
+  toolbar.appendChild(enemyPalettePanel);
+}
+createEnemyPalettePanel(2);
+
 /*//////////////////////////////////////////////////////////////////////////////
 -                                   VIEW                                       -
 //////////////////////////////////////////////////////////////////////////////*/
@@ -538,25 +779,8 @@ function edit(event) {
 -                                INITIAL SETUP                                 -
 //////////////////////////////////////////////////////////////////////////////*/
 openButton.dispatchEvent(new MouseEvent('click'));
-document.querySelector('.field').value = `
-WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
-W..............................W
-W..............................W
-W..E...........................W
-W....L.........................W
-W..............................W
-W..............................W
-W..............................W
-W........P.....................W
-W..............U...............W
-W..............................W
-W..............................W
-W..............................W
-W...LW....................E....W
-W....W.........................W
-W..............................W
-W..............................W
-WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW`;
+document.querySelector('.field').value = '{\n"dimension": [32,18], \n"spawn": [10,10], \n"init_lights": 0, \n"lights": [\n{"position": [6,14],"lit": true}, \n{"position": [16,9],"lit": false}, \n{"position": [5,5],"lit": true}\n], \n"enemies": [\n{"position": [5,15],"type": 0,"wander": [[4,15],[10,15],[10,5]]}, \n{"position": [27,5],"type": 0,"wander": [[30,5],[20,5]]}\n], \n"walls": [\n{"position": [6,5],"movable": false}, \n{"position": [6,4],"movable": false}\n]\n}';
+
 confirmOpen();
 toolButtons[0].dispatchEvent(new MouseEvent('click'));
 paletteButtons[1].dispatchEvent(new MouseEvent('click'));

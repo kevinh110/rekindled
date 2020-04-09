@@ -51,6 +51,9 @@ import java.util.LinkedList;
  */
 public class GameplayController extends WorldController implements ContactListener {
 
+	// Level Json Path
+	private String LEVEL_PATH = "jsons/level.json";
+
 	/**
 	 * File storing the players
 	 */
@@ -347,7 +350,7 @@ public class GameplayController extends WorldController implements ContactListen
 		setFailure(false);
 
 		// Reload the level json
-		levelFormat = jsonReader.parse(Gdx.files.internal("jsons/level.json"));
+		levelFormat = jsonReader.parse(Gdx.files.internal(LEVEL_PATH));
 		parseJson();
 		populateLevel();
 		board.reset(walls, lights);

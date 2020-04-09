@@ -107,7 +107,7 @@ public class Board {
     private static final String LIT_SOURCE = "images/litLightSource.png";
     /** The file location of a dim light source*/
     private static final String DIM_SOURCE = "images/dimLightSource.png";
-    private static final int LIGHT_RADIUS = 2;
+    private static final int LIGHT_RADIUS = 4;
 
     // Instance attributes
     /** The board width (in number of tiles) */

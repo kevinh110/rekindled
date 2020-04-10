@@ -531,9 +531,9 @@ public class GameplayController extends WorldController implements ContactListen
 					float dx =  e.getPosition().x - player.getX();
 					float dy = e.getPosition().y - player.getY();
 					float ratio = THROWN_LIGHT_RADIUS / distance;
-
 					Vector2 new_pos = new Vector2((dx * ratio) + player.getX(), (dy * ratio) + player.getY());
 					e.setPosition(new_pos);
+					e.stunned = true;
 
 				}
 			}

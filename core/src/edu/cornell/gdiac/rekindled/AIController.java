@@ -56,8 +56,8 @@ public class AIController extends Entity_Controller {
     private Player player;
     /** The enemy's current state in the FSM */
     private FSMState state;
-    /** The number of ticks since we started this controller */
-    private long ticks;
+    /** Timer used for wait/stun */
+    private long timer;
     /** The enemies next goal tile. This is a tile adjacent to at least one axis */
     private int[] goal;
     /** The target tile the enemy eventually would like to reach */
@@ -86,7 +86,7 @@ public class AIController extends Entity_Controller {
         state = FSMState.SPAWN;
         Vector2 pos = enemy.getPosition();
         goal = new int[]{(int) pos.x, (int) pos.y};
-        ticks = 0;
+        timer = 0;
     }
 
     public AIController(Enemy enemy, Board board, Player player, Enemy[] enemies, float del){
@@ -164,8 +164,9 @@ public class AIController extends Entity_Controller {
                     state = FSMState.CHASE;
                 }
                 else {
-                    ticks++;
-                    if (ticks % WAIT_TIME == 0){
+                    timer++;
+                    if (timer % WAIT_TIME == 0){
+                        timer = 0;
                         state = FSMState.RETURN;
                     }
                 }

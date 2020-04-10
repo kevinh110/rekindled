@@ -23,8 +23,6 @@ public class Enemy extends FeetHitboxObstacle {
     /** The number of frames for the afterburner */
     public static final int FIRE_FRAMES = 4;
 
-    /** How long enemy is stunned for, in frames */
-    public static final int STUN_TIME = 100;
 
     /** The force to apply to this rocket */
     private Vector2 force;
@@ -61,15 +59,13 @@ public class Enemy extends FeetHitboxObstacle {
 
 
     /** The number of frames for the afterburner */
-    // DEFAULT - 5
-    public static final int SPEED = 5;
+    // DEFAULT - 6
+    public static final int SPEED = 6;
 
     public int facingDirection;
 
     /** If the enemy was just stunned */
     public boolean stunned = false;
-    /** Timer used for stun */
-    public int timer;
 
     private int type;
 
@@ -335,15 +331,6 @@ public class Enemy extends FeetHitboxObstacle {
         else if(goalX == pos.x && goalY == pos.y){ // If goal did not change, don't move
             return;
         }
-        else if (stunned){ // Stun Case
-            timer++;
-            if (timer % STUN_TIME == 0){
-                setPosition(Math.round(pos.x), Math.round(pos.y));
-                stunned = false;
-                timer = 0;
-            }
-        }
-
     }
 
 

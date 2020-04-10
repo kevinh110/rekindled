@@ -52,7 +52,7 @@ import java.util.LinkedList;
 public class GameplayController extends WorldController implements ContactListener {
 
 	// Level Json Path
-	private String LEVEL_PATH = "jsons/level.json";
+	private String LEVEL_PATH = "jsons/leveltest.json";
 
 	/**
 	 * File storing the players
@@ -442,7 +442,7 @@ public class GameplayController extends WorldController implements ContactListen
 		addObject(wall);
 
 		// Add Player
-		player = new Player(spawn[0], spawn[1], 2, 4, initLights);
+		player = new Player(spawn[0], spawn[1], 1, 1, initLights);
 		AuraLight light_a = new AuraLight(sourceRayHandler);
 		player.addAura(light_a);
 		player.setDrawScale(scale);
@@ -488,6 +488,12 @@ public class GameplayController extends WorldController implements ContactListen
 	 */
 	public void update(float dt) {
 
+		// Temp Code to reset game if lost
+		if (lostGame){
+			lostGame = false;
+			reset();
+		}
+
 		if (sourceRayHandler != null) {
 			sourceRayHandler.update();
 		}
@@ -531,10 +537,9 @@ public class GameplayController extends WorldController implements ContactListen
 					float dx =  e.getPosition().x - player.getX();
 					float dy = e.getPosition().y - player.getY();
 					float ratio = THROWN_LIGHT_RADIUS / distance;
-					Vector2 new_pos = new Vector2((dx * ratio) + player.getX(), (dy * ratio) + player.getY());
+					Vector2 new_pos = new Vector2(Math.round((dx * ratio) + player.getX()), Math.round((dy * ratio) + player.getY()));
 					e.setPosition(new_pos);
 					e.stunned = true;
-
 				}
 			}
 		}
@@ -623,7 +628,7 @@ public class GameplayController extends WorldController implements ContactListen
 			for (Enemy enemy : enemies) {
 				if ((bd1 == player && bd2 == enemy) || (bd1 == enemy &&  bd2 == player)){
 					lostGame = true;
-					System.out.println("enemy contact");
+					System.out.println("enemy contact; you lost");
 				}
 			}
 

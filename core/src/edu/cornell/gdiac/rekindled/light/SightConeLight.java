@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.physics.box2d.Filter;
 
 public class SightConeLight extends ConeLight {
-    private static final float DISTANCE = 7f;
+    private static final float DISTANCE = 9f;
     /**
      * Creates light shaped as a circle's sector with given radius, direction and arc angle
      *

@@ -631,21 +631,24 @@ public class GameplayController extends WorldController implements ContactListen
 
 		//throw light
 		if(input.didSecondary() && player.lightCounter > 0 && !player.getTouchingLight()){
-			LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius
-			light.setPosition(player.getX(), player.getY());
-			thrownLights.add(new Pair<>(light, System.currentTimeMillis()));
-			player.placeLight();
+			if(thrownLights.isEmpty() || (System.currentTimeMillis() - thrownLights.get(0).getValue() > 500L)) {
 
-			//find enemies in range
-			for(Enemy e: enemies){
-				float distance = player.getPosition().dst(e.getPosition());
-				if(distance <= THROWN_LIGHT_RADIUS){
-					float dx =  e.getPosition().x - player.getX();
-					float dy = e.getPosition().y - player.getY();
-					float ratio = THROWN_LIGHT_RADIUS / distance;
-					Vector2 new_pos = new Vector2(Math.round((dx * ratio) + player.getX()), Math.round((dy * ratio) + player.getY()));
-					e.setPosition(new_pos);
-					e.stunned = true;
+				LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius
+				light.setPosition(player.getX(), player.getY());
+				thrownLights.add(new Pair<>(light, System.currentTimeMillis()));
+				player.placeLight();
+
+				//find enemies in range
+				for (Enemy e : enemies) {
+					float distance = player.getPosition().dst(e.getPosition());
+					if (distance <= THROWN_LIGHT_RADIUS) {
+						float dx = e.getPosition().x - player.getX();
+						float dy = e.getPosition().y - player.getY();
+						float ratio = THROWN_LIGHT_RADIUS / distance;
+						Vector2 new_pos = new Vector2(Math.round((dx * ratio) + player.getX()), Math.round((dy * ratio) + player.getY()));
+						e.setPosition(new_pos);
+						e.stunned = true;
+					}
 				}
 			}
 		}

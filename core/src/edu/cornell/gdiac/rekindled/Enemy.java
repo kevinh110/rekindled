@@ -396,29 +396,15 @@ public class Enemy extends FeetHitboxObstacle {
             body.setLinearVelocity(-SPEED, 0);
             facingDirection = Constants.LEFT;
         }
-        else if (move == Entity_Controller.Move_Direction.MOVE_DIAG_DOWN_LEFT) {
-            body.setLinearVelocity(-(float)Math.sqrt(SPEED*SPEED/2), -(float)Math.sqrt(SPEED*SPEED/2));
-        }
-        else if (move == Entity_Controller.Move_Direction.MOVE_DIAG_DOWN_RIGHT) {
-            body.setLinearVelocity((float)Math.sqrt(SPEED*SPEED/2), -(float)Math.sqrt(SPEED*SPEED/2));
-        }
-        else if (move == Entity_Controller.Move_Direction.MOVE_DIAG_UP_LEFT) {
-            body.setLinearVelocity(-(float)Math.sqrt(SPEED*SPEED/2), (float)Math.sqrt(SPEED*SPEED/2));
-        }
-        else if (move == Entity_Controller.Move_Direction.MOVE_DIAG_UP_RIGHT) {
-            body.setLinearVelocity((float)Math.sqrt(SPEED*SPEED/2), (float)Math.sqrt(SPEED*SPEED/2));
-        }
         else {
             body.setLinearVelocity(0, 0);
         }
     }
 
-
     public void addSight(SightConeLight light) {
         this.sight = light;
         this.sight.setPosition(this.getPosition());
         this.sight.setActive(true);
-
         updateSightCone();
     }
 

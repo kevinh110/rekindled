@@ -559,11 +559,21 @@ public class Board {
     }
 
     public boolean isLitTileBoard(int x, int y){
+        if (x > width || y > height){
+            return false;
+        }
         TileState tile = tiles[x][y];
         return tile.isLitTile;
     }
 
     public boolean isEnemyMovable(int x, int y){
+        if (x >= width || y >= height){
+            return false;
+        }
+        System.out.println("x: " + x);
+        System.out.println("y: " + y);
+        System.out.println("Width: " + width);
+        System.out.println("Height: " + height);
         TileState tile = tiles[x][y];
         return tile.isWall || tile.isLightSource || tile.isLitTile;
     }

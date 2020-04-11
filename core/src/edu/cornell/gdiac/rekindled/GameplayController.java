@@ -784,7 +784,8 @@ public class GameplayController extends WorldController implements ContactListen
 
 			// See if we lost.
 			for (Enemy enemy : enemies) {
-				if ((bd1 == player && bd2 == enemy) || (bd1 == enemy &&  bd2 == player)){
+				if (((bd1 == player && bd2 == enemy) || (bd1 == enemy &&  bd2 == player))
+						&& !enemy.getIsLit()){
 					lostGame = true;
 					System.out.println("enemy contact; you lost");
 				}

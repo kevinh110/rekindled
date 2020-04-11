@@ -52,7 +52,7 @@ import java.util.LinkedList;
 public class GameplayController extends WorldController implements ContactListener {
 
 	// Level Json Path
-	private String LEVEL_PATH = "jsons/leveltest.json";
+	private String LEVEL_PATH;
 
 	/**
 	 * File storing the players
@@ -321,8 +321,9 @@ public class GameplayController extends WorldController implements ContactListen
 	 * <p>
 	 * The game has default gravity and other settings
 	 */
-	public GameplayController() {
+	public GameplayController(String json) {
 		jsonReader = new JsonReader();
+		LEVEL_PATH = json;
 		setDebug(false);
 		setComplete(false);
 		setFailure(false);
@@ -549,9 +550,7 @@ public class GameplayController extends WorldController implements ContactListen
 		for (AIController controller : controls){
 			controller.move(insideLightSource(player.getPosition()));
 			controller.getEnemy().updateSightCone();
-//			System.out.println(controller.getState());
 		}
-//		System.out.println("---------");
 
 		// Check win Condition
 		int numLit = 0;

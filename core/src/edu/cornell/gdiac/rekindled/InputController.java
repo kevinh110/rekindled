@@ -177,6 +177,29 @@ public class InputController extends Entity_Controller{
 	}
 
 	/**
+	 * Returns true if the player wants to go to the next level.
+	 *
+	 * @return true if the player wants to go to the next level.
+	 */
+	public boolean didAdvance() {
+		return nextPressed && !nextPrevious;
+	}
+
+	/**
+	 * Returns true if the player wants to go to the previous level.
+	 *
+	 * @return true if the player wants to go to the previous level.
+	 */
+	public boolean didRetreat() {
+		return prevPressed && !prevPrevious;
+	}
+
+	/**
+	 * Returns true if the player wants to go toggle the debug mode.
+	 *
+	 * @return true if the player wants to go toggle the debug mode.
+
+	/**
 	 * Returns true if the tertiary action button was pressed.
 	 *
 	 * This is a sustained button. It will returns true as long as the player

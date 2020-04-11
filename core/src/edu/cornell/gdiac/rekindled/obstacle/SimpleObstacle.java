@@ -783,9 +783,9 @@ public abstract class SimpleObstacle extends Obstacle {
 	/**
 	 * Draws animated physics object
 	 */
-	public void draw(GameCanvas canvas, Animation animation, float elapseTime, int width){
+	public void draw(GameCanvas canvas, Animation animation, boolean looping, float elapseTime, int width){
 		if(animation != null){
-			canvas.draw(animation, elapseTime, 0, 0, getX() * drawScale.x - (width / 2f), getY()*drawScale.y - 20, getAngle(), 1, 1);
+			canvas.draw(animation, elapseTime, looping, 0, 0, getX() * drawScale.x - (width / 2f), getY()*drawScale.y - 20, getAngle(), 1, 1);
 		}
 	}
 

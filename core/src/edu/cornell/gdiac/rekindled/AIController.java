@@ -129,6 +129,9 @@ public class AIController extends Entity_Controller {
         Vector2 pos = enemy.getPosition();
         // Next state depends on current state.
         if (board.isLitTileBoard((int) pos.x, (int) pos.y)){
+            if(state != FSMState.LIT){
+                enemy.setIsLit(true);
+            }
             state = FSMState.LIT;
             return;
         }
@@ -136,6 +139,7 @@ public class AIController extends Entity_Controller {
             state = FSMState.STUNNED;
             return;
         }
+        enemy.setIsLit(false);
 
         switch (state) {
             case SPAWN:

@@ -409,7 +409,7 @@ public class GameCanvas {
 	 * Draws animated texture
 	 */
 
-	public void draw(Animation animation, float ElapsedTime,float ox, float oy,  float x, float y, float angle, float sx, float sy){
+	public void draw(Animation animation, float ElapsedTime, boolean looping, float ox, float oy,  float x, float y, float angle, float sx, float sy){
 		if (active != DrawPass.STANDARD) {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
@@ -418,7 +418,7 @@ public class GameCanvas {
 		computeTransform(ox,oy,x,y,angle,sx,sy);
 
 		spriteBatch.setColor(Color.WHITE);
-		spriteBatch.draw((TextureRegion)animation.getKeyFrame(ElapsedTime, true), x, y );
+		spriteBatch.draw((TextureRegion)animation.getKeyFrame(ElapsedTime, looping), x, y );
 
 	}
 

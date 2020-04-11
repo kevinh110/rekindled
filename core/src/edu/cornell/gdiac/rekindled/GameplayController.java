@@ -18,8 +18,6 @@ package edu.cornell.gdiac.rekindled;
 
 import box2dLight.RayHandler;
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
@@ -77,6 +75,8 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String ENEMY_ANIMATION_LEFT = "spritesheets/spritesheet_enemy_left.png";
 	private static final String ENEMY_ANIMATION_RIGHT = "spritesheets/spritesheet_enemy_right.png";
 	private static final String ENEMY_ANIMATION_BACK = "spritesheets/spritesheet_enemy_back.png";
+	private static final String ENEMY_TRANSFORMATION = "spritesheets/spritesheet_transformation.png";
+	private static final String ENEMY_ANIMATION_SAVED = "spritesheets/spritesheet_saved_soul.png";
 	/**
 	 * win/loss screens
 	 */
@@ -107,6 +107,8 @@ public class GameplayController extends WorldController implements ContactListen
 	private TextureRegion enemyAnimationBack;
 	private TextureRegion enemyAnimationLeft;
 	private TextureRegion enemyAnimationRight;
+	private TextureRegion enemyTransformation;
+	private TextureRegion enemyAnimationSaved;
 
 	/**
 	 * Texture for enemy
@@ -170,6 +172,10 @@ public class GameplayController extends WorldController implements ContactListen
 		assets.add(ENEMY_ANIMATION_LEFT);
 		manager.load(ENEMY_ANIMATION_RIGHT, Texture.class);
 		assets.add(ENEMY_ANIMATION_RIGHT);
+		manager.load(ENEMY_TRANSFORMATION, Texture.class);
+		assets.add(ENEMY_TRANSFORMATION);
+		manager.load(ENEMY_ANIMATION_SAVED, Texture.class);
+		assets.add(ENEMY_ANIMATION_SAVED);
 
 		manager.load(PLAYER_FILE_LEFT, Texture.class);
 		assets.add(PLAYER_FILE_LEFT);
@@ -218,6 +224,8 @@ public class GameplayController extends WorldController implements ContactListen
 		enemyAnimationBack = createTexture(manager, ENEMY_ANIMATION_BACK, false);
 		enemyAnimationLeft = createTexture(manager, ENEMY_ANIMATION_LEFT, false);
 		enemyAnimationRight = createTexture(manager, ENEMY_ANIMATION_RIGHT, false);
+		enemyTransformation = createTexture(manager, ENEMY_TRANSFORMATION, false);
+		enemyAnimationSaved = createTexture(manager, ENEMY_ANIMATION_SAVED, false);
 
 
 		playerTextureLeft = createTexture(manager, PLAYER_FILE_LEFT, false);
@@ -447,7 +455,8 @@ public class GameplayController extends WorldController implements ContactListen
 
 			enemies[i].setSensor(true);
 			enemies[i].setDrawScale(scale);
-			enemies[i].setAnimations(enemyAnimationFront, enemyAnimationBack, enemyAnimationLeft, enemyAnimationRight);
+			enemies[i].setAnimations(enemyAnimationFront, enemyAnimationBack, enemyAnimationLeft, enemyAnimationRight,
+					enemyTransformation, enemyAnimationSaved);
 			enemies[i].setTexture(enemyTexture);
 			addObject(enemies[i]);
 		}

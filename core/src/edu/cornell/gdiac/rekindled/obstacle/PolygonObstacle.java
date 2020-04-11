@@ -299,7 +299,7 @@ public class PolygonObstacle extends SimpleObstacle {
 		// Create the fixtures
 		for(int ii = 0; ii < shapes.length; ii++) {
 			fixture.shape = shapes[ii];
-			fixture.filter.categoryBits = Filters.BIT_WALL;
+			fixture.filter.categoryBits = Constants.BIT_WALL;
 			geoms[ii] = body.createFixture(fixture);
 		}
 		markDirty(false);

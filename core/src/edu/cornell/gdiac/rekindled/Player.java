@@ -262,18 +262,6 @@ public class Player extends FeetHitboxObstacle {
             body.setLinearVelocity(-SPEED, 0);
             super.setDirection(Direction.LEFT);
         }
-        else if (move == Entity_Controller.Move_Direction.MOVE_DIAG_DOWN_LEFT) {
-            body.setLinearVelocity(-(float)Math.sqrt(SPEED*SPEED/2), -(float)Math.sqrt(SPEED*SPEED/2));
-        }
-        else if (move == Entity_Controller.Move_Direction.MOVE_DIAG_DOWN_RIGHT) {
-            body.setLinearVelocity((float)Math.sqrt(SPEED*SPEED/2), -(float)Math.sqrt(SPEED*SPEED/2));
-        }
-        else if (move == Entity_Controller.Move_Direction.MOVE_DIAG_UP_LEFT) {
-            body.setLinearVelocity(-(float)Math.sqrt(SPEED*SPEED/2), (float)Math.sqrt(SPEED*SPEED/2));
-        }
-        else if (move == Entity_Controller.Move_Direction.MOVE_DIAG_UP_RIGHT) {
-            body.setLinearVelocity((float)Math.sqrt(SPEED*SPEED/2), (float)Math.sqrt(SPEED*SPEED/2));
-        }
         else {
             body.setLinearVelocity(0, 0);
         }

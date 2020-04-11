@@ -12,6 +12,9 @@ package edu.cornell.gdiac.rekindled;/*
  * LibGDX version, 2/6/2015
  */
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
@@ -39,6 +42,13 @@ public class Player extends FeetHitboxObstacle {
     private static final float DEFAULT_RESTITUTION = 0.4f;
     /** The thrust factor to convert player input into thrust */
     private static final float DEFAULT_THRUST = 30.0f;
+
+    /** the size of a tile of the sprite sheet*/
+    private static final int TILE_SIZE = 150;
+
+    /** the number of frames of the sprite sheet*/
+    private static final int NUMBER_FRAMES = 10;
+
 
     /** The force to apply to this rocket */
     private Vector2 force;
@@ -72,8 +82,12 @@ public class Player extends FeetHitboxObstacle {
     public Vector2 rghtOrigin = new Vector2();
 
     private Texture mainTexture;
-    private Entity.Direction direction;
-    private Vector2 position;
+    private Animation frontWalkingAnimation;
+    private Animation backWalkingAnimation;
+    private Animation leftWalkingAnimation;
+    private Animation rightWalkingAnimation;
+    private Animation currentAnimation;
+
 
     /** The number of frames for the afterburner */
     public static final int SPEED = 5;
@@ -188,6 +202,8 @@ public class Player extends FeetHitboxObstacle {
      */
     public Player(float x, float y, float width, float height) {
         super(x,y,width,height);
+        super.setDirection(Direction.FRONT);
+
         force = new Vector2();
         setDensity(DEFAULT_DENSITY);
         setFriction(DEFAULT_FRICTION);
@@ -232,15 +248,19 @@ public class Player extends FeetHitboxObstacle {
     public void move(InputController.Move_Direction move){
         if (move == Entity_Controller.Move_Direction.MOVE_DOWN) {
             body.setLinearVelocity(0, -SPEED);
+            super.setDirection(Direction.FRONT);
         }
         else if (move == Entity_Controller.Move_Direction.MOVE_UP) {
             body.setLinearVelocity(0, SPEED);
+            super.setDirection(Direction.BACK);
         }
         else if (move == Entity_Controller.Move_Direction.MOVE_RIGHT) {
             body.setLinearVelocity(SPEED, 0);
+            super.setDirection(Direction.RIGHT);
         }
         else if (move == Entity_Controller.Move_Direction.MOVE_LEFT) {
             body.setLinearVelocity(-SPEED, 0);
+            super.setDirection(Direction.LEFT);
         }
         else if (move == Entity_Controller.Move_Direction.MOVE_DIAG_DOWN_LEFT) {
             body.setLinearVelocity(-(float)Math.sqrt(SPEED*SPEED/2), -(float)Math.sqrt(SPEED*SPEED/2));
@@ -314,6 +334,24 @@ public class Player extends FeetHitboxObstacle {
         return this.lightCounter;
     }
 
+    public void setAnimations(TextureRegion frontTexture, TextureRegion backTexture, TextureRegion leftTexture, TextureRegion rightTexture){
+        frontWalkingAnimation = getAnimation(frontTexture, 150, 150, 10);
+        backWalkingAnimation = getAnimation(backTexture, 150, 150, 10);
+        rightWalkingAnimation = getAnimation(rightTexture, 150, 150, 10);
+        leftWalkingAnimation = getAnimation(leftTexture, 150, 150, 10);
+    }
+
+    public Animation getAnimation(TextureRegion texture, int width, int height, int n){
+        TextureRegion [][] frames = texture.split(width,height);
+        TextureRegion[] animationFrames = new TextureRegion[n];
+        for(int i = 0; i < n; i++){
+            animationFrames[i] = frames[0][i];
+        }
+
+        return(new Animation(1f/4f, animationFrames));
+
+    }
+
 
     public void setTouchingLight(boolean value){
         touchingLight = value;
@@ -333,7 +371,29 @@ public class Player extends FeetHitboxObstacle {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
-        super.draw(canvas);  // Player
+
+        switch (super.getDirection()){
+            case LEFT:
+                currentAnimation = leftWalkingAnimation;
+                break;
+            case RIGHT:
+                currentAnimation = rightWalkingAnimation;
+                break;
+            case FRONT:
+                currentAnimation = frontWalkingAnimation;
+                break;
+            case BACK:
+                currentAnimation = backWalkingAnimation;
+                break;
+        }
+
+
+        if(currentAnimation != null){
+            super.draw(canvas,currentAnimation, super.getTimeElapsed(), TILE_SIZE);
+
+        } else {
+            super.draw(canvas);  // Player
+        }
     }
 
     public void addAura(AuraLight a) {

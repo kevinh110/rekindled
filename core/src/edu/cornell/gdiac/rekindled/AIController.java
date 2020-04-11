@@ -43,7 +43,9 @@ public class AIController extends Entity_Controller {
         /** the enemy returns to its wander path */
         RETURN,
         /** The enemy is inside a lit-up light source */
-        LIT
+        LIT,
+        /** The enemy is stunned */
+        STUNNED
     }
 
 
@@ -56,14 +58,18 @@ public class AIController extends Entity_Controller {
     private Player player;
     /** The enemy's current state in the FSM */
     private FSMState state;
-    /** The number of ticks since we started this controller */
-    private long ticks;
+    /** Timer used for wait */
+    private long waitTimer;
+    /** Timer used for stun */
+    private long stunTimer;
     /** The enemies next goal tile. This is a tile adjacent to at least one axis */
     private int[] goal;
     /** The target tile the enemy eventually would like to reach */
     private int[] target;
     /** How many ticks to wait before returning to wander */
     private final int WAIT_TIME = 300;
+    /** How many ticks the enemy is stunned for */
+    private final int STUN_TIME = 100;
 
     private Enemy[] enemies;
 
@@ -86,7 +92,8 @@ public class AIController extends Entity_Controller {
         state = FSMState.SPAWN;
         Vector2 pos = enemy.getPosition();
         goal = new int[]{(int) pos.x, (int) pos.y};
-        ticks = 0;
+        stunTimer = 0;
+        waitTimer = 0;
     }
 
     public AIController(Enemy enemy, Board board, Player player, Enemy[] enemies, float del){
@@ -123,6 +130,10 @@ public class AIController extends Entity_Controller {
         // Next state depends on current state.
         if (board.isLitTileBoard((int) pos.x, (int) pos.y)){
             state = FSMState.LIT;
+            return;
+        }
+        if (enemy.stunned && state != FSMState.STUNNED){
+            state = FSMState.STUNNED;
             return;
         }
 
@@ -164,8 +175,9 @@ public class AIController extends Entity_Controller {
                     state = FSMState.CHASE;
                 }
                 else {
-                    ticks++;
-                    if (ticks % WAIT_TIME == 0){
+                    waitTimer++;
+                    if (waitTimer % WAIT_TIME == 0){
+                        waitTimer = 0;
                         state = FSMState.RETURN;
                     }
                 }
@@ -185,6 +197,16 @@ public class AIController extends Entity_Controller {
                     state = FSMState.RETURN;
                 }
                 break;
+
+            case STUNNED:
+                stunTimer++;
+                if (stunTimer % STUN_TIME == 0){
+                    enemy.stunned = false;
+                    stunTimer = 0;
+                    state = FSMState.RETURN;
+                }
+                break;
+
 
             default:
                 // Unknown or unhandled state, should never get here
@@ -416,6 +438,7 @@ public class AIController extends Entity_Controller {
                     goal = bfs();
                     break;
 
+                case STUNNED:
                 case WAIT:
                 case LIT:
                     goal[0] = (int) pos.x;

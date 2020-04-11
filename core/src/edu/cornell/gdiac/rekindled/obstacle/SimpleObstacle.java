@@ -779,7 +779,16 @@ public abstract class SimpleObstacle extends Obstacle {
 			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
 		}
 	}
-	
+
+	/**
+	 * Draws animated physics object
+	 */
+	public void draw(GameCanvas canvas, Animation animation, float elapseTime, int width){
+		if(animation != null){
+			canvas.draw(animation, elapseTime, 0, 0, getX() * drawScale.x - (width / 2f), getY()*drawScale.y - 20, getAngle(), 1, 1);
+		}
+	}
+
 	/**
 	 * Returns the Box2D body for this object.
 	 *

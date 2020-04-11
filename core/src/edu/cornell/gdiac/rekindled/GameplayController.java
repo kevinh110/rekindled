@@ -18,6 +18,9 @@ package edu.cornell.gdiac.rekindled;
 
 import box2dLight.RayHandler;
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
@@ -32,6 +35,8 @@ import edu.cornell.gdiac.rekindled.obstacle.Obstacle;
 import edu.cornell.gdiac.rekindled.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.*;
 import javafx.util.Pair;
+
+import javax.xml.soap.Text;
 import java.util.LinkedList;
 
 
@@ -51,9 +56,16 @@ import java.util.LinkedList;
  */
 public class GameplayController extends WorldController implements ContactListener {
 
+	// Level Json Path
+	private String LEVEL_PATH;
+
 	/**
 	 * File storing the players
 	 */
+	private static final String PLAYER_ANIMATION_FRONT = "spritesheets/spritesheet_lux_front.png";
+	private static final String PLAYER_ANIMATION_LEFT = "spritesheets/spritesheet_lux_left.png";
+	private static final String PLAYER_ANIMATION_RIGHT = "spritesheets/spritesheet_lux_right.png";
+	private static final String PLAYER_ANIMATION_BACK = "spritesheets/spritesheet_lux_back.png";
 	private static final String PLAYER_FILE_FRONT = "images/front.png";
 	private static final String PLAYER_FILE_BACK = "images/back.png";
 	private static final String PLAYER_FILE_LEFT = "images/left.png";
@@ -62,6 +74,10 @@ public class GameplayController extends WorldController implements ContactListen
 	 */
 	private static final String ENEMY_FILE = "images/enemy.png";
 	private static final String SAVED_ENEMY_FILE = "images/savedEnemy.png";
+	private static final String ENEMY_ANIMATION_FRONT = "spritesheets/spritesheet_enemy_front.png";
+	private static final String ENEMY_ANIMATION_LEFT = "spritesheets/spritesheet_enemy_left.png";
+	private static final String ENEMY_ANIMATION_RIGHT = "spritesheets/spritesheet_enemy_right.png";
+	private static final String ENEMY_ANIMATION_BACK = "spritesheets/spritesheet_enemy_back.png";
 	/**
 	 * win/loss screens
 	 */
@@ -69,7 +85,7 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String LOSS_SCREEN_FILE = "images/lossScreen.png";
 
 	/** The file location of the wall*/
-	private static final String WALL_FILE = "images/wall.png";
+	private static final String WALL_FILE = "images/ingame-wall.png";
 	private static final String LIT_SOURCE_FILE = "images/litLightSource.png";
 	private static final String DIM_SOURCE_FILE = "images/dimLightSource.png";
 
@@ -82,6 +98,17 @@ public class GameplayController extends WorldController implements ContactListen
 	private TextureRegion playerTextureLeft;
 	private TextureRegion playerTextureBack;
 	private TextureRegion playerTextureFront;
+
+	private TextureRegion playerAnimationFront;
+	private TextureRegion playerAnimationBack;
+	private TextureRegion playerAnimationLeft;
+	private TextureRegion playerAnimationRight;
+
+	private TextureRegion enemyAnimationFront;
+	private TextureRegion enemyAnimationBack;
+	private TextureRegion enemyAnimationLeft;
+	private TextureRegion enemyAnimationRight;
+
 	/**
 	 * Texture for enemy
 	 */
@@ -127,6 +154,24 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 		assetState = AssetState.LOADING;
 
+		manager.load(PLAYER_ANIMATION_FRONT, Texture.class);
+		assets.add(PLAYER_ANIMATION_FRONT);
+		manager.load(PLAYER_ANIMATION_BACK, Texture.class);
+		assets.add(PLAYER_ANIMATION_BACK);
+		manager.load(PLAYER_ANIMATION_LEFT, Texture.class);
+		assets.add(PLAYER_ANIMATION_LEFT);
+		manager.load(PLAYER_ANIMATION_RIGHT, Texture.class);
+		assets.add(PLAYER_ANIMATION_RIGHT);
+
+		manager.load(ENEMY_ANIMATION_FRONT, Texture.class);
+		assets.add(ENEMY_ANIMATION_FRONT);
+		manager.load(ENEMY_ANIMATION_BACK, Texture.class);
+		assets.add(ENEMY_ANIMATION_BACK);
+		manager.load(ENEMY_ANIMATION_LEFT, Texture.class);
+		assets.add(ENEMY_ANIMATION_LEFT);
+		manager.load(ENEMY_ANIMATION_RIGHT, Texture.class);
+		assets.add(ENEMY_ANIMATION_RIGHT);
+
 		manager.load(PLAYER_FILE_LEFT, Texture.class);
 		assets.add(PLAYER_FILE_LEFT);
 		manager.load(PLAYER_FILE_BACK, Texture.class);
@@ -165,6 +210,17 @@ public class GameplayController extends WorldController implements ContactListen
 		if (assetState != AssetState.LOADING) {
 			return;
 		}
+		playerAnimationFront = createTexture(manager, PLAYER_ANIMATION_FRONT, false);
+		playerAnimationBack = createTexture(manager, PLAYER_ANIMATION_BACK, false);
+		playerAnimationLeft = createTexture(manager, PLAYER_ANIMATION_LEFT, false);
+		playerAnimationRight = createTexture(manager, PLAYER_ANIMATION_RIGHT, false);
+
+		enemyAnimationFront = createTexture(manager, ENEMY_ANIMATION_FRONT, false);
+		enemyAnimationBack = createTexture(manager, ENEMY_ANIMATION_BACK, false);
+		enemyAnimationLeft = createTexture(manager, ENEMY_ANIMATION_LEFT, false);
+		enemyAnimationRight = createTexture(manager, ENEMY_ANIMATION_RIGHT, false);
+
+
 		playerTextureLeft = createTexture(manager, PLAYER_FILE_LEFT, false);
 		playerTextureFront = createTexture(manager, PLAYER_FILE_FRONT, false);
 		playerTextureBack = createTexture(manager, PLAYER_FILE_BACK, false);
@@ -172,13 +228,17 @@ public class GameplayController extends WorldController implements ContactListen
 		savedEnemyTexture = createTexture(manager, SAVED_ENEMY_FILE, false);
 		winScreenTexture = createTexture(manager, WIN_SCREEN_FILE, false);
 		lossScreenTexture = createTexture(manager, LOSS_SCREEN_FILE, false);
+
 		wallTexture = createTexture(manager, WALL_FILE, true);
+
+
 		dimSourceTexture = createTexture(manager, DIM_SOURCE_FILE, false);
 		litSourceTexture = createTexture(manager, LIT_SOURCE_FILE, false);
 
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
 	}
+
 
 
 	/**
@@ -261,6 +321,8 @@ public class GameplayController extends WorldController implements ContactListen
 	/** The JSON defining the level model */
 	private JsonValue  levelFormat;
 
+	BitmapFont font = new BitmapFont();
+
 
 	public void parseJson(){
 		float[] dim = levelFormat.get("dimension").asFloatArray();
@@ -318,8 +380,9 @@ public class GameplayController extends WorldController implements ContactListen
 	 * <p>
 	 * The game has default gravity and other settings
 	 */
-	public GameplayController() {
+	public GameplayController(String json) {
 		jsonReader = new JsonReader();
+		LEVEL_PATH = json;
 		setDebug(false);
 		setComplete(false);
 		setFailure(false);
@@ -347,7 +410,7 @@ public class GameplayController extends WorldController implements ContactListen
 		setFailure(false);
 
 		// Reload the level json
-		levelFormat = jsonReader.parse(Gdx.files.internal("jsons/level.json"));
+		levelFormat = jsonReader.parse(Gdx.files.internal(LEVEL_PATH));
 		parseJson();
 		populateLevel();
 		board.reset(walls, lights);
@@ -387,9 +450,11 @@ public class GameplayController extends WorldController implements ContactListen
 
 			enemies[i].setSensor(true);
 			enemies[i].setDrawScale(scale);
+			enemies[i].setAnimations(enemyAnimationFront, enemyAnimationBack, enemyAnimationLeft, enemyAnimationRight);
 			enemies[i].setTexture(enemyTexture);
 			addObject(enemies[i]);
 		}
+
 
 		// Add Walls
 		BoxObstacle obj;
@@ -435,15 +500,18 @@ public class GameplayController extends WorldController implements ContactListen
 		wall.setRestitution(BASIC_RESTITUTION);
 		wall.setDrawScale(scale);
 		wall.setTexture(wallTexture);
-		wall.setName("wall2");
+		wall.setTexture(wallTexture);
+//		wall.setName("wall2");
 		addObject(wall);
 
 		// Add Player
-		player = new Player(spawn[0], spawn[1], 2, 4, initLights);
+		player = new Player(spawn[0], spawn[1], 1, 1, initLights);
 		AuraLight light_a = new AuraLight(sourceRayHandler);
 		player.addAura(light_a);
 		player.setDrawScale(scale);
+		player.setAnimations(playerAnimationFront, playerAnimationBack, playerAnimationLeft, playerAnimationRight); //setting animation
 		player.setTexture(playerTextureFront);
+
 		addObject(player);
 
 		// Make Board
@@ -484,6 +552,12 @@ public class GameplayController extends WorldController implements ContactListen
 	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
+
+		// Temp Code to reset game if lost
+		if (lostGame){
+			lostGame = false;
+			reset();
+		}
 
 		if (sourceRayHandler != null) {
 			sourceRayHandler.update();
@@ -550,10 +624,9 @@ public class GameplayController extends WorldController implements ContactListen
 					float dx =  e.getPosition().x - player.getX();
 					float dy = e.getPosition().y - player.getY();
 					float ratio = THROWN_LIGHT_RADIUS / distance;
-
-					Vector2 new_pos = new Vector2((dx * ratio) + player.getX(), (dy * ratio) + player.getY());
+					Vector2 new_pos = new Vector2(Math.round((dx * ratio) + player.getX()), Math.round((dy * ratio) + player.getY()));
 					e.setPosition(new_pos);
-
+					e.stunned = true;
 				}
 			}
 		}
@@ -563,9 +636,7 @@ public class GameplayController extends WorldController implements ContactListen
 		for (AIController controller : controls){
 			controller.move(insideLightSource(player.getPosition()));
 			controller.getEnemy().updateSightCone();
-//			System.out.println(controller.getState());
 		}
-//		System.out.println("---------");
 
 		// Check win Condition
 		int numLit = 0;
@@ -610,6 +681,10 @@ public class GameplayController extends WorldController implements ContactListen
 		// render the light
 		sourceRayHandler.render();
 
+		//draw the  UI
+		drawUI();
+
+
 		// draw things that should not be affected by shadows
 //		canvas.begin();
 //
@@ -635,6 +710,13 @@ public class GameplayController extends WorldController implements ContactListen
 			canvas.end();
 		}
 
+	}
+
+	private void drawUI() {
+		String s = "Lights: " + player.getLightCounter();
+		canvas.begin();
+		canvas.drawText(s, font, 20, canvas.getHeight() - 20);
+		canvas.end();
 	}
 
 	public boolean isAlive() {
@@ -685,7 +767,7 @@ public class GameplayController extends WorldController implements ContactListen
 			for (Enemy enemy : enemies) {
 				if ((bd1 == player && bd2 == enemy) || (bd1 == enemy &&  bd2 == player)){
 					lostGame = true;
-					System.out.println("enemy contact");
+					System.out.println("enemy contact; you lost");
 				}
 			}
 

@@ -1,6 +1,9 @@
 package edu.cornell.gdiac.rekindled;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -22,6 +25,18 @@ public class Enemy extends FeetHitboxObstacle {
     private static final float DEFAULT_THRUST = 30.0f;
     /** The number of frames for the afterburner */
     public static final int FIRE_FRAMES = 4;
+
+    private static final int TILE_SIZE = 75;
+    private static final int NUMBER_FRAMES = 6;
+
+    private Animation frontWalkingAnimation;
+    private Animation backWalkingAnimation;
+    private Animation leftWalkingAnimation;
+    private Animation rightWalkingAnimation;
+    private Animation currentAnimation;
+
+    private float timeElapsed;
+
 
     /** The force to apply to this rocket */
     private Vector2 force;
@@ -58,10 +73,13 @@ public class Enemy extends FeetHitboxObstacle {
 
 
     /** The number of frames for the afterburner */
-    // DEFAULT - 5
-    public static final int SPEED = 5;
+    // DEFAULT - 6
+    public static final int SPEED = 6;
 
     public int facingDirection;
+
+    /** If the enemy was just stunned */
+    public boolean stunned = false;
 
     private int type;
 
@@ -233,11 +251,19 @@ public class Enemy extends FeetHitboxObstacle {
 
         this.getFilterData().categoryBits = Constants.BIT_ENEMY;
         facingDirection = Constants.BACK;
+        timeElapsed = 0;
     }
 
     public Enemy(float x, float y, float width, float height, int type) {
         this(x,y,width,height);
         this.type = type;
+    }
+
+    public void setAnimations(TextureRegion frontTexture, TextureRegion backTexture, TextureRegion leftTexture, TextureRegion rightTexture){
+        frontWalkingAnimation = getAnimation(frontTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES);
+        backWalkingAnimation = getAnimation(backTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES);
+        rightWalkingAnimation = getAnimation(rightTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES);
+        leftWalkingAnimation = getAnimation(leftTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES);
     }
 
     /**
@@ -324,6 +350,9 @@ public class Enemy extends FeetHitboxObstacle {
             }
             facingDirection = Constants.LEFT;
         }
+        else if(goalX == pos.x && goalY == pos.y){ // If goal did not change, don't move
+            return;
+        }
     }
 
 
@@ -388,18 +417,37 @@ public class Enemy extends FeetHitboxObstacle {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
-        super.draw(canvas);  // Ship
-        // Flames
-        if (mainBurner != null) {
-            float offsety = mainBurner.getRegionHeight()-origin.y;
-            canvas.draw(mainBurner, Color.WHITE,origin.x,offsety,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
+        timeElapsed += Gdx.graphics.getDeltaTime();
+        System.out.println(timeElapsed);
+        System.out.println(Gdx.graphics.getDeltaTime());
+        switch(facingDirection) {
+            case Constants.FORWARD:
+                currentAnimation = frontWalkingAnimation;
+                break;
+            case Constants.BACK:
+                currentAnimation = backWalkingAnimation;
+                break;
+            case Constants.RIGHT:
+                currentAnimation = rightWalkingAnimation;
+                break;
+            case Constants.LEFT:
+                currentAnimation = leftWalkingAnimation;
+                break;
         }
-        if (leftBurner != null) {
-            canvas.draw(leftBurner,Color.WHITE,leftOrigin.x,leftOrigin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
-        }
-        if (rghtBurner != null) {
-            canvas.draw(rghtBurner,Color.WHITE,rghtOrigin.x,rghtOrigin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
-        }
+        super.draw(canvas, currentAnimation, timeElapsed, TILE_SIZE);
+
+//        super.draw(canvas);  // Ship
+//        // Flames
+//        if (mainBurner != null) {
+//            float offsety = mainBurner.getRegionHeight()-origin.y;
+//            canvas.draw(mainBurner, Color.WHITE,origin.x,offsety,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
+//        }
+//        if (leftBurner != null) {
+//            canvas.draw(leftBurner,Color.WHITE,leftOrigin.x,leftOrigin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
+//        }
+//        if (rghtBurner != null) {
+//            canvas.draw(rghtBurner,Color.WHITE,rghtOrigin.x,rghtOrigin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
+//        }
     }
 
 

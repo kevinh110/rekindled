@@ -12,6 +12,9 @@
  */
 package edu.cornell.gdiac.rekindled.obstacle;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
@@ -43,6 +46,13 @@ public class FeetHitboxObstacle extends SimpleObstacle {
         RIGHT
     };
 
+    public enum Direction {
+        FRONT,
+        BACK,
+        LEFT,
+        RIGHT
+    };
+
     /** Shape information for this box */
     protected PolygonShape shape;
     /** Shape information for the end cap */
@@ -71,6 +81,13 @@ public class FeetHitboxObstacle extends SimpleObstacle {
     private Vector2 posCache = new Vector2();
     /** The seam offset of the core rectangle */
     private float seamEpsilon;
+
+    private Direction direction;
+
+    /**time Elapsed since last animation change*/
+    private float timeElapsed;
+
+
 
     /**
      * Returns the dimensions of this box
@@ -173,6 +190,40 @@ public class FeetHitboxObstacle extends SimpleObstacle {
         orient = value;
         resize(dimension.x,dimension.y);
         return true;
+    }
+
+    /**
+     * Sets the Direction
+     */
+    public void setDirection(Direction direction){
+        if( this.direction != direction) {
+            this.direction = direction;
+            timeElapsed = 0;
+        } else {
+            timeElapsed += Gdx.graphics.getDeltaTime();
+        }
+    }
+
+    /**
+     * Gets the Direction
+     */
+    public Direction getDirection(){
+        return direction;
+    }
+
+    public float getTimeElapsed(){
+        return timeElapsed;
+    }
+
+    public Animation getAnimation(TextureRegion texture, int width, int height, int n){
+        TextureRegion [][] frames = texture.split(width,height);
+        TextureRegion[] animationFrames = new TextureRegion[n];
+        for(int i = 0; i < n; i++){
+            animationFrames[i] = frames[0][i];
+        }
+
+        return(new Animation(1f/4f, animationFrames));
+
     }
 
     /**
@@ -285,6 +336,7 @@ public class FeetHitboxObstacle extends SimpleObstacle {
 
         // Initialize
         resize(width, height);
+        timeElapsed = 0;
     }
 
     /**

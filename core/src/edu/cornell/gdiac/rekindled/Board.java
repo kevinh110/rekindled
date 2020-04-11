@@ -107,7 +107,7 @@ public class Board {
     private static final String LIT_SOURCE = "images/litLightSource.png";
     /** The file location of a dim light source*/
     private static final String DIM_SOURCE = "images/dimLightSource.png";
-    private static final int LIGHT_RADIUS = 2;
+    private static final int LIGHT_RADIUS = 4;
 
     // Instance attributes
     /** The board width (in number of tiles) */
@@ -559,11 +559,21 @@ public class Board {
     }
 
     public boolean isLitTileBoard(int x, int y){
+        if (x > width || y > height){
+            return false;
+        }
         TileState tile = tiles[x][y];
         return tile.isLitTile;
     }
 
     public boolean isEnemyMovable(int x, int y){
+        if (x >= width || y >= height){
+            return false;
+        }
+        System.out.println("x: " + x);
+        System.out.println("y: " + y);
+        System.out.println("Width: " + width);
+        System.out.println("Height: " + height);
         TileState tile = tiles[x][y];
         return tile.isWall || tile.isLightSource || tile.isLitTile;
     }

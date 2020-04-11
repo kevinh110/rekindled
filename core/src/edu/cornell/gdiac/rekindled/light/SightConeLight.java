@@ -7,7 +7,9 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import edu.cornell.gdiac.rekindled.Constants;
 
 public class SightConeLight extends ConeLight {
-    private static final float DISTANCE = 10f;
+
+    private static final float DISTANCE = 9f;
+
     /**
      * Creates light shaped as a circle's sector with given radius, direction and arc angle
      *
@@ -27,5 +29,6 @@ public class SightConeLight extends ConeLight {
         Filter filter = new Filter();
         filter.maskBits = Constants.BIT_WALL;
         this.setContactFilter(filter);
+        this.setSoft(false);
     }
 }

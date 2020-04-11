@@ -596,7 +596,7 @@ public class GameplayController extends WorldController implements ContactListen
 		player.move(next_move);
 		player.updateAura();
 		player.updateCooldown(dt);
-		System.out.println(player.getLightCounter());
+//		System.out.println(player.getLightCounter());
 
 		//placing and taking light
 //		if (input.didSecondary() && player.getTouchingLight() && !player.getCooldown()) {

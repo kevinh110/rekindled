@@ -73,6 +73,10 @@ public class GameplayController extends WorldController implements ContactListen
 	 */
 	private static final String ENEMY_FILE = "images/enemy.png";
 	private static final String SAVED_ENEMY_FILE = "images/savedEnemy.png";
+	private static final String ENEMY_ANIMATION_FRONT = "spritesheets/spritesheet_enemy_front.png";
+	private static final String ENEMY_ANIMATION_LEFT = "spritesheets/spritesheet_enemy_left.png";
+	private static final String ENEMY_ANIMATION_RIGHT = "spritesheets/spritesheet_enemy_right.png";
+	private static final String ENEMY_ANIMATION_BACK = "spritesheets/spritesheet_enemy_back.png";
 	/**
 	 * win/loss screens
 	 */
@@ -98,6 +102,11 @@ public class GameplayController extends WorldController implements ContactListen
 	private TextureRegion playerAnimationBack;
 	private TextureRegion playerAnimationLeft;
 	private TextureRegion playerAnimationRight;
+
+	private TextureRegion enemyAnimationFront;
+	private TextureRegion enemyAnimationBack;
+	private TextureRegion enemyAnimationLeft;
+	private TextureRegion enemyAnimationRight;
 
 	/**
 	 * Texture for enemy
@@ -153,6 +162,15 @@ public class GameplayController extends WorldController implements ContactListen
 		manager.load(PLAYER_ANIMATION_RIGHT, Texture.class);
 		assets.add(PLAYER_ANIMATION_RIGHT);
 
+		manager.load(ENEMY_ANIMATION_FRONT, Texture.class);
+		assets.add(ENEMY_ANIMATION_FRONT);
+		manager.load(ENEMY_ANIMATION_BACK, Texture.class);
+		assets.add(ENEMY_ANIMATION_BACK);
+		manager.load(ENEMY_ANIMATION_LEFT, Texture.class);
+		assets.add(ENEMY_ANIMATION_LEFT);
+		manager.load(ENEMY_ANIMATION_RIGHT, Texture.class);
+		assets.add(ENEMY_ANIMATION_RIGHT);
+
 		manager.load(PLAYER_FILE_LEFT, Texture.class);
 		assets.add(PLAYER_FILE_LEFT);
 		manager.load(PLAYER_FILE_BACK, Texture.class);
@@ -195,6 +213,13 @@ public class GameplayController extends WorldController implements ContactListen
 		playerAnimationBack = createTexture(manager, PLAYER_ANIMATION_BACK, false);
 		playerAnimationLeft = createTexture(manager, PLAYER_ANIMATION_LEFT, false);
 		playerAnimationRight = createTexture(manager, PLAYER_ANIMATION_RIGHT, false);
+
+		enemyAnimationFront = createTexture(manager, ENEMY_ANIMATION_FRONT, false);
+		enemyAnimationBack = createTexture(manager, ENEMY_ANIMATION_BACK, false);
+		enemyAnimationLeft = createTexture(manager, ENEMY_ANIMATION_LEFT, false);
+		enemyAnimationRight = createTexture(manager, ENEMY_ANIMATION_RIGHT, false);
+
+
 		playerTextureLeft = createTexture(manager, PLAYER_FILE_LEFT, false);
 		playerTextureFront = createTexture(manager, PLAYER_FILE_FRONT, false);
 		playerTextureBack = createTexture(manager, PLAYER_FILE_BACK, false);
@@ -421,9 +446,11 @@ public class GameplayController extends WorldController implements ContactListen
 
 			enemies[i].setSensor(true);
 			enemies[i].setDrawScale(scale);
+			enemies[i].setAnimations(enemyAnimationFront, enemyAnimationBack, enemyAnimationLeft, enemyAnimationRight);
 			enemies[i].setTexture(enemyTexture);
 			addObject(enemies[i]);
 		}
+
 
 		// Add Walls
 		BoxObstacle obj;

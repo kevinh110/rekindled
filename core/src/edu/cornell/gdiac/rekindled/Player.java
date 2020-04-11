@@ -43,6 +43,13 @@ public class Player extends FeetHitboxObstacle {
     /** The thrust factor to convert player input into thrust */
     private static final float DEFAULT_THRUST = 30.0f;
 
+    /** the size of a tile of the sprite sheet*/
+    private static final int TILE_SIZE = 150;
+
+    /** the number of frames of the sprite sheet*/
+    private static final int NUMBER_FRAMES = 10;
+
+
     /** The force to apply to this rocket */
     private Vector2 force;
 
@@ -80,10 +87,6 @@ public class Player extends FeetHitboxObstacle {
     private Animation leftWalkingAnimation;
     private Animation rightWalkingAnimation;
     private Animation currentAnimation;
-
-    private Entity.Direction direction;
-    private Vector2 position;
-    private Texture frontWalkingSheet;
 
 
     /** The number of frames for the afterburner */

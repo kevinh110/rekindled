@@ -13,6 +13,8 @@
 package edu.cornell.gdiac.rekindled.obstacle;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
@@ -211,6 +213,17 @@ public class FeetHitboxObstacle extends SimpleObstacle {
 
     public float getTimeElapsed(){
         return timeElapsed;
+    }
+
+    public Animation getAnimation(TextureRegion texture, int width, int height, int n){
+        TextureRegion [][] frames = texture.split(width,height);
+        TextureRegion[] animationFrames = new TextureRegion[n];
+        for(int i = 0; i < n; i++){
+            animationFrames[i] = frames[0][i];
+        }
+
+        return(new Animation(1f/4f, animationFrames));
+
     }
 
     /**

@@ -372,7 +372,7 @@ public class Player extends FeetHitboxObstacle {
 
 
         if(currentAnimation != null){
-            super.draw(canvas,currentAnimation, super.getTimeElapsed());
+            super.draw(canvas,currentAnimation, super.getTimeElapsed(), TILE_SIZE);
 
         } else {
             super.draw(canvas);  // Player

@@ -432,7 +432,7 @@ public class Enemy extends FeetHitboxObstacle {
                 currentAnimation = leftWalkingAnimation;
                 break;
         }
-        super.draw(canvas, currentAnimation, timeElapsed);
+        super.draw(canvas, currentAnimation, timeElapsed, TILE_SIZE);
 
 //        super.draw(canvas);  // Ship
 //        // Flames

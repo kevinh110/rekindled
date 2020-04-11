@@ -1,10 +1,9 @@
 {
 "dimension": [25,16], 
 "spawn": [10,13], 
-"init_lights": 0, 
+"init_lights": 1,
 "lights": [
-{"position": [9,13],"lit": true}, 
-{"position": [22,8],"lit": true}, 
+{"position": [22,8],"lit": true},
 {"position": [14,3],"lit": true}
 ], 
 "enemies": [

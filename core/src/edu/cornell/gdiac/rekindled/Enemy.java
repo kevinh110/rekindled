@@ -109,6 +109,7 @@ public class Enemy extends FeetHitboxObstacle {
             transformationAnimation.setPlayMode(Animation.PlayMode.REVERSED);
         }
         isLit = value;
+        this.sight.setActive(!value);
 
         }
 
@@ -422,17 +423,16 @@ public class Enemy extends FeetHitboxObstacle {
     }
 
     public void updateSightCone() {
-        this.sight.setPosition(this.getPosition());
-
-        float angle =
-                (facingDirection == Constants.FORWARD) ? 270.0f :
-                (facingDirection == Constants.BACK) ? 90.f :
-                (facingDirection == Constants.LEFT) ? 180.f:
-                0f;
-
-        this.sight.setDirection(angle);
+        if (this.sight.isActive()) {
+            this.sight.setPosition(this.getPosition());
+            float angle =
+                    (facingDirection == Constants.FORWARD) ? 270.0f :
+                            (facingDirection == Constants.BACK) ? 90.f :
+                                    (facingDirection == Constants.LEFT) ? 180.f :
+                                            0f;
+            this.sight.setDirection(angle);
+        }
     }
-
     /**
      * Draws the physics object.
      *

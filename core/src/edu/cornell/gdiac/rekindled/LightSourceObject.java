@@ -16,6 +16,7 @@ public class LightSourceObject extends BoxObstacle {
         super(x, y, w, h);
         this.isLit = isLit;
         this.touchingPlayer = false;
+        this.getFilterData().categoryBits = Constants.BIT_SOURCE;
     }
 
     public void addLight(LightSourceLight light) {

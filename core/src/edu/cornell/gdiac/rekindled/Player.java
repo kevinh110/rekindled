@@ -402,7 +402,8 @@ public class Player extends FeetHitboxObstacle {
     }
 
     public void updateAura() {
-        this.aura.setPosition(this.getPosition());
+        if (this.aura.isActive())
+            this.aura.setPosition(this.getPosition());
     }
 
 

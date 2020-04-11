@@ -570,10 +570,10 @@ public class Board {
         if (x >= width || y >= height){
             return false;
         }
-        System.out.println("x: " + x);
-        System.out.println("y: " + y);
-        System.out.println("Width: " + width);
-        System.out.println("Height: " + height);
+//        System.out.println("x: " + x);
+//        System.out.println("y: " + y);
+//        System.out.println("Width: " + width);
+//        System.out.println("Height: " + height);
         TileState tile = tiles[x][y];
         return tile.isWall || tile.isLightSource || tile.isLitTile;
     }

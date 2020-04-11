@@ -423,7 +423,7 @@ public class AIController extends Entity_Controller {
             enemy.setPosition(Math.round(pos.x), Math.round(pos.y)); // Center pos to account for slight drift
             pos = enemy.getPosition();
             changeStateIfApplicable(playerLit);
-            System.out.println("State: " + state);
+//            System.out.println("State: " + state);
             switch (state) {
                 case WANDER:
                     if (pos.x == goal[0] && pos.y == goal[1]){

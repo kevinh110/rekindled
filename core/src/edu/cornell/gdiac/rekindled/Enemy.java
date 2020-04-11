@@ -35,7 +35,7 @@ public class Enemy extends FeetHitboxObstacle {
     private Animation rightWalkingAnimation;
     private Animation currentAnimation;
 
-    private int timeElapsed;
+    private float timeElapsed;
 
 
     /** The force to apply to this rocket */
@@ -418,6 +418,8 @@ public class Enemy extends FeetHitboxObstacle {
      */
     public void draw(GameCanvas canvas) {
         timeElapsed += Gdx.graphics.getDeltaTime();
+        System.out.println(timeElapsed);
+        System.out.println(Gdx.graphics.getDeltaTime());
         switch(facingDirection) {
             case Constants.FORWARD:
                 currentAnimation = frontWalkingAnimation;

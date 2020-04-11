@@ -33,7 +33,10 @@ public class Enemy extends FeetHitboxObstacle {
     private Animation backWalkingAnimation;
     private Animation leftWalkingAnimation;
     private Animation rightWalkingAnimation;
+    private Animation savedAnimation;
+    private Animation transformationAnimation;
     private Animation currentAnimation;
+
 
     private float timeElapsed;
 
@@ -87,14 +90,28 @@ public class Enemy extends FeetHitboxObstacle {
     private int pointer = 0; // Points to the current goal in wander
     private boolean forward = true; //Indicates if we are going forward in wander or backward
 
-    private boolean isLit;
+    private boolean isLit;//whether the enemy is lit or not
+    private boolean isTransitioning; //keeps track of if the enemy is currently animating a transitioning
 
     public boolean getIsLit(){
         return isLit;
     }
+
     public void setIsLit(boolean value){
+
+        if(!isLit && value) {
+            timeElapsed = 0;
+            isTransitioning = true;
+            transformationAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+        } else if(isLit && !value){
+            timeElapsed = 0;
+            isTransitioning = true;
+            transformationAnimation.setPlayMode(Animation.PlayMode.REVERSED);
+        }
         isLit = value;
-    }
+
+        }
+
 
     public int getType(){
         return type;
@@ -252,6 +269,7 @@ public class Enemy extends FeetHitboxObstacle {
         this.getFilterData().categoryBits = Constants.BIT_ENEMY;
         facingDirection = Constants.BACK;
         timeElapsed = 0;
+        isTransitioning = false;
     }
 
     public Enemy(float x, float y, float width, float height, int type) {
@@ -259,11 +277,15 @@ public class Enemy extends FeetHitboxObstacle {
         this.type = type;
     }
 
-    public void setAnimations(TextureRegion frontTexture, TextureRegion backTexture, TextureRegion leftTexture, TextureRegion rightTexture){
+    /** Initialized all animations. */
+    public void setAnimations(TextureRegion frontTexture, TextureRegion backTexture, TextureRegion leftTexture,
+                              TextureRegion rightTexture, TextureRegion transformation, TextureRegion saved){
         frontWalkingAnimation = getAnimation(frontTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES);
         backWalkingAnimation = getAnimation(backTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES);
         rightWalkingAnimation = getAnimation(rightTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES);
         leftWalkingAnimation = getAnimation(leftTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES);
+        transformationAnimation = getAnimation(transformation, TILE_SIZE, TILE_SIZE, 8);
+        savedAnimation = getAnimation(saved, TILE_SIZE, TILE_SIZE, 8);
     }
 
     /**
@@ -420,21 +442,36 @@ public class Enemy extends FeetHitboxObstacle {
         timeElapsed += Gdx.graphics.getDeltaTime();
         System.out.println(timeElapsed);
         System.out.println(Gdx.graphics.getDeltaTime());
-        switch(facingDirection) {
-            case Constants.FORWARD:
-                currentAnimation = frontWalkingAnimation;
-                break;
-            case Constants.BACK:
-                currentAnimation = backWalkingAnimation;
-                break;
-            case Constants.RIGHT:
-                currentAnimation = rightWalkingAnimation;
-                break;
-            case Constants.LEFT:
-                currentAnimation = leftWalkingAnimation;
-                break;
+        if(isTransitioning){
+            currentAnimation = transformationAnimation;
+            if(transformationAnimation.isAnimationFinished(timeElapsed)){
+                isTransitioning = false;
+            }
+            super.draw(canvas, currentAnimation,false, timeElapsed, TILE_SIZE);
+
+        } else if(isLit){
+            currentAnimation = savedAnimation;
+            super.draw(canvas, currentAnimation,true, timeElapsed, TILE_SIZE);
+
         }
-        super.draw(canvas, currentAnimation, timeElapsed, TILE_SIZE);
+        else {
+            switch (facingDirection) {
+                case Constants.FORWARD:
+                    currentAnimation = frontWalkingAnimation;
+                    break;
+                case Constants.BACK:
+                    currentAnimation = backWalkingAnimation;
+                    break;
+                case Constants.RIGHT:
+                    currentAnimation = rightWalkingAnimation;
+                    break;
+                case Constants.LEFT:
+                    currentAnimation = leftWalkingAnimation;
+                    break;
+            }
+            super.draw(canvas, currentAnimation,true, timeElapsed, TILE_SIZE);
+
+        }
 
 //        super.draw(canvas);  // Ship
 //        // Flames

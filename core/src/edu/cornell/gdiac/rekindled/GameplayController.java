@@ -85,8 +85,11 @@ public class GameplayController extends WorldController implements ContactListen
 
 	/** The file location of the wall*/
 	private static final String WALL_FILE = "images/ingame-wall.png";
+	/** file locations of the light sources*/
 	private static final String LIT_SOURCE_FILE = "images/litLightSource.png";
 	private static final String DIM_SOURCE_FILE = "images/dimLightSource.png";
+	private static final String LIGHT_ANIMATION_FILE = "spritesheets/spritesheet_lamp.png";
+
 
 
 	/**texture region for wall*/
@@ -123,6 +126,8 @@ public class GameplayController extends WorldController implements ContactListen
 	private TextureRegion dimSourceTexture;
 	/**texture region for lit light source*/
 	private TextureRegion litSourceTexture;
+	/** spritesheet for light source */
+	private TextureRegion lightAnimation;
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState assetState = AssetState.EMPTY;
@@ -197,6 +202,8 @@ public class GameplayController extends WorldController implements ContactListen
 		assets.add(LIT_SOURCE_FILE);
 		manager.load(DIM_SOURCE_FILE, Texture.class);
 		assets.add(DIM_SOURCE_FILE);
+		manager.load(LIGHT_ANIMATION_FILE, Texture.class);
+		assets.add(LIGHT_ANIMATION_FILE);
 
 		super.preLoadContent(manager);
 	}
@@ -241,6 +248,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 		dimSourceTexture = createTexture(manager, DIM_SOURCE_FILE, false);
 		litSourceTexture = createTexture(manager, LIT_SOURCE_FILE, false);
+		lightAnimation = createTexture(manager, LIGHT_ANIMATION_FILE, false);
 
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
@@ -430,8 +438,8 @@ public class GameplayController extends WorldController implements ContactListen
 		for (int i = 0; i < lights.length; i++){
 
 			LightSourceLight light_s = new LightSourceLight(sourceRayHandler);
+			lights[i].setAnimation(lightAnimation);
 			lights[i].addLight(light_s);
-
 			lights[i].setSensor(true);
 			lights[i].setDrawScale(scale);
 			lights[i].setBodyType(BodyDef.BodyType.StaticBody);

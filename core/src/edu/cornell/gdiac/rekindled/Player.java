@@ -325,17 +325,6 @@ public class Player extends FeetHitboxObstacle {
         leftWalkingAnimation = getAnimation(leftTexture, 150, 150, 10);
     }
 
-    public Animation getAnimation(TextureRegion texture, int width, int height, int n){
-        TextureRegion [][] frames = texture.split(width,height);
-        TextureRegion[] animationFrames = new TextureRegion[n];
-        for(int i = 0; i < n; i++){
-            animationFrames[i] = frames[0][i];
-        }
-
-        return(new Animation(1f/4f, animationFrames));
-
-    }
-
     public void setTouchingLight(boolean value){
         touchingLight = value;
     }

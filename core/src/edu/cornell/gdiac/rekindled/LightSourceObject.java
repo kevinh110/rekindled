@@ -53,17 +53,16 @@ public class LightSourceObject extends BoxObstacle {
         return isLit;
     }
 
-    public boolean toggleLit(){
-        if(touchingPlayer) {
+    public boolean toggleLit() {
+        if (touchingPlayer) {
             isLit = !isLit;
             light.setActive(isLit);
             System.out.println("Light is on?:" + isLit);
-            if(isLit) {
+            if (isLit) {
                 this.timeElapsed = 0;
                 lightAnimation.setPlayMode(Animation.PlayMode.NORMAL);
                 isTransitioning = true;
-            }
-            else {
+            } else {
                 this.timeElapsed = 0;
                 lightAnimation.setPlayMode(Animation.PlayMode.REVERSED);
                 isTransitioning = true;
@@ -71,6 +70,10 @@ public class LightSourceObject extends BoxObstacle {
             return true;
         }
         return false;
+    }
+
+    public boolean getTouchingPlayer() {
+        return this.touchingPlayer;
     }
 
     public boolean contains(Vector2 pos) {

@@ -440,8 +440,7 @@ public class Enemy extends FeetHitboxObstacle {
      */
     public void draw(GameCanvas canvas) {
         timeElapsed += Gdx.graphics.getDeltaTime();
-        System.out.println(timeElapsed);
-        System.out.println(Gdx.graphics.getDeltaTime());
+
         if(isTransitioning){
             currentAnimation = transformationAnimation;
             if(transformationAnimation.isAnimationFinished(timeElapsed)){

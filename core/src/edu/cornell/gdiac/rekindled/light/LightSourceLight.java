@@ -9,7 +9,7 @@ import edu.cornell.gdiac.rekindled.Constants;
 
 public class LightSourceLight extends PointLight {
     /** The default distance for a point source light */
-    public static float DEFAULT_DISTANCE = 8f;
+    public static float DEFAULT_DISTANCE = 6f;
     public static float BRIGHTNESS = 1f;
 
     /** Copy of the collision filter.  Necessary because the original version is private */

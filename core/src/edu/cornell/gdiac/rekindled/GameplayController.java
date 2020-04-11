@@ -596,7 +596,7 @@ public class GameplayController extends WorldController implements ContactListen
 		player.move(next_move);
 		player.updateAura();
 		player.updateCooldown(dt);
-		System.out.println(player.getLightCounter());
+//		System.out.println(player.getLightCounter());
 
 		//placing and taking light
 //		if (input.didSecondary() && player.getTouchingLight() && !player.getCooldown()) {
@@ -631,21 +631,24 @@ public class GameplayController extends WorldController implements ContactListen
 
 		//throw light
 		if(input.didSecondary() && player.lightCounter > 0 && !player.getTouchingLight()){
-			LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius
-			light.setPosition(player.getX(), player.getY());
-			thrownLights.add(new Pair<>(light, System.currentTimeMillis()));
-			player.placeLight();
+			if(thrownLights.isEmpty() || (System.currentTimeMillis() - thrownLights.get(0).getValue() > 500L)) {
 
-			//find enemies in range
-			for(Enemy e: enemies){
-				float distance = player.getPosition().dst(e.getPosition());
-				if(distance <= THROWN_LIGHT_RADIUS){
-					float dx =  e.getPosition().x - player.getX();
-					float dy = e.getPosition().y - player.getY();
-					float ratio = THROWN_LIGHT_RADIUS / distance;
-					Vector2 new_pos = new Vector2(Math.round((dx * ratio) + player.getX()), Math.round((dy * ratio) + player.getY()));
-					e.setPosition(new_pos);
-					e.stunned = true;
+				LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius
+				light.setPosition(player.getX(), player.getY());
+				thrownLights.add(new Pair<>(light, System.currentTimeMillis()));
+				player.placeLight();
+
+				//find enemies in range
+				for (Enemy e : enemies) {
+					float distance = player.getPosition().dst(e.getPosition());
+					if (distance <= THROWN_LIGHT_RADIUS) {
+						float dx = e.getPosition().x - player.getX();
+						float dy = e.getPosition().y - player.getY();
+						float ratio = THROWN_LIGHT_RADIUS / distance;
+						Vector2 new_pos = new Vector2(Math.round((dx * ratio) + player.getX()), Math.round((dy * ratio) + player.getY()));
+						e.setPosition(new_pos);
+						e.stunned = true;
+					}
 				}
 			}
 		}
@@ -784,7 +787,8 @@ public class GameplayController extends WorldController implements ContactListen
 
 			// See if we lost.
 			for (Enemy enemy : enemies) {
-				if ((bd1 == player && bd2 == enemy) || (bd1 == enemy &&  bd2 == player)){
+				if (((bd1 == player && bd2 == enemy) || (bd1 == enemy &&  bd2 == player))
+						&& !enemy.getIsLit()){
 					lostGame = true;
 					System.out.println("enemy contact; you lost");
 				}

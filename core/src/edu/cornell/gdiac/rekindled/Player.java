@@ -296,7 +296,24 @@ public class Player extends FeetHitboxObstacle {
         delayTimer = 0;
         cooldown = true;
         lightCounter += 1;
+
+        if (lightCounter == 1)
+            this.aura.setActive(true);
     }
+
+    public void placeLight(){
+        delayTimer = 0;
+        cooldown = true;
+        lightCounter -= 1;
+
+        if (lightCounter == 0)
+            this.aura.setActive(false);
+    }
+
+    public int getLightCounter() {
+        return this.lightCounter;
+    }
+
 
     public void setTouchingLight(boolean value){
         touchingLight = value;
@@ -321,7 +338,7 @@ public class Player extends FeetHitboxObstacle {
 
     public void addAura(AuraLight a) {
         this.aura = a;
-        updateAura();
+        this.aura.setActive(false);
     }
 
     public void updateAura() {

@@ -4,9 +4,10 @@ import box2dLight.ConeLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.physics.box2d.Filter;
+import edu.cornell.gdiac.rekindled.Constants;
 
 public class SightConeLight extends ConeLight {
-    private static final float DISTANCE = 7f;
+    private static final float DISTANCE = 10f;
     /**
      * Creates light shaped as a circle's sector with given radius, direction and arc angle
      *
@@ -24,7 +25,7 @@ public class SightConeLight extends ConeLight {
         super(rayHandler, 512, Color.RED, DISTANCE, 0, 0, 0f, 60f);
 
         Filter filter = new Filter();
-        filter.maskBits = 0;
+        filter.maskBits = Constants.BIT_WALL;
         this.setContactFilter(filter);
     }
 }

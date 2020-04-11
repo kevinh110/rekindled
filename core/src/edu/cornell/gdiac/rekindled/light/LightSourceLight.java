@@ -45,6 +45,11 @@ public class LightSourceLight extends PointLight {
     public LightSourceLight(RayHandler rayHandler, float radius){
         super(rayHandler, 512, null, radius, 0, 0);
         this.setSoftnessLength(0f);
+        this.setColor(BRIGHTNESS, BRIGHTNESS, BRIGHTNESS, BRIGHTNESS);
+
+        Filter filter = new Filter();
+        filter.maskBits = Constants.BIT_WALL;
+        this.setContactFilter(filter);
     }
 
 

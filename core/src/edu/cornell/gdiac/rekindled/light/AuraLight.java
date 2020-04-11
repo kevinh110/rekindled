@@ -39,7 +39,7 @@ public class AuraLight extends PointLight {
 
 
         Filter filter = new Filter();
-        filter.maskBits = 0;
+        filter.maskBits = Constants.BIT_WALL;
         this.setContactFilter(filter);
     }
 

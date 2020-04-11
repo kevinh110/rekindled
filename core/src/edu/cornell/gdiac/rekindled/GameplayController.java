@@ -209,7 +209,7 @@ public class GameplayController extends WorldController implements ContactListen
 	/**
 	 * Reference to the game canvas
 	 */
-	protected GameCanvas canvas;
+	//protected GameCanvas canvas;
 	/**
 	 * Listener that will update the player mode when we are done
 	 */
@@ -503,14 +503,36 @@ public class GameplayController extends WorldController implements ContactListen
 		player.move(next_move);
 		player.updateAura();
 		player.updateCooldown(dt);
+		System.out.println(player.getLightCounter());
 
 		//placing and taking light
+//		if (input.didSecondary() && player.getTouchingLight() && !player.getCooldown()) {
+//			LightSourceObject goalLight;
+//			for (LightSourceObject light : lights){
+//				if (light.getTouchingPlayer()){
+//					if (light.isLit())
+//						// Changes texture if applicable
+//					board.toggleSource(light.getPosition());
+//				};
+//			}
+//		}
+
 		if (input.didSecondary() && player.getTouchingLight() && !player.getCooldown()) {
-			player.takeLight();
-			for (LightSourceObject light : lights){
-				if (light.toggleLit()){ // Changes texture if applicable
-					board.toggleSource(light.getPosition());
-				};
+			LightSourceObject goalLight = null;
+
+			for (LightSourceObject light : lights) {
+				if (light.getTouchingPlayer())
+					goalLight = light;
+			}
+
+			if (goalLight != null && goalLight.isLit() && player.getLightCounter() <= Constants.MAX_LIGHTS) {
+				player.takeLight();
+				goalLight.toggleLit();
+				board.toggleSource(goalLight.getPosition());
+			} else if (goalLight != null && !goalLight.isLit() && player.getLightCounter() > 0) {
+				player.placeLight();
+				goalLight.toggleLit();
+				board.toggleSource(goalLight.getPosition());
 			}
 		}
 
@@ -519,7 +541,7 @@ public class GameplayController extends WorldController implements ContactListen
 			LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius
 			light.setPosition(player.getX(), player.getY());
 			thrownLights.add(new Pair<>(light, System.currentTimeMillis()));
-			player.lightCounter = player.lightCounter - 1;
+			player.placeLight();
 
 			//find enemies in range
 			for(Enemy e: enemies){
@@ -566,10 +588,53 @@ public class GameplayController extends WorldController implements ContactListen
                 postUpdate(delta);
             }
             draw(delta, board);
-            sourceRayHandler.render();
+            //sourceRayHandler.render();
 
 
         }
+	}
+
+	@Override
+	public void draw(float delta, Board board) {
+		canvas.clear();
+
+		// draw everything that should be affected by lighting (everything excluding walls)
+		canvas.begin();
+		board.draw(canvas);
+		for(Obstacle obj : objects) {
+//			if (!(obj instanceof BoxObstacle))
+			obj.draw(canvas);
+		}
+		canvas.end();
+
+		// render the light
+		sourceRayHandler.render();
+
+		// draw things that should not be affected by shadows
+//		canvas.begin();
+//
+//		for(Obstacle obj : objects) {
+//			if (obj instanceof BoxObstacle)
+//				obj.draw(canvas);
+//		}
+//		canvas.end();
+
+		if (debug) {
+			canvas.beginDebug();
+			for(Obstacle obj : objects) {
+				obj.drawDebug(canvas);
+			}
+			canvas.endDebug();
+		}
+
+		if (complete && !failed) {
+			canvas.begin(); // DO NOT SCALE
+			canvas.end();
+		} else if (failed) {
+			canvas.begin(); // DO NOT SCALE
+			canvas.end();
+		}
+
 	}
 
 	public boolean isAlive() {

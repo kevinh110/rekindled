@@ -11,4 +11,7 @@ public class Constants {
     public static final int BACK = 2;
     public static final int LEFT = 3;
     public static final int RIGHT = 4;
+
+    // Maximum number of lights that Lux can carry
+    public static final int MAX_LIGHTS = 2;
 }

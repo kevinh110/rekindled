@@ -754,7 +754,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 	public boolean insideLightSource(Vector2 pos) {
 		for (LightSourceObject l : lights) {
-			if (l.contains(pos))
+			if (l.contains(pos) && l.isLit())
 				return true;
 		}
 		return false;

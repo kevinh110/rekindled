@@ -2,6 +2,7 @@ package edu.cornell.gdiac.rekindled.light;
 
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.physics.box2d.Filter;
 import edu.cornell.gdiac.rekindled.Constants;
 
@@ -31,11 +32,11 @@ public class AuraLight extends PointLight {
      * @param rays			the number of rays
      */
     public AuraLight(RayHandler rayHandler) {
-        super(rayHandler, 512, null, DEFAULT_DISTANCE, 0, 0);
+        super(rayHandler, 512, Color.WHITE, DEFAULT_DISTANCE, 0, 0);
         System.out.println(this.softShadowLength);
         this.setSoftnessLength(0f);
 
-        this.setColor(1f, 1f, 0, 1f);
+        //this.setColor(1f, 1f, 0, 1f);
 
 
         Filter filter = new Filter();

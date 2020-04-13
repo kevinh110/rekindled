@@ -8,8 +8,6 @@ import edu.cornell.gdiac.rekindled.Constants;
 
 public class SightConeLight extends ConeLight {
 
-    private static final float DISTANCE = 9f;
-
     /**
      * Creates light shaped as a circle's sector with given radius, direction and arc angle
      *
@@ -24,7 +22,7 @@ public class SightConeLight extends ConeLight {
      * @param coneDegree
      */
     public SightConeLight(RayHandler rayHandler) {
-        super(rayHandler, 512, Color.RED, DISTANCE, 0, 0, 0f, 60f);
+        super(rayHandler, 512, Color.RED, Constants.SIGHT_CONE_RADIUS, 0, 0, 0f, Constants.SIGHT_CONE_SECTOR);
 
         Filter filter = new Filter();
         filter.maskBits = Constants.BIT_WALL;

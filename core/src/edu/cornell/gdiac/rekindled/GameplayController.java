@@ -392,7 +392,6 @@ public class GameplayController extends WorldController implements ContactListen
 	}
 
 
-	private static final float AMBIANCE = 0.2f;
 	/**
 	 * Creates and initialize a new instance of the rocket lander game
 	 * <p>
@@ -554,7 +553,7 @@ public class GameplayController extends WorldController implements ContactListen
 		sourceRayHandler = new RayHandler(world, Gdx.graphics.getWidth(),  Gdx.graphics.getHeight());
 		sourceRayHandler.setCombinedMatrix(rayCamera);
 
-		sourceRayHandler.setAmbientLight(AMBIANCE, AMBIANCE, AMBIANCE, AMBIANCE);
+		sourceRayHandler.setAmbientLight(Constants.AMBIANCE, Constants.AMBIANCE, Constants.AMBIANCE, Constants.AMBIANCE);
 		sourceRayHandler.setShadows(true);
 		sourceRayHandler.setBlur(true);
 		sourceRayHandler.setBlurNum(3);

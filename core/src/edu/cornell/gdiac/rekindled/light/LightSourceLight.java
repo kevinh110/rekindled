@@ -10,7 +10,6 @@ import edu.cornell.gdiac.rekindled.Constants;
 public class LightSourceLight extends PointLight {
     /** The default distance for a point source light */
     public static float DEFAULT_DISTANCE = 6f;
-    public static float BRIGHTNESS = 1f;
 
     /** Copy of the collision filter.  Necessary because the original version is private */
     protected Filter collisions;
@@ -33,10 +32,9 @@ public class LightSourceLight extends PointLight {
      * @param rays			the number of rays
      */
     public LightSourceLight(RayHandler rayHandler) {
-        super(rayHandler, 512, null, DEFAULT_DISTANCE, 0, 0);
+        super(rayHandler, 512, null, Constants.SOURCE_LIGHT_RADIUS, 0, 0);
         this.setSoftnessLength(0f);
-        this.setColor(BRIGHTNESS, BRIGHTNESS, BRIGHTNESS, BRIGHTNESS);
-
+        this.setColor(1, 1, 1, 1);
         Filter filter = new Filter();
         filter.maskBits = Constants.BIT_WALL;
         this.setContactFilter(filter);
@@ -47,7 +45,7 @@ public class LightSourceLight extends PointLight {
     public LightSourceLight(RayHandler rayHandler, float radius){
         super(rayHandler, 512, null, radius, 0, 0);
         this.setSoftnessLength(0f);
-        this.setColor(BRIGHTNESS, BRIGHTNESS, BRIGHTNESS, BRIGHTNESS);
+        this.setColor(1, 1, 1, 1);
 
         Filter filter = new Filter();
         filter.maskBits = Constants.BIT_WALL;

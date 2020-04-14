@@ -145,6 +145,8 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private static final float THROWN_LIGHT_RADIUS = 5f;
 
+	private static final float CAMERA_SCALE = 0.5f;
+
 
 
 	/**
@@ -438,6 +440,7 @@ public class GameplayController extends WorldController implements ContactListen
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
+		canvas.setScale(CAMERA_SCALE);
 		initLighting();
 		for (int i = 0; i < lights.length; i++){
 
@@ -689,6 +692,9 @@ public class GameplayController extends WorldController implements ContactListen
 	@Override
 	public void draw(float delta, Board board) {
 		canvas.clear();
+
+		//set the players location
+		canvas.setCamera_coordinates(player.getScaledPosition());
 
 		// draw everything that should be affected by lighting (everything excluding walls)
 		canvas.begin();

@@ -276,7 +276,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		} else {
 			Color tint = (pressState == 1 ? Color.GRAY: Color.WHITE);
 			canvas.draw(playButton, tint, playButton.getWidth()/2, playButton.getHeight()/2, 
-						centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+						centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale, false);
 		}
 		canvas.end();
 	}

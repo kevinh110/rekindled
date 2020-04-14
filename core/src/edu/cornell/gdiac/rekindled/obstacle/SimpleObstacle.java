@@ -23,6 +23,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 import edu.cornell.gdiac.rekindled.GameCanvas;
+import edu.cornell.gdiac.rekindled.GameplayController;
 
 /**
  * Base model class to support collisions.
@@ -84,6 +85,11 @@ public abstract class SimpleObstacle extends Obstacle {
 	 */
 	public Vector2 getPosition() {
 		return (body != null ? body.getPosition() : super.getPosition());
+	}
+
+	public Vector2 getScaledPosition() {
+		Vector2 pos = getPosition();
+		return (new Vector2(pos.x * getDrawScale().x, pos.y * getDrawScale().y));
 	}
 	
 	/**
@@ -785,7 +791,16 @@ public abstract class SimpleObstacle extends Obstacle {
 	 */
 	public void draw(GameCanvas canvas, Animation animation, boolean looping, float elapseTime, int width){
 		if(animation != null){
-			canvas.draw(animation, elapseTime, looping, 0, 0, getX() * drawScale.x - (width / 2f), getY()*drawScale.y - 20, getAngle(), 1, 1);
+			canvas.draw(animation, elapseTime, looping, 0, 0, getX() * drawScale.x - (width / 2f), getY()*drawScale.y - 20, getAngle(), 1, 1, false);
+		}
+	}
+
+	/**
+	 * Draws an animated object at the center of the screen. ie. the player
+	 */
+	public void drawCenter(GameCanvas canvas, Animation animation, boolean looping, float elapseTime, int width){
+		if(animation != null){
+			canvas.draw(animation, elapseTime, looping, 0, 0, getX() * drawScale.x - (width / 2f), getY()*drawScale.y - 20, getAngle(), 1, 1, true);
 		}
 	}
 

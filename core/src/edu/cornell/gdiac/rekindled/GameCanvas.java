@@ -81,6 +81,18 @@ public class GameCanvas {
 	/** Value to cache window height (if we are currently full screen) */
 	int height;
 
+	/**the location of the camera center in global coordinates*/
+	Vector2 camera_coordinates;
+
+	/** A float representing the scale of the camera view 0 < scale < 1*/
+	float scale;
+
+	/**the width of the camera's viewport*/
+	int viewport_width;
+
+	/** the height of the camera's viewport*/
+	int viewport_height;
+
 	// CACHE OBJECTS
 	/** Affine cache for current sprite to draw */
 	private Affine2 local;
@@ -260,6 +272,21 @@ public class GameCanvas {
 		}
 	}
 
+	/**Sets the location of the player.  Used for calculating the camera view.
+	 */
+	public void setCamera_coordinates(Vector2 camera_coordinates){
+		this.camera_coordinates = camera_coordinates;
+	}
+
+	/**Sets the scale of the camera
+	 */
+	public void setScale(float scale){
+		this.scale = scale;
+		this.viewport_width = (int)(scale * getWidth());
+		this.viewport_height = (int)(scale * getHeight());
+	}
+
+
 	/**
 	 * Resets the SpriteBatch camera when this canvas is resized.
 	 *
@@ -409,16 +436,24 @@ public class GameCanvas {
 	 * Draws animated texture
 	 */
 
-	public void draw(Animation animation, float ElapsedTime, boolean looping, float ox, float oy,  float x, float y, float angle, float sx, float sy){
+	public void draw(Animation animation, float ElapsedTime, boolean looping, float ox, float oy,  float x, float y,
+					 float angle, float sx, float sy, boolean camera){
 		if (active != DrawPass.STANDARD) {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
 		}
+		System.out.println("animated");
+		TextureRegion frame = (TextureRegion) animation.getKeyFrame(ElapsedTime, looping);
 
-		computeTransform(ox,oy,x,y,angle,sx,sy);
+		if(computeView(ox,oy,x,y,angle,sx,sy, camera)) {
 
-		spriteBatch.setColor(Color.WHITE);
-		spriteBatch.draw((TextureRegion)animation.getKeyFrame(ElapsedTime, looping), x, y );
+			spriteBatch.setColor(Color.WHITE);
+			spriteBatch.draw(frame, frame.getRegionWidth(), frame.getRegionHeight(), local);
+		}
+		//this will display the non-camera view position.  Good for debugging.
+//		computeTransform(ox,oy,x,y,angle,sx,sy);
+//		spriteBatch.setColor(Color.WHITE);
+//		spriteBatch.draw(frame, frame.getRegionWidth(), frame.getRegionHeight(), local);
 
 	}
 
@@ -514,6 +549,19 @@ public class GameCanvas {
 		// Call the master drawing method (more efficient that base method)
 		holder.setRegion(image);
 		draw(holder,tint,ox,oy,x,y,angle,sx,sy);
+	}
+
+	public void draw(Texture image, Color tint, float ox, float oy,
+					 float x, float y, float angle, float sx, float sy, boolean useCamera) {
+		if (active != DrawPass.STANDARD) {
+			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+			return;
+		}
+
+		// Call the master drawing method (more efficient that base method)
+		holder.setRegion(image);
+		draw(holder,tint,ox,oy,x,y,angle,sx,sy, useCamera);
+
 	}
 
 	/**
@@ -660,6 +708,26 @@ public class GameCanvas {
 	 */
 	public void draw(TextureRegion region, Color tint, float ox, float oy,
 					 float x, float y, float angle, float sx, float sy) {
+		if (active != DrawPass.STANDARD) {
+			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+			return;
+		}
+
+		// BUG: The draw command for texture regions does not work properly.
+		// There is a workaround, but it will break if the bug is fixed.
+		// For now, it is better to set the affine transform directly.
+		if(computeView(ox,oy,x,y,angle,sx,sy, false)) {
+
+			spriteBatch.setColor(tint);
+			spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+		};
+//		computeTransform(ox,oy,x,y,angle,sx,sy);
+//		spriteBatch.setColor(tint);
+//		spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+	}
+
+	public void draw(TextureRegion region, Color tint, float ox, float oy,
+					 float x, float y, float angle, float sx, float sy, boolean useCamera) {
 		if (active != DrawPass.STANDARD) {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
@@ -1152,6 +1220,39 @@ public class GameCanvas {
     }
 
 	/**
+	 * This function computes computes the affine transformation of this image with respect to the
+	 * camera's central location.  If an image is out of range of the camera, it will not be drawn.
+	 * @param ox 	The x-coordinate of texture origin (in pixels)
+	 * @param oy 	The y-coordinate of texture origin (in pixels)
+	 * @param x 	The x-coordinate of the texture origin (on screen)
+	 * @param y 	The y-coordinate of the texture origin (on screen)
+	 * @param angle The rotation angle (in degrees) about the origin.
+	 * @param sx 	The x-axis scaling factor
+	 * @param sy 	The y-axis scaling factor
+	 */
+    private boolean computeView (float ox, float oy, float x, float y, float angle, float sx, float sy, boolean camera) {
+		float view_x;
+		float view_y;
+		if(camera) { //camera should be at the center of the screen
+			view_x = getWidth() / 2f - 150; //sorry 150 is the size of the tile I'll change this later i swear
+			view_y	= getHeight() / 2f - 100;
+		} else {
+			if (Math.abs(camera_coordinates.x - x) > (viewport_width / 2f) ||
+					Math.abs(camera_coordinates.y - y) > (viewport_height / 2f)) {
+				return false;
+			}
+			view_x = -(camera_coordinates.x - x) * (1 / scale) + (getWidth() / 2);
+			view_y = -(camera_coordinates.y - y) * (1 / scale) + (getHeight() / 2);
+		}
+		local.setToTranslation(view_x,view_y);
+
+		local.rotate(180.0f*angle/(float)Math.PI);
+		local.scale((1 / scale) * sx ,(1 / scale) * sy);
+		local.translate(-ox,-oy);
+		return true;
+	}
+
+	/**
 	 * Compute the affine transform (and store it in local) for this image.
 	 *
 	 * @param ox 	The x-coordinate of texture origin (in pixels)
@@ -1168,4 +1269,6 @@ public class GameCanvas {
 		local.scale(sx,sy);
 		local.translate(-ox,-oy);
 	}
+
+
 }

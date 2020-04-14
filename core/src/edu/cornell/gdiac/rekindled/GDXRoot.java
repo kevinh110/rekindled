@@ -79,7 +79,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers[4] = new GameplayController("jsons/level4.json");
 		controllers[5] = new GameplayController("jsons/level5.json");
 		controllers[6] = new GameplayController("jsons/level6.json");
-		controllers[7] = new GameplayController("jsons/levela.json");
+		controllers[7] = new GameplayController("jsons/level7.json");
 		for(int ii = 0; ii < controllers.length; ii++) {
 			controllers[ii].preLoadContent(manager);
 		}

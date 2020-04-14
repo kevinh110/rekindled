@@ -94,7 +94,7 @@ public class Board {
     /** Space to leave open between tiles */
     private static final float TILE_SPACE = 0;
     /** The dimensions of a single tile */
-    private static final int TILE_WIDTH = 64; // MUST BE 2X VALUE IN GAMECANVAS
+    private static final int TILE_WIDTH = 32; // MUST BE 2X VALUE IN GAMECANVAS
 
     //images
     /** The file location of the light tile*/
@@ -107,7 +107,7 @@ public class Board {
     private static final String LIT_SOURCE = "images/litLightSource.png";
     /** The file location of a dim light source*/
     private static final String DIM_SOURCE = "images/dimLightSource.png";
-    private static final int LIGHT_RADIUS = 3;
+    private static final int LIGHT_RADIUS = (int) Constants.SOURCE_LIGHT_RADIUS - 3; //idk why we have to sub 3
 
     // Instance attributes
     /** The board width (in number of tiles) */
@@ -393,13 +393,16 @@ public class Board {
      */
     private void drawTile(int x, int y, GameCanvas canvas) {
         TileState tile = tiles[x][y];
-
         // Compute drawing coordinates
         float sx = boardToScreenCenter(x);
         float sy = boardToScreenCenter(y);
+        canvas.draw(lightRegion, sx - (getTileSize() - getTileSpacing()) / 2, sy - (getTileSize() - getTileSpacing()) / 2);
 
-        canvas.draw(lightRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
-
+//        if (tile.isLitTile)
+//            canvas.draw(lightRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
+//        else
+//            canvas.draw(darkRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
+//
     }
 
     /**
@@ -575,7 +578,7 @@ public class Board {
 //        System.out.println("Width: " + width);
 //        System.out.println("Height: " + height);
         TileState tile = tiles[x][y];
-        return tile.isWall || tile.isLightSource || tile.isLitTile;
+        return tile.isWall || tile.isLitTile;
     }
 
     public boolean isLitLightSource(Vector2 position){

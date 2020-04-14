@@ -380,7 +380,6 @@ public class Enemy extends FeetHitboxObstacle {
             facingDirection = Constants.LEFT;
         }
         else if(goalX == pos.x && goalY == pos.y){ // If goal did not change, don't move
-            System.out.println("Not moving");
             return;
         }
     }

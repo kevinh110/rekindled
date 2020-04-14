@@ -202,7 +202,7 @@ public class AIController extends Entity_Controller {
 
             case LIT:
                 if(!board.isLitTileBoard((int) pos.x,(int) pos.y)){
-                    state = FSMState.RETURN;
+                    state = FSMState.WAIT;
                 }
                 break;
 
@@ -211,7 +211,7 @@ public class AIController extends Entity_Controller {
                 if (stunTimer % STUN_TIME == 0){
                     enemy.stunned = false;
                     stunTimer = 0;
-                    state = FSMState.RETURN;
+                    state = FSMState.WAIT;
                 }
                 break;
 

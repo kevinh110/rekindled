@@ -215,14 +215,14 @@ public class FeetHitboxObstacle extends SimpleObstacle {
         return timeElapsed;
     }
 
-    public Animation getAnimation(TextureRegion texture, int width, int height, int n){
+    public Animation getAnimation(TextureRegion texture, int width, int height, int n, float frameRate){
         TextureRegion [][] frames = texture.split(width,height);
         TextureRegion[] animationFrames = new TextureRegion[n];
         for(int i = 0; i < n; i++){
             animationFrames[i] = frames[0][i];
         }
 
-        return(new Animation(1f/4f, animationFrames));
+        return(new Animation(frameRate, animationFrames));
 
     }
 

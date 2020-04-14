@@ -79,6 +79,8 @@ public class Enemy extends FeetHitboxObstacle {
     // DEFAULT - 6
     public static final int SPEED = 6;
 
+    public static final float FRAME_RATE = 1/10f;
+
     public int facingDirection;
 
     /** If the enemy was just stunned */
@@ -281,12 +283,12 @@ public class Enemy extends FeetHitboxObstacle {
     /** Initialized all animations. */
     public void setAnimations(TextureRegion frontTexture, TextureRegion backTexture, TextureRegion leftTexture,
                               TextureRegion rightTexture, TextureRegion transformation, TextureRegion saved){
-        frontWalkingAnimation = getAnimation(frontTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES);
-        backWalkingAnimation = getAnimation(backTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES);
-        rightWalkingAnimation = getAnimation(rightTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES);
-        leftWalkingAnimation = getAnimation(leftTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES);
-        transformationAnimation = getAnimation(transformation, TILE_SIZE, TILE_SIZE, 8);
-        savedAnimation = getAnimation(saved, TILE_SIZE, TILE_SIZE, 8);
+        frontWalkingAnimation = getAnimation(frontTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+        backWalkingAnimation = getAnimation(backTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+        rightWalkingAnimation = getAnimation(rightTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+        leftWalkingAnimation = getAnimation(leftTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+        transformationAnimation = getAnimation(transformation, TILE_SIZE, TILE_SIZE, 8, FRAME_RATE);
+        savedAnimation = getAnimation(saved, TILE_SIZE, TILE_SIZE, 8, FRAME_RATE);
     }
 
     /**

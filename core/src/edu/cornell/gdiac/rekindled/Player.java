@@ -49,6 +49,8 @@ public class Player extends FeetHitboxObstacle {
     /** the number of frames of the sprite sheet*/
     private static final int NUMBER_FRAMES = 10;
 
+    private static final float FRAME_RATE = 1/10f;
+
 
     /** The force to apply to this rocket */
     private Vector2 force;
@@ -323,10 +325,10 @@ public class Player extends FeetHitboxObstacle {
     }
 
     public void setAnimations(TextureRegion frontTexture, TextureRegion backTexture, TextureRegion leftTexture, TextureRegion rightTexture){
-        frontWalkingAnimation = getAnimation(frontTexture, 150, 150, 10);
-        backWalkingAnimation = getAnimation(backTexture, 150, 150, 10);
-        rightWalkingAnimation = getAnimation(rightTexture, 150, 150, 10);
-        leftWalkingAnimation = getAnimation(leftTexture, 150, 150, 10);
+        frontWalkingAnimation = getAnimation(frontTexture, 150, 150, NUMBER_FRAMES, FRAME_RATE);
+        backWalkingAnimation = getAnimation(backTexture, 150, 150, NUMBER_FRAMES, FRAME_RATE);
+        rightWalkingAnimation = getAnimation(rightTexture, 150, 150, NUMBER_FRAMES, FRAME_RATE);
+        leftWalkingAnimation = getAnimation(leftTexture, 150, 150, NUMBER_FRAMES, FRAME_RATE);
     }
 
 

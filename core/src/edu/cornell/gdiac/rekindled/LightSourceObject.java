@@ -10,6 +10,7 @@ import edu.cornell.gdiac.rekindled.obstacle.BoxObstacle;
 public class LightSourceObject extends BoxObstacle {
     private final int TILE_SIZE = 75;
     private final int FRAME_NUMBER = 8;
+    private final float FRAME_RATE = 1/10f;
     private float timeElapsed;
     boolean isTransitioning;
     boolean isLit;
@@ -45,7 +46,10 @@ public class LightSourceObject extends BoxObstacle {
                 animationFrames[i] = frames[0][i];
             }
 
-            lightAnimation = new Animation(1f/4f, animationFrames);
+            lightAnimation = new Animation(FRAME_RATE, animationFrames);
+            if(isLit()){
+                lightAnimation.setPlayMode(Animation.PlayMode.REVERSED);
+            }
 
         }
 

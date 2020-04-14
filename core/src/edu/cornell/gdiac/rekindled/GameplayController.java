@@ -31,6 +31,7 @@ import edu.cornell.gdiac.rekindled.light.AuraLight;
 import edu.cornell.gdiac.rekindled.light.LightSourceLight;
 import edu.cornell.gdiac.rekindled.light.SightConeLight;
 import edu.cornell.gdiac.rekindled.obstacle.BoxObstacle;
+import edu.cornell.gdiac.rekindled.obstacle.FeetHitboxObstacle;
 import edu.cornell.gdiac.rekindled.obstacle.Obstacle;
 import edu.cornell.gdiac.rekindled.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.*;
@@ -694,8 +695,8 @@ public class GameplayController extends WorldController implements ContactListen
 		canvas.begin();
 		board.draw(canvas);
 		for(Obstacle obj : objects) {
-//			if (!(obj instanceof BoxObstacle))
-			obj.draw(canvas);
+			if (!(obj instanceof BoxObstacle || obj instanceof PolygonObstacle || obj instanceof FeetHitboxObstacle))
+				obj.draw(canvas);
 		}
 		canvas.end();
 
@@ -707,13 +708,13 @@ public class GameplayController extends WorldController implements ContactListen
 
 
 		// draw things that should not be affected by shadows
-//		canvas.begin();
-//
-//		for(Obstacle obj : objects) {
-//			if (obj instanceof BoxObstacle)
-//				obj.draw(canvas);
-//		}
-//		canvas.end();
+		canvas.begin();
+
+		for(Obstacle obj : objects) {
+			if (obj instanceof BoxObstacle || obj instanceof PolygonObstacle || obj instanceof FeetHitboxObstacle)
+				obj.draw(canvas);
+		}
+		canvas.end();
 
 		if (debug) {
 			canvas.beginDebug();

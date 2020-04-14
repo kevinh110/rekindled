@@ -532,6 +532,6 @@ public class AIController extends Entity_Controller {
             }
             return result;
         }
-        return enemy.inSight(player.getPosition());
+        return enemy.inSight(player.getPosition(), player.getAuraRadius());
     }
 }

@@ -381,9 +381,18 @@ public class Player extends FeetHitboxObstacle {
     }
 
     public void updateAura() {
-        if (this.aura.isActive())
+        if (this.aura.isActive()) {
             this.aura.setPosition(this.getPosition());
+            float length = Constants.AURA_RADIUS * (float) Math.sqrt(lightCounter);
+            this.aura.setDistance(length);
+        }
     }
 
+    public float getAuraRadius() {
+        if (!this.aura.isActive())
+            return 0f;
+
+        return this.aura.getDistance();
+    }
 
 }

@@ -422,6 +422,19 @@ public class GameCanvas {
 
 	}
 
+	public void draw(Animation animation, float ElapsedTime, boolean looping, float ox, float oy,  float x, float y, float angle, float sx, float sy, Color tint){
+		if (active != DrawPass.STANDARD) {
+			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+			return;
+		}
+
+		computeTransform(ox,oy,x,y,angle,sx,sy);
+
+		spriteBatch.setColor(tint);
+		spriteBatch.draw((TextureRegion)animation.getKeyFrame(ElapsedTime, looping), x, y );
+
+	}
+
 	/**
 	 * Draws the tinted texture at the given position.
 	 *

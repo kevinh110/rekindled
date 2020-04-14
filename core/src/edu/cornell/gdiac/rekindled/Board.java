@@ -396,13 +396,13 @@ public class Board {
         // Compute drawing coordinates
         float sx = boardToScreenCenter(x);
         float sy = boardToScreenCenter(y);
-        canvas.draw(lightRegion, sx - (getTileSize() - getTileSpacing()) / 2, sy - (getTileSize() - getTileSpacing()) / 2);
+//        canvas.draw(lightRegion, sx - (getTileSize() - getTileSpacing()) / 2, sy - (getTileSize() - getTileSpacing()) / 2);
 
-//        if (tile.isLitTile)
-//            canvas.draw(lightRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
-//        else
-//            canvas.draw(darkRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
-//
+        if (tile.isLitTile)
+            canvas.draw(lightRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
+        else
+            canvas.draw(darkRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
+
     }
 
     /**

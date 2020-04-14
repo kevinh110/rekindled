@@ -80,6 +80,12 @@ public class InputController extends Entity_Controller{
 	private boolean rightPressed;
 	private boolean rightPrevious;
 
+	/** Whether the shift key was pressed . */
+	private boolean shiftPressed;
+
+	/** whether the shift key was previously pressed */
+	private boolean shiftPrevious;
+
 	/** How much did we move horizontally? */
 	private float horizontal;
 	/** How much did we move vertically? */
@@ -154,6 +160,13 @@ public class InputController extends Entity_Controller{
 	public boolean didSecondary() {
 		return secondPressed;
 	}
+
+	/**
+	 * Returns true if the shift key was pressed
+	 */
+	public boolean didShift() { return shiftPressed; }
+
+
 
 	/**
 	 * Returns true if the tertiary action button was pressed.
@@ -316,6 +329,7 @@ public class InputController extends Entity_Controller{
 		exitPrevious = exitPressed;
 		nextPrevious = nextPressed;
 		prevPrevious = prevPressed;
+		shiftPrevious = shiftPressed;
 		
 		// Check to see if a GamePad is connected
 		if (xbox.isConnected()) {
@@ -376,6 +390,7 @@ public class InputController extends Entity_Controller{
 		downPressed  = (secondary && downPressed) || (Gdx.input.isKeyPressed(Input.Keys.DOWN));
 		leftPressed  = (secondary && leftPressed) || (Gdx.input.isKeyPressed(Input.Keys.LEFT));
 		rightPressed  = (secondary && rightPressed) || (Gdx.input.isKeyPressed(Input.Keys.RIGHT));
+		shiftPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
 
 		// Directional controls
 		horizontal = (secondary ? horizontal : 0.0f);

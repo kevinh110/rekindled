@@ -44,7 +44,7 @@ public class Player extends FeetHitboxObstacle {
     private static final float DEFAULT_THRUST = 30.0f;
 
     /** the size of a tile of the sprite sheet*/
-    private static final int TILE_SIZE = 150;
+    private static final int TILE_SIZE = 100;
 
     /** the number of frames of the sprite sheet*/
     private static final int NUMBER_FRAMES = 10;
@@ -325,10 +325,10 @@ public class Player extends FeetHitboxObstacle {
     }
 
     public void setAnimations(TextureRegion frontTexture, TextureRegion backTexture, TextureRegion leftTexture, TextureRegion rightTexture){
-        frontWalkingAnimation = getAnimation(frontTexture, 150, 150, NUMBER_FRAMES, FRAME_RATE);
-        backWalkingAnimation = getAnimation(backTexture, 150, 150, NUMBER_FRAMES, FRAME_RATE);
-        rightWalkingAnimation = getAnimation(rightTexture, 150, 150, NUMBER_FRAMES, FRAME_RATE);
-        leftWalkingAnimation = getAnimation(leftTexture, 150, 150, NUMBER_FRAMES, FRAME_RATE);
+        frontWalkingAnimation = getAnimation(frontTexture, TILE_SIZE,TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+        backWalkingAnimation = getAnimation(backTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+        rightWalkingAnimation = getAnimation(rightTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+        leftWalkingAnimation = getAnimation(leftTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
     }
 
 

@@ -438,11 +438,11 @@ public class Enemy extends FeetHitboxObstacle {
             if(transformationAnimation.isAnimationFinished(timeElapsed)){
                 isTransitioning = false;
             }
-            super.draw(canvas, currentAnimation,false, timeElapsed, TILE_SIZE);
+            super.draw(canvas, currentAnimation,false, timeElapsed, TILE_SIZE, Color.WHITE);
 
         } else if(isLit){
             currentAnimation = savedAnimation;
-            super.draw(canvas, currentAnimation,true, timeElapsed, TILE_SIZE);
+            super.draw(canvas, currentAnimation,true, timeElapsed, TILE_SIZE, Color.WHITE);
 
         }
         else {
@@ -460,17 +460,18 @@ public class Enemy extends FeetHitboxObstacle {
                     currentAnimation = leftWalkingAnimation;
                     break;
             }
-            super.draw(canvas, currentAnimation,true, timeElapsed, TILE_SIZE);
+            super.draw(canvas, currentAnimation,true, timeElapsed, TILE_SIZE, Color.WHITE);
 
         }
     }
 
 
     public boolean inSight(Vector2 position, float rad) {
-        return this.sight.contains(position.x, position.y) ||
-                this.sight.contains(position.x + rad, position.y) ||
-                this.sight.contains(position.x - rad, position.y) ||
-                this.sight.contains(position.x, position.y + rad) ||
-                this.sight.contains(position.x, position.y - rad);
+//        return this.sight.contains(position.x, position.y) ||
+//                this.sight.contains(position.x + rad, position.y) ||
+//                this.sight.contains(position.x - rad, position.y) ||
+//                this.sight.contains(position.x, position.y + rad) ||
+//                this.sight.contains(position.x, position.y - rad);
+        return this.sight.contains(position.x, position.y);
     }
 }

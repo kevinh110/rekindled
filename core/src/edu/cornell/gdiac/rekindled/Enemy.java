@@ -13,6 +13,8 @@ import edu.cornell.gdiac.rekindled.light.SightConeLight;
 import edu.cornell.gdiac.rekindled.obstacle.FeetHitboxObstacle;
 import edu.cornell.gdiac.util.FilmStrip;
 
+import java.util.Arrays;
+
 public class Enemy extends FeetHitboxObstacle {
     // Default physics values
     /** The density of this rocket */
@@ -88,7 +90,7 @@ public class Enemy extends FeetHitboxObstacle {
 
     private int type;
 
-    private int[][] wander;
+    public int[][] wander;
     private int pointer = 0; // Points to the current goal in wander
     private boolean forward = true; //Indicates if we are going forward in wander or backward
 
@@ -123,7 +125,14 @@ public class Enemy extends FeetHitboxObstacle {
     public int getPointer(){return pointer;}
 
     public int[] getWanderGoal(){
-        return wander[pointer];
+        return Arrays.copyOf(wander[pointer], 2); }
+
+    public void setWanderGoal(int[] goal){
+        for (int i = 0; i < wander.length; i++){
+            if (wander[i][0] == goal[0] && wander[i][1] == goal[1]){
+                pointer = i;
+            }
+        }
     }
 
     public int[][] getWanderPath(){
@@ -141,11 +150,6 @@ public class Enemy extends FeetHitboxObstacle {
             forward = true;
         }
         if (forward) {pointer++;} else {pointer--;}
-    }
-
-
-    public void setWander(int[][] path){
-        this.wander = path;
     }
 
     public void setWander(JsonValue pathJson){
@@ -376,6 +380,7 @@ public class Enemy extends FeetHitboxObstacle {
             facingDirection = Constants.LEFT;
         }
         else if(goalX == pos.x && goalY == pos.y){ // If goal did not change, don't move
+            System.out.println("Not moving");
             return;
         }
     }
@@ -459,19 +464,6 @@ public class Enemy extends FeetHitboxObstacle {
             super.draw(canvas, currentAnimation,true, timeElapsed, TILE_SIZE);
 
         }
-
-//        super.draw(canvas);  // Ship
-//        // Flames
-//        if (mainBurner != null) {
-//            float offsety = mainBurner.getRegionHeight()-origin.y;
-//            canvas.draw(mainBurner, Color.WHITE,origin.x,offsety,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
-//        }
-//        if (leftBurner != null) {
-//            canvas.draw(leftBurner,Color.WHITE,leftOrigin.x,leftOrigin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
-//        }
-//        if (rghtBurner != null) {
-//            canvas.draw(rghtBurner,Color.WHITE,rghtOrigin.x,rghtOrigin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
-//        }
     }
 
 

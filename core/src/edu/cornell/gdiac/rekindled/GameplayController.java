@@ -88,7 +88,7 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String LOSS_SCREEN_FILE = "images/lossScreen.png";
 
 	/** The file location of the wall*/
-	private static final String WALL_FILE = "images/ingame-wall.png";
+	private static final String WALL_FILE = "images/ingame-wall-temp.png";
 	/** file locations of the light sources*/
 	private static final String LIT_SOURCE_FILE = "images/litLightSource.png";
 	private static final String DIM_SOURCE_FILE = "images/dimLightSource.png";

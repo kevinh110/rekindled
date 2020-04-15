@@ -1,186 +1,49 @@
 {
-  "dimension": [32, 18],
-  "spawn": [4, 4],
+  "dimension": [32,18],
+  "spawn": [4,12],
   "init_lights": 0,
   "lights": [
-    {
-      "position": [
-        6,
-        14
-      ],
-      "lit": false
-    },
-    {
-      "position": [
-        16,
-        9
-      ],
-      "lit": true
-    }
+    {"position": [26,9],"lit": true}
   ],
   "enemies": [
-    {
-      "position": [
-        11,
-        4
-      ],
-      "type": 0,
-      "wander": [
-        [
-          11,
-          4
-        ],
-        [
-          11,
-          15
-        ],
-        [
-          8,
-          15
-        ]
-      ]
-    }
+    {"position": [10,10],"type": 0,"wander": [[10,14],[10,13],[10,12],[10,11],[10,9],[10,8],[10,7],[10,6],[10,5]]}
   ],
   "walls": [
-    {
-      "position": [
-        7,
-        7
-      ],
-      "movable": false
-    },
-    {
-      "position": [
-        7,
-        8
-      ],
-      "movable": false
-    },
-    {
-      "position": [
-        7,
-        9
-      ],
-      "movable": false
-    },
-    {
-      "position": [
-        6,
-        7
-      ],
-      "movable": false
-    },
-    {
-      "position": [
-        5,
-        7
-      ],
-      "movable": false
-    },
-    {
-      "position": [
-        6,
-        7
-      ],
-      "movable": false
-    },
-    {
-      "position": [
-        6,
-        8
-      ],
-      "movable": false
-    },
-    {
-      "position": [
-        5,
-        8
-      ],
-      "movable": false
-    },
-    {
-      "position": [
-        5,
-        9
-      ],
-      "movable": false
-    },
-    {
-      "position": [
-        6,
-        9
-      ],
-      "movable": false
-    },
-    {
-      "position": [
-        14,
-        7
-      ],
-      "movable": false
-    },
-    {
-      "position": [
-        14,
-        8
-      ],
-      "movable": false
-    },
-    {
-      "position": [
-        14,
-        9
-      ],
-      "movable": false
-    },
-    {
-      "position": [
-        13,
-        7
-      ],
-      "movable": false
-    },
-    {
-      "position": [
-        12,
-        7
-      ],
-      "movable": false
-    },
-    {
-      "position": [
-        13,
-        7
-      ],
-      "movable": false
-    },
-    {
-      "position": [
-        13,
-        8
-      ],
-      "movable": false
-    },
-    {
-      "position": [
-        12,
-        8
-      ],
-      "movable": false
-    },
-    {
-      "position": [
-        12,
-        9
-      ],
-      "movable": false
-    },
-    {
-      "position": [
-        13,
-        9
-      ],
-      "movable": false
-    }
+    {"position": [6,14],"movable": false},
+    {"position": [7,14],"movable": false},
+    {"position": [6,13],"movable": false},
+    {"position": [7,13],"movable": false},
+    {"position": [19,13],"movable": false},
+    {"position": [6,12],"movable": false},
+    {"position": [7,12],"movable": false},
+    {"position": [19,12],"movable": false},
+    {"position": [6,11],"movable": false},
+    {"position": [7,11],"movable": false},
+    {"position": [19,11],"movable": false},
+    {"position": [20,11],"movable": false},
+    {"position": [21,11],"movable": false},
+    {"position": [6,10],"movable": false},
+    {"position": [7,10],"movable": false},
+    {"position": [19,10],"movable": false},
+    {"position": [20,10],"movable": false},
+    {"position": [21,10],"movable": false},
+    {"position": [6,9],"movable": false},
+    {"position": [7,9],"movable": false},
+    {"position": [6,8],"movable": false},
+    {"position": [7,8],"movable": false},
+    {"position": [19,8],"movable": false},
+    {"position": [20,8],"movable": false},
+    {"position": [21,8],"movable": false},
+    {"position": [6,7],"movable": false},
+    {"position": [7,7],"movable": false},
+    {"position": [19,7],"movable": false},
+    {"position": [20,7],"movable": false},
+    {"position": [21,7],"movable": false},
+    {"position": [6,6],"movable": false},
+    {"position": [7,6],"movable": false},
+    {"position": [19,6],"movable": false},
+    {"position": [6,5],"movable": false},
+    {"position": [7,5],"movable": false},
+    {"position": [19,5],"movable": false}
   ]
 }

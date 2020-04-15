@@ -46,8 +46,8 @@ import edu.cornell.gdiac.util.*;
  */
 public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	// Textures necessary to support the loading screen 
-	private static final String BACKGROUND_FILE = "images/loading.png";
-	private static final String PROGRESS_FILE = "images/progressbar.png";
+	private static final String BACKGROUND_FILE = "images/start.png";
+//	private static final String PROGRESS_FILE = "images/progressbar.png";
 	private static final String PLAY_BTN_FILE = "images/play.png";
 	
 	/** Background texture for start-up */
@@ -55,21 +55,21 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** Play button to display when done */
 	private Texture playButton;
 	/** Texture atlas to support a progress bar */
-	private Texture statusBar;
+//	private Texture statusBar;
 	
 	// statusBar is a "texture atlas." Break it up into parts.
 	/** Left cap to the status background (grey region) */
-	private TextureRegion statusBkgLeft;
-	/** Middle portion of the status background (grey region) */
-	private TextureRegion statusBkgMiddle;
-	/** Right cap to the status background (grey region) */
-	private TextureRegion statusBkgRight;
-	/** Left cap to the status forground (colored region) */
-	private TextureRegion statusFrgLeft;
-	/** Middle portion of the status forground (colored region) */
-	private TextureRegion statusFrgMiddle;
-	/** Right cap to the status forground (colored region) */
-	private TextureRegion statusFrgRight;	
+//	private TextureRegion statusBkgLeft;
+//	/** Middle portion of the status background (grey region) */
+//	private TextureRegion statusBkgMiddle;
+//	/** Right cap to the status background (grey region) */
+//	private TextureRegion statusBkgRight;
+//	/** Left cap to the status forground (colored region) */
+//	private TextureRegion statusFrgLeft;
+//	/** Middle portion of the status forground (colored region) */
+//	private TextureRegion statusFrgMiddle;
+//	/** Right cap to the status forground (colored region) */
+//	private TextureRegion statusFrgRight;
 
 	/** Default budget for asset loader (do nothing but load 60 fps) */
 	private static int DEFAULT_BUDGET = 15;
@@ -192,7 +192,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		// Load the next two images immediately.
 		playButton = null;
 		background = new Texture(BACKGROUND_FILE);
-		statusBar  = new Texture(PROGRESS_FILE);
+//		statusBar  = new Texture(PROGRESS_FILE);
 		
 		// No progress so far.		
 		progress   = 0;
@@ -200,14 +200,14 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		active = false;
 
 		// Break up the status bar texture into regions
-		statusBkgLeft   = new TextureRegion(statusBar,0,0,PROGRESS_CAP,PROGRESS_HEIGHT);
-		statusBkgRight  = new TextureRegion(statusBar,statusBar.getWidth()-PROGRESS_CAP,0,PROGRESS_CAP,PROGRESS_HEIGHT);
-		statusBkgMiddle = new TextureRegion(statusBar,PROGRESS_CAP,0,PROGRESS_MIDDLE,PROGRESS_HEIGHT);
-
-		int offset = statusBar.getHeight()-PROGRESS_HEIGHT;
-		statusFrgLeft   = new TextureRegion(statusBar,0,offset,PROGRESS_CAP,PROGRESS_HEIGHT);
-		statusFrgRight  = new TextureRegion(statusBar,statusBar.getWidth()-PROGRESS_CAP,offset,PROGRESS_CAP,PROGRESS_HEIGHT);
-		statusFrgMiddle = new TextureRegion(statusBar,PROGRESS_CAP,offset,PROGRESS_MIDDLE,PROGRESS_HEIGHT);
+//		statusBkgLeft   = new TextureRegion(statusBar,0,0,PROGRESS_CAP,PROGRESS_HEIGHT);
+//		statusBkgRight  = new TextureRegion(statusBar,statusBar.getWidth()-PROGRESS_CAP,0,PROGRESS_CAP,PROGRESS_HEIGHT);
+//		statusBkgMiddle = new TextureRegion(statusBar,PROGRESS_CAP,0,PROGRESS_MIDDLE,PROGRESS_HEIGHT);
+//
+//		int offset = statusBar.getHeight()-PROGRESS_HEIGHT;
+//		statusFrgLeft   = new TextureRegion(statusBar,0,offset,PROGRESS_CAP,PROGRESS_HEIGHT);
+//		statusFrgRight  = new TextureRegion(statusBar,statusBar.getWidth()-PROGRESS_CAP,offset,PROGRESS_CAP,PROGRESS_HEIGHT);
+//		statusFrgMiddle = new TextureRegion(statusBar,PROGRESS_CAP,offset,PROGRESS_MIDDLE,PROGRESS_HEIGHT);
 
 		startButton = (System.getProperty("os.name").equals("Mac OS X") ? MAC_OS_X_START : WINDOWS_START);
 		Gdx.input.setInputProcessor(this);
@@ -222,18 +222,18 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * Called when this screen should release all resources.
 	 */
 	public void dispose() {
-		 statusBkgLeft = null;
-		 statusBkgRight = null;
-		 statusBkgMiddle = null;
-
-		 statusFrgLeft = null;
-		 statusFrgRight = null;
-		 statusFrgMiddle = null;
+//		 statusBkgLeft = null;
+//		 statusBkgRight = null;
+//		 statusBkgMiddle = null;
+//
+//		 statusFrgLeft = null;
+//		 statusFrgRight = null;
+//		 statusFrgMiddle = null;
 
 		 background.dispose();
-		 statusBar.dispose();
+//		 statusBar.dispose();
 		 background = null;
-		 statusBar  = null;
+//		 statusBar  = null;
 		 if (playButton != null) {
 			 playButton.dispose();
 			 playButton = null;
@@ -271,13 +271,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private void draw() {
 		canvas.begin();
 		canvas.draw(background, 0, 0);
-		if (playButton == null) {
-			drawProgress(canvas);
-		} else {
-			Color tint = (pressState == 1 ? Color.GRAY: Color.WHITE);
-			canvas.draw(playButton, tint, playButton.getWidth()/2, playButton.getHeight()/2, 
-						centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-		}
 		canvas.end();
 	}
 	
@@ -290,20 +283,20 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 *
 	 * @param canvas The drawing context
 	 */	
-	private void drawProgress(GameCanvas canvas) {	
-		canvas.draw(statusBkgLeft,   Color.WHITE, centerX-width/2, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-		canvas.draw(statusBkgRight,  Color.WHITE, centerX+width/2-scale*PROGRESS_CAP, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-		canvas.draw(statusBkgMiddle, Color.WHITE, centerX-width/2+scale*PROGRESS_CAP, centerY, width-2*scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-
-		canvas.draw(statusFrgLeft,   Color.WHITE, centerX-width/2, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-		if (progress > 0) {
-			float span = progress*(width-2*scale*PROGRESS_CAP)/2.0f;
-			canvas.draw(statusFrgRight,  Color.WHITE, centerX-width/2+scale*PROGRESS_CAP+span, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-			canvas.draw(statusFrgMiddle, Color.WHITE, centerX-width/2+scale*PROGRESS_CAP, centerY, span, scale*PROGRESS_HEIGHT);
-		} else {
-			canvas.draw(statusFrgRight,  Color.WHITE, centerX-width/2+scale*PROGRESS_CAP, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-		}
-	}
+//	private void drawProgress(GameCanvas canvas) {
+//		canvas.draw(statusBkgLeft,   Color.WHITE, centerX-width/2, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
+//		canvas.draw(statusBkgRight,  Color.WHITE, centerX+width/2-scale*PROGRESS_CAP, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
+//		canvas.draw(statusBkgMiddle, Color.WHITE, centerX-width/2+scale*PROGRESS_CAP, centerY, width-2*scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
+//
+//		canvas.draw(statusFrgLeft,   Color.WHITE, centerX-width/2, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
+//		if (progress > 0) {
+//			float span = progress*(width-2*scale*PROGRESS_CAP)/2.0f;
+//			canvas.draw(statusFrgRight,  Color.WHITE, centerX-width/2+scale*PROGRESS_CAP+span, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
+//			canvas.draw(statusFrgMiddle, Color.WHITE, centerX-width/2+scale*PROGRESS_CAP, centerY, span, scale*PROGRESS_HEIGHT);
+//		} else {
+//			canvas.draw(statusFrgRight,  Color.WHITE, centerX-width/2+scale*PROGRESS_CAP, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
+//		}
+//	}
 
 	// ADDITIONAL SCREEN METHODS
 	/**
@@ -410,18 +403,20 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		if (playButton == null || pressState == 2) {
 			return true;
 		}
-		
 		// Flip to match graphics coordinates
 		screenY = heightY-screenY;
-		
-		// TODO: Fix scaling
-		// Play button is a circle.
-		float radius = BUTTON_SCALE*scale*playButton.getWidth()/2.0f;
-		float dist = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-		if (dist < radius*radius) {
+		if (screenX >= 781 && screenX <= 859 && screenY >= 63 && screenY <= 99){
 			pressState = 1;
 		}
+
+		// Play button is a circle
+//		float radius = BUTTON_SCALE*scale*playButton.getWidth()/2.0f;
+//		float dist = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
+//		if (dist < radius*radius) {
+//			pressState = 1;
+//		}
 		return false;
+
 	}
 	
 	/** 

@@ -371,7 +371,7 @@ public class GameplayController extends WorldController implements ContactListen
 		idx = 0;
 		while (light != null){
 			int[] pos = light.get("position").asIntArray();
-			lights[idx] = new LightSourceObject(pos[0], pos[1], 1, 1,light.getBoolean("lit"));
+			lights[idx] = new LightSourceObject(pos[0], pos[1], 2, 2,light.getBoolean("lit"));
 			idx++;
 			light = light.next();
 		}

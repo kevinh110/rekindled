@@ -70,6 +70,13 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String PLAYER_FILE_FRONT = "images/front.png";
 	private static final String PLAYER_FILE_BACK = "images/back.png";
 	private static final String PLAYER_FILE_LEFT = "images/left.png";
+	private static final String PLACING_LIGHT_FRONT = "spritesheets/spritesheet_front-place-light.png";
+	private static final String TAKING_LIGHT_FRONT = "spritesheets/spritesheet_front-place-light.png";
+	private static final String PLACING_LIGHT_LEFT = "spritesheets/spritesheet_left-place-light.png";
+	private static final String TAKING_LIGHT_LEFT = "spritesheets/spritesheet_left-take-light.png";
+	private static final String PLACING_LIGHT_RIGHT = "spritesheets/spritesheet_right-place-light.png";
+	private static final String TAKING_LIGHT_RIGHT = "spritesheets/spritesheet_right-take-light.png";
+
 	/**
 	 * File storing the enemy
 	 */
@@ -109,6 +116,13 @@ public class GameplayController extends WorldController implements ContactListen
 	private TextureRegion playerAnimationBack;
 	private TextureRegion playerAnimationLeft;
 	private TextureRegion playerAnimationRight;
+	private TextureRegion placingLightFront;
+	private TextureRegion takingLightFront;
+	private TextureRegion placingLightLeft;
+	private TextureRegion takingLightLeft;
+	private TextureRegion placingLightRight;
+	private TextureRegion takingLightRight;
+
 
 	private TextureRegion enemyAnimationFront;
 	private TextureRegion enemyAnimationBack;
@@ -173,6 +187,19 @@ public class GameplayController extends WorldController implements ContactListen
 		manager.load(PLAYER_ANIMATION_RIGHT, Texture.class);
 		assets.add(PLAYER_ANIMATION_RIGHT);
 
+		manager.load(PLACING_LIGHT_FRONT, Texture.class);
+		assets.add(PLACING_LIGHT_FRONT);
+		manager.load(TAKING_LIGHT_FRONT, Texture.class);
+		assets.add(TAKING_LIGHT_FRONT);
+		manager.load(PLACING_LIGHT_LEFT, Texture.class);
+		assets.add(PLACING_LIGHT_LEFT);
+		manager.load(TAKING_LIGHT_LEFT, Texture.class);
+		assets.add(TAKING_LIGHT_LEFT);
+		manager.load(PLACING_LIGHT_RIGHT, Texture.class);
+		assets.add(PLACING_LIGHT_RIGHT);
+		manager.load(TAKING_LIGHT_RIGHT, Texture.class);
+		assets.add(TAKING_LIGHT_RIGHT);
+
 		manager.load(ENEMY_ANIMATION_FRONT, Texture.class);
 		assets.add(ENEMY_ANIMATION_FRONT);
 		manager.load(ENEMY_ANIMATION_BACK, Texture.class);
@@ -230,6 +257,12 @@ public class GameplayController extends WorldController implements ContactListen
 		playerAnimationBack = createTexture(manager, PLAYER_ANIMATION_BACK, false);
 		playerAnimationLeft = createTexture(manager, PLAYER_ANIMATION_LEFT, false);
 		playerAnimationRight = createTexture(manager, PLAYER_ANIMATION_RIGHT, false);
+		placingLightFront = createTexture(manager, PLACING_LIGHT_FRONT, false);
+		takingLightFront = createTexture(manager, TAKING_LIGHT_FRONT, false);
+		placingLightLeft = createTexture(manager, PLACING_LIGHT_LEFT, false);
+		takingLightLeft = createTexture(manager, TAKING_LIGHT_LEFT, false);
+		placingLightRight = createTexture(manager, PLACING_LIGHT_RIGHT, false);
+		takingLightRight = createTexture(manager, TAKING_LIGHT_RIGHT, false);
 
 		enemyAnimationFront = createTexture(manager, ENEMY_ANIMATION_FRONT, false);
 		enemyAnimationBack = createTexture(manager, ENEMY_ANIMATION_BACK, false);
@@ -528,7 +561,9 @@ public class GameplayController extends WorldController implements ContactListen
 		AuraLight light_a = new AuraLight(sourceRayHandler);
 		player.addAura(light_a);
 		player.setDrawScale(scale);
-		player.setAnimations(playerAnimationFront, playerAnimationBack, playerAnimationLeft, playerAnimationRight); //setting animation
+		player.setAnimations(playerAnimationFront, playerAnimationBack, playerAnimationLeft, playerAnimationRight,
+				placingLightFront, takingLightFront, placingLightLeft, takingLightLeft, placingLightRight,
+				takingLightRight); //setting animation
 		player.setTexture(playerTextureFront);
 
 		addObject(player);

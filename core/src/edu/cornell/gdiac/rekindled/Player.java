@@ -89,6 +89,12 @@ public class Player extends FeetHitboxObstacle {
     private Animation leftWalkingAnimation;
     private Animation rightWalkingAnimation;
     private Animation currentAnimation;
+    private Animation frontPlacingAnimation;
+    private Animation frontTakingAnimation;
+    private Animation leftPlacingAnimation;
+    private Animation leftTakingAnimation;
+    private Animation rightPlacingAnimation;
+    private Animation rightTakingAnimation;
 
 
     /** The number of frames for the afterburner */
@@ -100,6 +106,8 @@ public class Player extends FeetHitboxObstacle {
     private boolean cooldown;
     private static final int TURN_ON_DELAY = 2;
 
+    private boolean placingLight;
+    private boolean takingLight;
     private boolean touchingLight;
     private AuraLight aura;
 
@@ -215,6 +223,8 @@ public class Player extends FeetHitboxObstacle {
         delayTimer = 0;
         cooldown = false;
         touchingLight = false;
+        placingLight = false;
+        takingLight = false;
 
         this.getFilterData().categoryBits = Constants.BIT_PLAYER;
     }
@@ -306,6 +316,9 @@ public class Player extends FeetHitboxObstacle {
         delayTimer = 0;
         cooldown = true;
         lightCounter += 1;
+        placingLight = true;
+        super.timeElapsed = 0;
+
 
         if (lightCounter == 1)
             this.aura.setActive(true);
@@ -315,6 +328,9 @@ public class Player extends FeetHitboxObstacle {
         delayTimer = 0;
         cooldown = true;
         lightCounter -= 1;
+        takingLight = true;
+        super.timeElapsed = 0;
+
 
         if (lightCounter == 0)
             this.aura.setActive(false);
@@ -324,11 +340,19 @@ public class Player extends FeetHitboxObstacle {
         return this.lightCounter;
     }
 
-    public void setAnimations(TextureRegion frontTexture, TextureRegion backTexture, TextureRegion leftTexture, TextureRegion rightTexture){
+    public void setAnimations(TextureRegion frontTexture, TextureRegion backTexture, TextureRegion leftTexture,
+                              TextureRegion rightTexture, TextureRegion frontPlace, TextureRegion frontTake,
+                              TextureRegion leftPlace, TextureRegion leftTake, TextureRegion rightPlace, TextureRegion rightTake){
         frontWalkingAnimation = getAnimation(frontTexture, TILE_SIZE,TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
         backWalkingAnimation = getAnimation(backTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
         rightWalkingAnimation = getAnimation(rightTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
         leftWalkingAnimation = getAnimation(leftTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+        frontPlacingAnimation = getAnimation(frontPlace, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+        frontTakingAnimation = getAnimation(frontTake, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+        leftPlacingAnimation = getAnimation(leftPlace, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+        leftTakingAnimation = getAnimation(leftTake, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+        rightPlacingAnimation = getAnimation(rightPlace, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+        rightTakingAnimation = getAnimation(rightTake, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
     }
 
 
@@ -350,30 +374,69 @@ public class Player extends FeetHitboxObstacle {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
-
-        switch (super.getDirection()){
-            case LEFT:
-                currentAnimation = leftWalkingAnimation;
-                break;
-            case RIGHT:
-                currentAnimation = rightWalkingAnimation;
-                break;
-            case FRONT:
-                currentAnimation = frontWalkingAnimation;
-                break;
-            case BACK:
-                currentAnimation = backWalkingAnimation;
-                break;
-        }
-
         Color tint = (cooldown) ? Color.CYAN : Color.WHITE;
 
-
-        if(currentAnimation != null){
-            super.draw(canvas,currentAnimation, true,super.getTimeElapsed(), TILE_SIZE, tint);
-
+        if(placingLight){
+                super.timeElapsed += Gdx.graphics.getDeltaTime();
+                switch (super.getDirection()){
+                case FRONT:
+                    currentAnimation = frontPlacingAnimation;
+                    break;
+                case LEFT:
+                    currentAnimation = leftPlacingAnimation;
+                    break;
+                case RIGHT:
+                    currentAnimation = rightPlacingAnimation;
+                    break;
+                case BACK:
+                    currentAnimation = backWalkingAnimation;
+                    break;
+            }
+            super.draw(canvas,currentAnimation, false,super.getTimeElapsed(), TILE_SIZE, tint);
+            if(frontPlacingAnimation.isAnimationFinished(super.timeElapsed)){
+                placingLight = false;
+                super.timeElapsed = 0;
+            }
+        } else if(takingLight){
+            super.timeElapsed += Gdx.graphics.getDeltaTime();
+            switch (super.getDirection()){
+                case FRONT:
+                    currentAnimation = frontTakingAnimation;
+                    break;
+                case LEFT:
+                    currentAnimation = leftTakingAnimation;
+                    break;
+                case RIGHT:
+                    currentAnimation = rightTakingAnimation;
+                    break;
+                case BACK:
+                    currentAnimation = backWalkingAnimation;
+                    break;
+            }
+            super.draw(canvas,currentAnimation, false,super.getTimeElapsed(), TILE_SIZE, tint);
+            if(frontPlacingAnimation.isAnimationFinished(super.timeElapsed)){
+                takingLight = false;
+                super.timeElapsed = 0;
+            }
         } else {
-            super.draw(canvas);  // Player
+
+
+            switch (super.getDirection()) {
+                case LEFT:
+                    currentAnimation = leftWalkingAnimation;
+                    break;
+                case RIGHT:
+                    currentAnimation = rightWalkingAnimation;
+                    break;
+                case FRONT:
+                    currentAnimation = frontWalkingAnimation;
+                    break;
+                case BACK:
+                    currentAnimation = backWalkingAnimation;
+                    break;
+            }
+                super.draw(canvas, currentAnimation, true, super.getTimeElapsed(), TILE_SIZE, tint);
+
         }
     }
 

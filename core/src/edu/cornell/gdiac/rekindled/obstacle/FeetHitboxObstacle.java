@@ -85,7 +85,7 @@ public class FeetHitboxObstacle extends SimpleObstacle {
     private Direction direction;
 
     /**time Elapsed since last animation change*/
-    private float timeElapsed;
+    public float timeElapsed;
 
 
 

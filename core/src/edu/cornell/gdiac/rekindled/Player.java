@@ -104,7 +104,7 @@ public class Player extends FeetHitboxObstacle {
     public int lightCounter;
     private float delayTimer;
     private boolean cooldown;
-    private static final int TURN_ON_DELAY = 2;
+    private static final float TURN_ON_DELAY = 1.5f;
 
     private boolean placingLight;
     private boolean takingLight;

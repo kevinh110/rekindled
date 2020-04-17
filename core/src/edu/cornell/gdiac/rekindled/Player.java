@@ -442,7 +442,8 @@ public class Player extends FeetHitboxObstacle {
 
     public void addAura(AuraLight a) {
         this.aura = a;
-        this.aura.setActive(false);
+        this.aura.setActive(lightCounter != 0);
+        updateAura();
     }
 
     public void updateAura() {

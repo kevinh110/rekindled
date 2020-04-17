@@ -23,7 +23,7 @@ public class Constants {
     public static final float SIGHT_CONE_SECTOR = 60f;
 
     // Defines how big the player's aura should be
-    public static final float AURA_RADIUS = 5f;
+    public static final float AURA_RADIUS = 3f;
 
     // Defines how big the light from a light source is
     public static final float SOURCE_LIGHT_RADIUS = 7f;

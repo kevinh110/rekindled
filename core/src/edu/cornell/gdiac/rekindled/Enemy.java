@@ -39,7 +39,6 @@ public class Enemy extends FeetHitboxObstacle {
     private Animation transformationAnimation;
     private Animation currentAnimation;
 
-
     private float timeElapsed;
 
 

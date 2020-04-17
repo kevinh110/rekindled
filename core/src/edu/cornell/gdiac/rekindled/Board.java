@@ -434,6 +434,13 @@ public class Board {
         return false;
     }
 
+    public boolean isWall(int x, int y){
+        if (inBounds(x, y)){
+            return tiles[x][y].isWall;
+        }
+        return false;
+    }
+
     /**
      * Returns the screen position coordinate for a board cell index.
      *

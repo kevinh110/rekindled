@@ -96,6 +96,12 @@ public class GameplayController extends WorldController implements ContactListen
 
 	/** The file location of the wall*/
 	private static final String WALL_FILE = "images/ingame-wall-temp.png";
+	private static final String WALL_FRONT_FILE = "images/stone_wall_front.png";
+	private static final String WALL_BACK_FILE = "images/stone_wall_back.png";
+	private static final String WALL_LEFT_FILE = "images/stone_wall_left.png";
+	private static final String WALL_RIGHT_FILE = "images/stone_wall_right.png";
+	private static final String WALL_MID_FILE = "images/stone_wall_mid.png";
+
 	/** file locations of the light sources*/
 	private static final String LIT_SOURCE_FILE = "images/litLightSource.png";
 	private static final String DIM_SOURCE_FILE = "images/dimLightSource.png";
@@ -105,6 +111,12 @@ public class GameplayController extends WorldController implements ContactListen
 
 	/**texture region for wall*/
 	private TextureRegion wallTexture;
+	private TextureRegion wallFrontTexture;
+	private TextureRegion wallBackTexture;
+	private TextureRegion wallLeftTexture;
+	private TextureRegion wallRightTexture;
+	private TextureRegion wallMidTexture;
+
 	/**
 	 * Textures for player
 	 */
@@ -229,6 +241,16 @@ public class GameplayController extends WorldController implements ContactListen
 		assets.add(LOSS_SCREEN_FILE);
 		manager.load(WALL_FILE, Texture.class);
 		assets.add(WALL_FILE);
+		manager.load(WALL_FRONT_FILE, Texture.class);
+		assets.add(WALL_FRONT_FILE);
+		manager.load(WALL_LEFT_FILE, Texture.class);
+		assets.add(WALL_LEFT_FILE);
+		manager.load(WALL_RIGHT_FILE, Texture.class);
+		assets.add(WALL_RIGHT_FILE);
+		manager.load(WALL_BACK_FILE, Texture.class);
+		assets.add(WALL_BACK_FILE);
+		manager.load(WALL_MID_FILE, Texture.class);
+		assets.add(WALL_MID_FILE);
 		manager.load(LIT_SOURCE_FILE, Texture.class);
 		assets.add(LIT_SOURCE_FILE);
 		manager.load(DIM_SOURCE_FILE, Texture.class);
@@ -281,7 +303,11 @@ public class GameplayController extends WorldController implements ContactListen
 		lossScreenTexture = createTexture(manager, LOSS_SCREEN_FILE, false);
 
 		wallTexture = createTexture(manager, WALL_FILE, true);
-
+		wallBackTexture = createTexture(manager, WALL_BACK_FILE, true);
+		wallFrontTexture = createTexture(manager, WALL_FRONT_FILE, true);
+		wallLeftTexture = createTexture(manager, WALL_LEFT_FILE, true);
+		wallRightTexture = createTexture(manager, WALL_RIGHT_FILE, true);
+		wallMidTexture = createTexture(manager, WALL_MID_FILE, true);
 
 		dimSourceTexture = createTexture(manager, DIM_SOURCE_FILE, false);
 		litSourceTexture = createTexture(manager, LIT_SOURCE_FILE, false);
@@ -469,6 +495,32 @@ public class GameplayController extends WorldController implements ContactListen
 
 
 	/**
+	 * Returns the proper wall texture
+	 * Pre: board is initialized properly
+	 * @param x x coord of the wall we want to draw
+	 * @param y y coord of the wall we want to draw
+	 * @return the proper wall texture
+	 */
+	private TextureRegion getWallTexture(int x, int y){
+		if (!board.isWall(x - 1, y) && !board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
+			return wallFrontTexture;
+		}
+		else if (!board.isWall(x - 1, y) && board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
+			return wallLeftTexture;
+		}
+		else if (board.isWall(x - 1, y) && !board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
+			return wallRightTexture;
+		}
+		else if (board.isWall(x - 1, y) && board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
+			return wallMidTexture;
+		}
+		else {
+			return wallBackTexture;
+		}
+	}
+
+
+	/**
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
@@ -507,25 +559,22 @@ public class GameplayController extends WorldController implements ContactListen
 			addObject(enemies[i]);
 		}
 
+		// Make Board
+		board = new Board((int) BOARD_WIDTH, (int) BOARD_HEIGHT, walls, lights);
 
 		// Add Walls
 		BoxObstacle obj;
 		for (int i = 0; i < walls.length; i+=2){
-			float[] vertices = {
-					walls[i], walls[i+1],
-					walls[i] + 1, walls[i + 1],
-					walls[i] + 1, walls[i + 1] + 1,
-					walls[i], walls[i + 1] + 1
-			};
 			obj = new BoxObstacle(walls[i], walls[i + 1], 1, 1);
 			obj.setBodyType(BodyDef.BodyType.KinematicBody);
 			obj.setDensity(BASIC_DENSITY);
 			obj.setFriction(BASIC_FRICTION);
 			obj.setRestitution(BASIC_RESTITUTION);
 			obj.setDrawScale(scale);
-			obj.setTexture(wallTexture);
+			obj.setTexture(getWallTexture(walls[i], walls[i+1]));
 			addObject(obj);
-		}
+			}
+
 
 		// Create border pieces
 		float[] border1 = {BOARD_WIDTH / 2f, BOARD_HEIGHT, BOARD_WIDTH / 2f, BOARD_HEIGHT - 0.5f, 0.5f, BOARD_HEIGHT - 0.5f,
@@ -552,7 +601,6 @@ public class GameplayController extends WorldController implements ContactListen
 		wall.setRestitution(BASIC_RESTITUTION);
 		wall.setDrawScale(scale);
 		wall.setTexture(wallTexture);
-		wall.setTexture(wallTexture);
 //		wall.setName("wall2");
 		addObject(wall);
 
@@ -567,9 +615,6 @@ public class GameplayController extends WorldController implements ContactListen
 		player.setTexture(playerTextureFront);
 
 		addObject(player);
-
-		// Make Board
-		board = new Board((int) BOARD_WIDTH, (int) BOARD_HEIGHT, walls, lights);
 
 		// Make AI Controllers
 		for (int idx = 0; idx < enemies.length; idx++){

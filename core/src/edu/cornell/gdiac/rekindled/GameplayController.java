@@ -18,9 +18,7 @@ package edu.cornell.gdiac.rekindled;
 
 import box2dLight.RayHandler;
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
@@ -37,7 +35,6 @@ import edu.cornell.gdiac.rekindled.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.*;
 import javafx.util.Pair;
 
-import javax.xml.soap.Text;
 import java.util.LinkedList;
 
 

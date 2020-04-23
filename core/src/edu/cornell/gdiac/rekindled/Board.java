@@ -58,8 +58,6 @@ public class Board {
         /** Has this tile been visited (used for pathfinding)? */
         public boolean visited = false;
 
-        public final int lightRadius = 3;
-
         private void setWall(){
             isWall = true;
             isLitLightSource = false;
@@ -107,7 +105,7 @@ public class Board {
     private static final String LIT_SOURCE = "images/litLightSource.png";
     /** The file location of a dim light source*/
     private static final String DIM_SOURCE = "images/dimLightSource.png";
-    private static final int LIGHT_RADIUS = (int) Constants.SOURCE_LIGHT_RADIUS - 3; //idk why we have to sub 3
+    private static final int LIGHT_RADIUS = 2; //idk why we have to sub 3
 
     // Instance attributes
     /** The board width (in number of tiles) */
@@ -143,6 +141,8 @@ public class Board {
     private TextureRegion dimSourceRegion;
     /**texture region for wall*/
     private TextureRegion wallRegion;
+
+    private static final Color sightTint = new Color(1, 1, 1, 1);
 
     /**
      * Creates a new board of the given size
@@ -396,13 +396,12 @@ public class Board {
         // Compute drawing coordinates
         float sx = boardToScreenCenter(x);
         float sy = boardToScreenCenter(y);
-        canvas.draw(lightRegion, sx - (getTileSize() - getTileSpacing()) / 2, sy - (getTileSize() - getTileSpacing()) / 2);
 
-//        if (tile.isLitTile)
-//            canvas.draw(lightRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
-//        else
-//            canvas.draw(darkRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
-//
+        if (tile.isLitTile)
+            canvas.draw(lightRegion, sightTint, sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2, lightRegion.getRegionWidth(), lightRegion.getRegionHeight());
+        else
+            canvas.draw(darkRegion, sightTint, sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2, darkRegion.getRegionWidth(), darkRegion.getRegionHeight());
+
     }
 
     /**
@@ -730,6 +729,52 @@ public class Board {
                 right = true;
         }
         spreadLight(LIGHT_RADIUS, x, y, top, bottom, left, right);
+    }
+
+    public void spreadSight (int depth, Vector2 pos, int dir) {
+        // position of first tile to "light" up
+        int x = (dir == Constants.LEFT) ? screenToBoard(pos.x) - 1 : (dir == Constants.RIGHT) ? screenToBoard(pos.x) + 1 : screenToBoard(pos.x);
+        int y = (dir == Constants.FORWARD) ? screenToBoard(pos.y) - 1 : (dir == Constants.BACK) ? screenToBoard(pos.y) + 1 : screenToBoard(pos.y);
+
+        spreadSightHelp(depth, x, y, dir);
+    }
+
+    private void spreadSightHelp (int depth, int x, int y, int dir) {
+
+        if (depth == 0)
+            return;
+
+        if (dir == Constants.LEFT) {
+            TileState tile = tiles[x][y];
+            tile.setLit();
+            spreadSightHelp(depth - 1, x - 1, y, dir);
+            spreadSightHelp(depth - 1, x - 1, y - 1, dir);
+            spreadSightHelp(depth - 1, x - 1, y + 1, dir);
+        }
+
+        if (dir == Constants.RIGHT) {
+            TileState tile = tiles[x][y];
+            tile.setLit();
+            spreadSightHelp(depth - 1, x + 1, y, dir);
+            spreadSightHelp(depth - 1, x + 1, y - 1, dir);
+            spreadSightHelp(depth - 1, x + 1, y + 1, dir);
+        }
+
+        if (dir == Constants.FORWARD) {
+            TileState tile = tiles[x][y];
+            tile.setLit();
+            spreadSightHelp(depth - 1, x, y - 1, dir);
+            spreadSightHelp(depth - 1, x + 1, y - 1, dir);
+            spreadSightHelp(depth - 1, x - 1, y - 1, dir);
+        }
+
+        if (dir == Constants.BACK) {
+            TileState tile = tiles[x][y];
+            tile.setLit();
+            spreadSightHelp(depth - 1, x, y + 1, dir);
+            spreadSightHelp(depth - 1, x + 1, y + 1, dir);
+            spreadSightHelp(depth - 1, x - 1, y + 1, dir);
+        }
     }
 
     public void spreadLight(int depth, int x, int y, boolean top, boolean bottom, boolean left, boolean right) {

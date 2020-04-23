@@ -113,7 +113,7 @@ public class Enemy extends FeetHitboxObstacle {
             transformationAnimation.setPlayMode(Animation.PlayMode.REVERSED);
         }
         isLit = value;
-        this.sight.setActive(!value);
+        //this.sight.setActive(!value);
 
         }
 
@@ -468,10 +468,11 @@ public class Enemy extends FeetHitboxObstacle {
 
 
     public boolean inSight(Vector2 position, float rad) {
-        return this.sight.contains(position.x, position.y) ||
-                this.sight.contains(position.x + rad, position.y) ||
-                this.sight.contains(position.x - rad, position.y) ||
-                this.sight.contains(position.x, position.y + rad) ||
-                this.sight.contains(position.x, position.y - rad);
+//        return this.sight.contains(position.x, position.y) ||
+//                this.sight.contains(position.x + rad, position.y) ||
+//                this.sight.contains(position.x - rad, position.y) ||
+//                this.sight.contains(position.x, position.y + rad) ||
+//                this.sight.contains(position.x, position.y - rad);
+        return false;
     }
 }

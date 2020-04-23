@@ -322,8 +322,8 @@ public abstract class WorldController implements Screen {
      */
     public void setCanvas(GameCanvas canvas) {
         this.canvas = canvas;
-        this.scale.x = canvas.getWidth()/bounds.getWidth();
-        this.scale.y = canvas.getHeight()/bounds.getHeight();
+        this.scale.x = 2 * canvas.getWidth()/bounds.getWidth();
+        this.scale.y = 2 * canvas.getHeight()/bounds.getHeight();
         System.out.println("Canvas Dim: " + canvas.getWidth()+ ", " + canvas.getHeight());
         System.out.println("Bounds: " + bounds.getWidth()+ ", " + bounds.getHeight());
     }
@@ -368,6 +368,7 @@ public abstract class WorldController implements Screen {
     protected WorldController(Rectangle bounds, Vector2 gravity) {
         assets = new Array<String>();
         world = new World(gravity,false);
+
         this.bounds = new Rectangle(bounds);
         this.scale = new Vector2(1,1);
         complete = false;

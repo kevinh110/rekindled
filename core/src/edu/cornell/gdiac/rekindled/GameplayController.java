@@ -463,8 +463,8 @@ public class GameplayController extends WorldController implements ContactListen
 
 		for(int i = 0; i < enemies.length; i ++) {
 
-			SightConeLight sight = new SightConeLight(sourceRayHandler);
-			enemies[i].addSight(sight);
+//			SightConeLight sight = new SightConeLight(sourceRayHandler);
+//			enemies[i].addSight(sight);
 
 			enemies[i].setSensor(true);
 			enemies[i].setDrawScale(scale);
@@ -495,36 +495,73 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 
 		// Create border pieces
+		BoxObstacle border;
 		float[] border1 = {BOARD_WIDTH / 2f, BOARD_HEIGHT, BOARD_WIDTH / 2f, BOARD_HEIGHT - 0.5f, 0.5f, BOARD_HEIGHT - 0.5f,
 				0.5f,  0.5f, BOARD_WIDTH / 2f,  0.5f, BOARD_WIDTH / 2,  0.0f, 0.0f,  0.0f,  0.0f, BOARD_HEIGHT};
-		PolygonObstacle wall;
-		wall = new PolygonObstacle(border1, 0, 0);
-		wall.setBodyType(BodyDef.BodyType.KinematicBody);
-		wall.setDensity(BASIC_DENSITY);
-		wall.setFriction(BASIC_FRICTION);
-		wall.setRestitution(BASIC_RESTITUTION);
-		wall.setDrawScale(scale);
-		wall.setTexture(wallTexture);
-		wall.setName("wall1");
-		addObject(wall);
+		for (int ii = 0; ii < BOARD_WIDTH; ii++) {
+			border = new BoxObstacle(ii, 0, 1, 1);
+			border.setBodyType(BodyDef.BodyType.KinematicBody);
+			border.setDensity(BASIC_DENSITY);
+			border.setFriction(BASIC_FRICTION);
+			border.setRestitution(BASIC_RESTITUTION);
+			border.setDrawScale(scale);
+			border.setTexture(wallTexture);
+			addObject(border);
+			border = new BoxObstacle(ii, BOARD_HEIGHT, 1, 1);
+			border.setBodyType(BodyDef.BodyType.KinematicBody);
+			border.setDensity(BASIC_DENSITY);
+			border.setFriction(BASIC_FRICTION);
+			border.setRestitution(BASIC_RESTITUTION);
+			border.setDrawScale(scale);
+			border.setTexture(wallTexture);
+			addObject(border);
+		}
+		for (int jj = 1; jj < BOARD_WIDTH - 1; jj++) {
+			border = new BoxObstacle(0, jj, 1, 1);
+			border.setBodyType(BodyDef.BodyType.KinematicBody);
+			border.setDensity(BASIC_DENSITY);
+			border.setFriction(BASIC_FRICTION);
+			border.setRestitution(BASIC_RESTITUTION);
+			border.setDrawScale(scale);
+			border.setTexture(wallTexture);
+			addObject(border);
+			border = new BoxObstacle(BOARD_WIDTH, jj, 1, 1);
+			border.setBodyType(BodyDef.BodyType.KinematicBody);
+			border.setDensity(BASIC_DENSITY);
+			border.setFriction(BASIC_FRICTION);
+			border.setRestitution(BASIC_RESTITUTION);
+			border.setDrawScale(scale);
+			border.setTexture(wallTexture);
+			addObject(border);
+		}
+//		PolygonObstacle wall;
+//		wall = new BoxObstacle(border1, 0, 0);
+//		wall.setBodyType(BodyDef.BodyType.KinematicBody);
+//		wall.setDensity(BASIC_DENSITY);
+//		wall.setFriction(BASIC_FRICTION);
+//		wall.setRestitution(BASIC_RESTITUTION);
+//		wall.setDrawScale(scale);
+//		wall.setTexture(wallTexture);
+//		wall.setName("wall1");
+//		addObject(wall);
 
-		float[] border2 = {BOARD_WIDTH, BOARD_HEIGHT, BOARD_WIDTH,  0.0f, BOARD_WIDTH / 2f,  0.0f,
-				BOARD_WIDTH / 2f,  0.5f, BOARD_WIDTH - 0.5f,  0.5f, BOARD_WIDTH - 0.5f, BOARD_HEIGHT - 0.5f,
-				BOARD_WIDTH / 2f, BOARD_HEIGHT - 0.5f, BOARD_WIDTH / 2f, BOARD_HEIGHT};
-
-		wall = new PolygonObstacle(border2, 0, 0);
-		wall.setBodyType(BodyDef.BodyType.KinematicBody);
-		wall.setDensity(BASIC_DENSITY);
-		wall.setFriction(BASIC_FRICTION);
-		wall.setRestitution(BASIC_RESTITUTION);
-		wall.setDrawScale(scale);
-		wall.setTexture(wallTexture);
-		wall.setTexture(wallTexture);
+//		float[] border2 = {BOARD_WIDTH, BOARD_HEIGHT, BOARD_WIDTH,  0.0f, BOARD_WIDTH / 2f,  0.0f,
+//				BOARD_WIDTH / 2f,  0.5f, BOARD_WIDTH - 0.5f,  0.5f, BOARD_WIDTH - 0.5f, BOARD_HEIGHT - 0.5f,
+//				BOARD_WIDTH / 2f, BOARD_HEIGHT - 0.5f, BOARD_WIDTH / 2f, BOARD_HEIGHT};
+//
+//		wall = new PolygonObstacle(border2, 0, 0);
+//		wall.setBodyType(BodyDef.BodyType.KinematicBody);
+//		wall.setDensity(BASIC_DENSITY);
+//		wall.setFriction(BASIC_FRICTION);
+//		wall.setRestitution(BASIC_RESTITUTION);
+//		wall.setDrawScale(scale);
+//		wall.setTexture(wallTexture);
+//		wall.setTexture(wallTexture);
 //		wall.setName("wall2");
-		addObject(wall);
+//		addObject(wall);
 
 		// Add Player
-		player = new Player(spawn[0], spawn[1], 1, 1, initLights);
+		player = new Player(spawn[0], spawn[1], 0.95f, 0.95f, initLights);
 		AuraLight light_a = new AuraLight(sourceRayHandler);
 		player.addAura(light_a);
 		player.setDrawScale(scale);

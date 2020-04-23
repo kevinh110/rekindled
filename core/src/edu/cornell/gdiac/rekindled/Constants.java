@@ -29,5 +29,5 @@ public class Constants {
     public static final float SOURCE_LIGHT_RADIUS = 6f;
 
     // Defines how dark shadows should be (0..1)
-    public static final float AMBIANCE = 0.2f;
+    public static final float AMBIANCE = 0.5f;
 }

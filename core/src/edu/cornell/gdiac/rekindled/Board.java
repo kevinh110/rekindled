@@ -58,8 +58,6 @@ public class Board {
         /** Has this tile been visited (used for pathfinding)? */
         public boolean visited = false;
 
-        public final int lightRadius = 3;
-
         private void setWall(){
             isWall = true;
             isLitLightSource = false;
@@ -107,7 +105,7 @@ public class Board {
     private static final String LIT_SOURCE = "images/litLightSource.png";
     /** The file location of a dim light source*/
     private static final String DIM_SOURCE = "images/dimLightSource.png";
-    private static final int LIGHT_RADIUS = 3;
+    private static final int LIGHT_RADIUS = 2;
 
     // Instance attributes
     /** The board width (in number of tiles) */
@@ -398,7 +396,10 @@ public class Board {
         float sx = boardToScreenCenter(x);
         float sy = boardToScreenCenter(y);
 
-        canvas.draw(lightRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
+        if (tile.isLitTile)
+            canvas.draw(lightRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
+        else
+            canvas.draw(darkRegion,  sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2);
 
     }
 

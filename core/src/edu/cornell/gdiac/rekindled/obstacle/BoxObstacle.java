@@ -148,6 +148,10 @@ public class BoxObstacle extends SimpleObstacle {
 
 		this.getFilterData().categoryBits =  Constants.BIT_WALL;
 	}
+
+//	public BoxObstacle(float x, float y, float width, float height, boolean check) {
+//		this(x + .5f, y + .5f, width, height);
+//	}
 	
 	/**
 	 * Reset the polygon vertices in the shape to match the dimension.

@@ -14,7 +14,7 @@ public class Constants {
     public static final int RIGHT = 4;
 
     // Maximum number of lights that Lux can carry
-    public static final int MAX_LIGHTS = 2;
+    public static final int MAX_LIGHTS = 10;
 
     // How far the enemies sight cone should extend
     public static final float SIGHT_CONE_RADIUS = 9f;
@@ -23,10 +23,10 @@ public class Constants {
     public static final float SIGHT_CONE_SECTOR = 60f;
 
     // Defines how big the player's aura should be
-    public static final float AURA_RADIUS = 5f;
+    public static final float AURA_RADIUS = 3f;
 
     // Defines how big the light from a light source is
-    public static final float SOURCE_LIGHT_RADIUS = 6f;
+    public static final float SOURCE_LIGHT_RADIUS = 3f;
 
     // Defines how dark shadows should be (0..1)
     public static final float AMBIANCE = 0.2f;

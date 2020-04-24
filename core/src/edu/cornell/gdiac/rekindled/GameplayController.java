@@ -18,9 +18,7 @@ package edu.cornell.gdiac.rekindled;
 
 import box2dLight.RayHandler;
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
@@ -31,12 +29,12 @@ import edu.cornell.gdiac.rekindled.light.AuraLight;
 import edu.cornell.gdiac.rekindled.light.LightSourceLight;
 import edu.cornell.gdiac.rekindled.light.SightConeLight;
 import edu.cornell.gdiac.rekindled.obstacle.BoxObstacle;
+import edu.cornell.gdiac.rekindled.obstacle.FeetHitboxObstacle;
 import edu.cornell.gdiac.rekindled.obstacle.Obstacle;
 import edu.cornell.gdiac.rekindled.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.*;
 import javafx.util.Pair;
 
-import javax.xml.soap.Text;
 import java.util.LinkedList;
 
 
@@ -69,6 +67,13 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String PLAYER_FILE_FRONT = "images/front.png";
 	private static final String PLAYER_FILE_BACK = "images/back.png";
 	private static final String PLAYER_FILE_LEFT = "images/left.png";
+	private static final String PLACING_LIGHT_FRONT = "spritesheets/spritesheet_front-place-light.png";
+	private static final String TAKING_LIGHT_FRONT = "spritesheets/spritesheet_front-place-light.png";
+	private static final String PLACING_LIGHT_LEFT = "spritesheets/spritesheet_left-place-light.png";
+	private static final String TAKING_LIGHT_LEFT = "spritesheets/spritesheet_left-take-light.png";
+	private static final String PLACING_LIGHT_RIGHT = "spritesheets/spritesheet_right-place-light.png";
+	private static final String TAKING_LIGHT_RIGHT = "spritesheets/spritesheet_right-take-light.png";
+
 	/**
 	 * File storing the enemy
 	 */
@@ -87,16 +92,36 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String LOSS_SCREEN_FILE = "images/lossScreen.png";
 
 	/** The file location of the wall*/
-	private static final String WALL_FILE = "images/ingame-wall.png";
+	private static final String WALL_FILE = "images/ingame-wall-temp.png";
+	private static final String WALL_FRONT_FILE = "images/stone_wall_front.png";
+	private static final String WALL_BACK_FILE = "images/stone_wall_back.png";
+	private static final String WALL_LEFT_FILE = "images/stone_wall_left.png";
+	private static final String WALL_RIGHT_FILE = "images/stone_wall_right.png";
+	private static final String WALL_MID_FILE = "images/stone_wall_mid.png";
+
 	/** file locations of the light sources*/
 	private static final String LIT_SOURCE_FILE = "images/litLightSource.png";
 	private static final String DIM_SOURCE_FILE = "images/dimLightSource.png";
 	private static final String LIGHT_ANIMATION_FILE = "spritesheets/spritesheet_lamp.png";
 
+	/** file location for the art objects */
+	private static final String GRASS_SOURCE_FILE = "spritesheets/spritesheet_grass.png";
+	private static final String MUSHROOM_SOURCE_FILE = "spritesheets/spritesheet_mushrooms.png";
+
+	/** texture for art objects */
+	private TextureRegion grassTexture;
+	private TextureRegion mushroomTexture;
+
 
 
 	/**texture region for wall*/
 	private TextureRegion wallTexture;
+	private TextureRegion wallFrontTexture;
+	private TextureRegion wallBackTexture;
+	private TextureRegion wallLeftTexture;
+	private TextureRegion wallRightTexture;
+	private TextureRegion wallMidTexture;
+
 	/**
 	 * Textures for player
 	 */
@@ -108,6 +133,13 @@ public class GameplayController extends WorldController implements ContactListen
 	private TextureRegion playerAnimationBack;
 	private TextureRegion playerAnimationLeft;
 	private TextureRegion playerAnimationRight;
+	private TextureRegion placingLightFront;
+	private TextureRegion takingLightFront;
+	private TextureRegion placingLightLeft;
+	private TextureRegion takingLightLeft;
+	private TextureRegion placingLightRight;
+	private TextureRegion takingLightRight;
+
 
 	private TextureRegion enemyAnimationFront;
 	private TextureRegion enemyAnimationBack;
@@ -174,6 +206,19 @@ public class GameplayController extends WorldController implements ContactListen
 		manager.load(PLAYER_ANIMATION_RIGHT, Texture.class);
 		assets.add(PLAYER_ANIMATION_RIGHT);
 
+		manager.load(PLACING_LIGHT_FRONT, Texture.class);
+		assets.add(PLACING_LIGHT_FRONT);
+		manager.load(TAKING_LIGHT_FRONT, Texture.class);
+		assets.add(TAKING_LIGHT_FRONT);
+		manager.load(PLACING_LIGHT_LEFT, Texture.class);
+		assets.add(PLACING_LIGHT_LEFT);
+		manager.load(TAKING_LIGHT_LEFT, Texture.class);
+		assets.add(TAKING_LIGHT_LEFT);
+		manager.load(PLACING_LIGHT_RIGHT, Texture.class);
+		assets.add(PLACING_LIGHT_RIGHT);
+		manager.load(TAKING_LIGHT_RIGHT, Texture.class);
+		assets.add(TAKING_LIGHT_RIGHT);
+
 		manager.load(ENEMY_ANIMATION_FRONT, Texture.class);
 		assets.add(ENEMY_ANIMATION_FRONT);
 		manager.load(ENEMY_ANIMATION_BACK, Texture.class);
@@ -203,12 +248,26 @@ public class GameplayController extends WorldController implements ContactListen
 		assets.add(LOSS_SCREEN_FILE);
 		manager.load(WALL_FILE, Texture.class);
 		assets.add(WALL_FILE);
+		manager.load(WALL_FRONT_FILE, Texture.class);
+		assets.add(WALL_FRONT_FILE);
+		manager.load(WALL_LEFT_FILE, Texture.class);
+		assets.add(WALL_LEFT_FILE);
+		manager.load(WALL_RIGHT_FILE, Texture.class);
+		assets.add(WALL_RIGHT_FILE);
+		manager.load(WALL_BACK_FILE, Texture.class);
+		assets.add(WALL_BACK_FILE);
+		manager.load(WALL_MID_FILE, Texture.class);
+		assets.add(WALL_MID_FILE);
 		manager.load(LIT_SOURCE_FILE, Texture.class);
 		assets.add(LIT_SOURCE_FILE);
 		manager.load(DIM_SOURCE_FILE, Texture.class);
 		assets.add(DIM_SOURCE_FILE);
 		manager.load(LIGHT_ANIMATION_FILE, Texture.class);
 		assets.add(LIGHT_ANIMATION_FILE);
+		manager.load(GRASS_SOURCE_FILE, Texture.class);
+		assets.add(GRASS_SOURCE_FILE);
+		manager.load(MUSHROOM_SOURCE_FILE, Texture.class);
+		assets.add(MUSHROOM_SOURCE_FILE);
 
 		super.preLoadContent(manager);
 	}
@@ -231,6 +290,12 @@ public class GameplayController extends WorldController implements ContactListen
 		playerAnimationBack = createTexture(manager, PLAYER_ANIMATION_BACK, false);
 		playerAnimationLeft = createTexture(manager, PLAYER_ANIMATION_LEFT, false);
 		playerAnimationRight = createTexture(manager, PLAYER_ANIMATION_RIGHT, false);
+		placingLightFront = createTexture(manager, PLACING_LIGHT_FRONT, false);
+		takingLightFront = createTexture(manager, TAKING_LIGHT_FRONT, false);
+		placingLightLeft = createTexture(manager, PLACING_LIGHT_LEFT, false);
+		takingLightLeft = createTexture(manager, TAKING_LIGHT_LEFT, false);
+		placingLightRight = createTexture(manager, PLACING_LIGHT_RIGHT, false);
+		takingLightRight = createTexture(manager, TAKING_LIGHT_RIGHT, false);
 
 		enemyAnimationFront = createTexture(manager, ENEMY_ANIMATION_FRONT, false);
 		enemyAnimationBack = createTexture(manager, ENEMY_ANIMATION_BACK, false);
@@ -249,11 +314,18 @@ public class GameplayController extends WorldController implements ContactListen
 		lossScreenTexture = createTexture(manager, LOSS_SCREEN_FILE, false);
 
 		wallTexture = createTexture(manager, WALL_FILE, true);
-
+		wallBackTexture = createTexture(manager, WALL_BACK_FILE, true);
+		wallFrontTexture = createTexture(manager, WALL_FRONT_FILE, true);
+		wallLeftTexture = createTexture(manager, WALL_LEFT_FILE, true);
+		wallRightTexture = createTexture(manager, WALL_RIGHT_FILE, true);
+		wallMidTexture = createTexture(manager, WALL_MID_FILE, true);
 
 		dimSourceTexture = createTexture(manager, DIM_SOURCE_FILE, false);
 		litSourceTexture = createTexture(manager, LIT_SOURCE_FILE, false);
 		lightAnimation = createTexture(manager, LIGHT_ANIMATION_FILE, false);
+
+		grassTexture = createTexture(manager, GRASS_SOURCE_FILE, false);
+		mushroomTexture = createTexture(manager, MUSHROOM_SOURCE_FILE, false);
 
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
@@ -316,6 +388,10 @@ public class GameplayController extends WorldController implements ContactListen
 	private Player player;
 
 	private Enemy[] enemies;
+
+	private ArtObject[] artObjects;
+
+
 
 	/**
 	 * Stores all the AI controllers
@@ -386,11 +462,26 @@ public class GameplayController extends WorldController implements ContactListen
 		while (enemy != null){
 			int[] pos = enemy.get("position").asIntArray();
 			JsonValue wander = enemy.get("wander");
+			System.out.println("position");
+			System.out.println(pos[1]);
 			enemies[idx] = new Enemy(pos[0], pos[1], 1, 1, enemy.getInt("type"));
 			enemies[idx].setWander(wander);
 			idx++;
 			enemy = enemy.next();
 		}
+
+		//Add sample art objects
+		int grass_tile = 75;
+		int grass_frames = 7;
+		int mushroom_frames = 5;
+		artObjects = new ArtObject[4];
+		artObjects[0] = new ArtObject(15, 6, 1, 1, grass_tile, grass_frames, ArtObject.ASSET_TYPE.GRASS);
+		artObjects[1] = new ArtObject(3, 3, 1, 1, grass_tile, mushroom_frames, ArtObject.ASSET_TYPE.MUSHROOM);
+		artObjects[2] = new ArtObject(4, 13, 1, 1, grass_tile, grass_frames, ArtObject.ASSET_TYPE.GRASS);
+		artObjects[3] = new ArtObject(18, 7, 1, 1, grass_tile, mushroom_frames, ArtObject.ASSET_TYPE.MUSHROOM);
+
+
+
 	}
 
 
@@ -400,6 +491,7 @@ public class GameplayController extends WorldController implements ContactListen
 	 * The game has default gravity and other settings
 	 */
 	public GameplayController(String json) {
+		System.out.println(json);
 		jsonReader = new JsonReader();
 		LEVEL_PATH = json;
 		setDebug(false);
@@ -437,11 +529,38 @@ public class GameplayController extends WorldController implements ContactListen
 
 
 	/**
+	 * Returns the proper wall texture
+	 * Pre: board is initialized properly
+	 * @param x x coord of the wall we want to draw
+	 * @param y y coord of the wall we want to draw
+	 * @return the proper wall texture
+	 */
+	private TextureRegion getWallTexture(int x, int y){
+		if (!board.isWall(x - 1, y) && !board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
+			return wallFrontTexture;
+		}
+		else if (!board.isWall(x - 1, y) && board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
+			return wallLeftTexture;
+		}
+		else if (board.isWall(x - 1, y) && !board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
+			return wallRightTexture;
+		}
+		else if (board.isWall(x - 1, y) && board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
+			return wallMidTexture;
+		}
+		else {
+			return wallBackTexture;
+		}
+	}
+
+
+	/**
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
 		canvas.setScale(CAMERA_SCALE);
 		initLighting();
+
 		for (int i = 0; i < lights.length; i++){
 
 			LightSourceLight light_s = new LightSourceLight(sourceRayHandler);
@@ -477,83 +596,101 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 
 
+
+		// Make Board
+		board = new Board((int) BOARD_WIDTH, (int) BOARD_HEIGHT, walls, lights);
+
 		// Add Walls
 		BoxObstacle obj;
 		for (int i = 0; i < walls.length; i+=2){
-			float[] vertices = {
-					walls[i], walls[i+1],
-					walls[i] + 1, walls[i + 1],
-					walls[i] + 1, walls[i + 1] + 1,
-					walls[i], walls[i + 1] + 1
-			};
 			obj = new BoxObstacle(walls[i], walls[i + 1], 1, 1);
 			obj.setBodyType(BodyDef.BodyType.KinematicBody);
 			obj.setDensity(BASIC_DENSITY);
 			obj.setFriction(BASIC_FRICTION);
 			obj.setRestitution(BASIC_RESTITUTION);
 			obj.setDrawScale(scale);
-			obj.setTexture(wallTexture);
+			obj.setTexture(getWallTexture(walls[i], walls[i+1]));
 			addObject(obj);
-		}
+			}
+
 
 		// Create border pieces
-		float[] border1 = {BOARD_WIDTH / 2f, BOARD_HEIGHT, BOARD_WIDTH / 2f, BOARD_HEIGHT - 0.5f, 0.5f, BOARD_HEIGHT - 0.5f,
-				0.5f,  0.5f, BOARD_WIDTH / 2f,  0.5f, BOARD_WIDTH / 2,  0.0f, 0.0f,  0.0f,  0.0f, BOARD_HEIGHT};
-		PolygonObstacle wall;
-		wall = new PolygonObstacle(border1, 0, 0);
-		wall.setBodyType(BodyDef.BodyType.KinematicBody);
-		wall.setDensity(BASIC_DENSITY);
-		wall.setFriction(BASIC_FRICTION);
-		wall.setRestitution(BASIC_RESTITUTION);
-		wall.setDrawScale(scale);
-		wall.setTexture(wallTexture);
-		wall.setName("wall1");
-		addObject(wall);
+		BoxObstacle border;
+		for (int ii = 0; ii < BOARD_WIDTH; ii++) {
+			border = new BoxObstacle(ii, 0, 1, 1);
+			border.setBodyType(BodyDef.BodyType.KinematicBody);
+			border.setDensity(BASIC_DENSITY);
+			border.setFriction(BASIC_FRICTION);
+			border.setRestitution(BASIC_RESTITUTION);
+			border.setDrawScale(scale);
+			border.setTexture(getWallTexture(ii, 0));
+			addObject(border);
+			border = new BoxObstacle(ii, BOARD_HEIGHT, 1, 1);
+			border.setBodyType(BodyDef.BodyType.KinematicBody);
+			border.setDensity(BASIC_DENSITY);
+			border.setFriction(BASIC_FRICTION);
+			border.setRestitution(BASIC_RESTITUTION);
+			border.setDrawScale(scale);
+			border.setTexture(getWallTexture(ii, (int)BOARD_HEIGHT));
+			addObject(border);
+		}
+		for (int jj = 1; jj < BOARD_WIDTH - 1; jj++) {
+			border = new BoxObstacle(0, jj, 1, 1);
+			border.setBodyType(BodyDef.BodyType.KinematicBody);
+			border.setDensity(BASIC_DENSITY);
+			border.setFriction(BASIC_FRICTION);
+			border.setRestitution(BASIC_RESTITUTION);
+			border.setDrawScale(scale);
+			border.setTexture(getWallTexture(0, jj));
+			addObject(border);
+			border = new BoxObstacle(BOARD_WIDTH, jj, 1, 1);
+			border.setBodyType(BodyDef.BodyType.KinematicBody);
+			border.setDensity(BASIC_DENSITY);
+			border.setFriction(BASIC_FRICTION);
+			border.setRestitution(BASIC_RESTITUTION);
+			border.setDrawScale(scale);
+			border.setTexture(getWallTexture((int)BOARD_WIDTH, jj));
+			addObject(border);
+		}
 
-		float[] border2 = {BOARD_WIDTH, BOARD_HEIGHT, BOARD_WIDTH,  0.0f, BOARD_WIDTH / 2f,  0.0f,
-				BOARD_WIDTH / 2f,  0.5f, BOARD_WIDTH - 0.5f,  0.5f, BOARD_WIDTH - 0.5f, BOARD_HEIGHT - 0.5f,
-				BOARD_WIDTH / 2f, BOARD_HEIGHT - 0.5f, BOARD_WIDTH / 2f, BOARD_HEIGHT};
-
-		wall = new PolygonObstacle(border2, 0, 0);
-		wall.setBodyType(BodyDef.BodyType.KinematicBody);
-		wall.setDensity(BASIC_DENSITY);
-		wall.setFriction(BASIC_FRICTION);
-		wall.setRestitution(BASIC_RESTITUTION);
-		wall.setDrawScale(scale);
-		wall.setTexture(wallTexture);
-		wall.setTexture(wallTexture);
-//		wall.setName("wall2");
-		addObject(wall);
 
 		// Add Player
-		player = new Player(spawn[0], spawn[1], 1, 1, initLights);
+		player = new Player(spawn[0], spawn[1], 0.5f, 0.5f, initLights);
 		AuraLight light_a = new AuraLight(sourceRayHandler);
 		player.addAura(light_a);
 		player.setDrawScale(scale);
-		player.setAnimations(playerAnimationFront, playerAnimationBack, playerAnimationLeft, playerAnimationRight); //setting animation
+		player.setAnimations(playerAnimationFront, playerAnimationBack, playerAnimationLeft, playerAnimationRight,
+				placingLightFront, takingLightFront, placingLightLeft, takingLightLeft, placingLightRight,
+				takingLightRight); //setting animation
 		player.setTexture(playerTextureFront);
 
 		addObject(player);
-
-		// Make Board
-		board = new Board((int) BOARD_WIDTH, (int) BOARD_HEIGHT, walls, lights);
 
 		// Make AI Controllers
 		for (int idx = 0; idx < enemies.length; idx++){
 			controls[idx] = new AIController(enemies[idx], board, player, enemies, getWorldStep());
 		}
 
+		//Add Art Objects
+		for(int i = 0; i < artObjects.length; i++){
+			artObjects[i].setAnimation(artObjects[i].type == ArtObject.ASSET_TYPE.GRASS ? grassTexture : mushroomTexture);
+			artObjects[i].setDrawScale(scale);
+			artObjects[i].setBodyType(BodyDef.BodyType.StaticBody);
+			artObjects[i].setSensor(true);
+			addObject(artObjects[i]);
+		}
+
 
 	}
 
 	public void initLighting() {
-		rayCamera = new OrthographicCamera(bounds.width,bounds.height);
-		rayCamera.position.set(bounds.width/2.0f, bounds.height/2.0f, 0);
+		rayCamera = new OrthographicCamera(Gdx.graphics.getWidth() / 64f, Gdx.graphics.getHeight()/64f);
+		rayCamera.position.set(10, 5.5f, 0);
 		rayCamera.update();
 
 		RayHandler.setGammaCorrection(true);
 		RayHandler.useDiffuseLight(true);
-		sourceRayHandler = new RayHandler(world, Gdx.graphics.getWidth(),  Gdx.graphics.getHeight());
+		sourceRayHandler = new RayHandler(world);
 		sourceRayHandler.setCombinedMatrix(rayCamera);
 
 		sourceRayHandler.setAmbientLight(Constants.AMBIANCE, Constants.AMBIANCE, Constants.AMBIANCE, Constants.AMBIANCE);
@@ -632,7 +769,7 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 
 		//throw light
-		if(input.didSecondary() && player.lightCounter > 0 && !player.getTouchingLight()){
+		if(input.didShift() && player.lightCounter > 0){
 			if(thrownLights.isEmpty() || (System.currentTimeMillis() - thrownLights.get(0).getValue() > 500L)) {
 
 				LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius
@@ -654,12 +791,25 @@ public class GameplayController extends WorldController implements ContactListen
 				}
 			}
 		}
+		// update board
+		board.update();
+
+		//update Art objects
+		for(ArtObject obj : artObjects){
+			if (board.isLitTileBoard((int)obj.getX(), (int)obj.getY())){
+				obj.setLit(true);
+			} else {
+				obj.setLit(false);
+			}
+		}
 
 		// Do enemy movement
 		// Enemy Movement
 		for (AIController controller : controls){
 			controller.move(insideLightSource(player.getPosition()));
-			controller.getEnemy().updateSightCone();
+			Enemy enemy = controller.getEnemy();
+			//board.updateSeenTiles(enemy.getPosition(), enemy.getFacingDirection());
+			enemy.updateSightCone();
 		}
 
 		// Check win Condition
@@ -670,8 +820,6 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 		wonGame = (numLit == enemies.length);
 
-		//Update board
-		board.update();
 
 	}
 
@@ -683,7 +831,6 @@ public class GameplayController extends WorldController implements ContactListen
                 postUpdate(delta);
             }
             draw(delta, board);
-            //sourceRayHandler.render();
 
 
         }
@@ -700,8 +847,8 @@ public class GameplayController extends WorldController implements ContactListen
 		canvas.begin();
 		board.draw(canvas);
 		for(Obstacle obj : objects) {
-//			if (!(obj instanceof BoxObstacle))
-			obj.draw(canvas);
+			if (!(obj instanceof BoxObstacle || obj instanceof PolygonObstacle || obj instanceof FeetHitboxObstacle))
+				obj.draw(canvas);
 		}
 		canvas.end();
 
@@ -713,13 +860,13 @@ public class GameplayController extends WorldController implements ContactListen
 
 
 		// draw things that should not be affected by shadows
-//		canvas.begin();
-//
-//		for(Obstacle obj : objects) {
-//			if (obj instanceof BoxObstacle)
-//				obj.draw(canvas);
-//		}
-//		canvas.end();
+		canvas.begin();
+
+		for(Obstacle obj : objects) {
+			if (obj instanceof BoxObstacle || obj instanceof PolygonObstacle || obj instanceof FeetHitboxObstacle)
+				obj.draw(canvas);
+		}
+		canvas.end();
 
 		if (debug) {
 			canvas.beginDebug();

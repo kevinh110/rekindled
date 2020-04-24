@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.rekindled;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -94,6 +95,6 @@ public class LightSourceObject extends BoxObstacle {
             timeElapsed += Gdx.graphics.getDeltaTime();
             isTransitioning = !lightAnimation.isAnimationFinished(timeElapsed);
         }
-        super.draw(canvas, lightAnimation, false, timeElapsed, TILE_SIZE);
+        super.draw(canvas, lightAnimation, false, timeElapsed, TILE_SIZE, Color.WHITE);
     }
 }

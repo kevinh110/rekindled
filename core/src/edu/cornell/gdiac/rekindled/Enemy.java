@@ -8,10 +8,11 @@ import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
-import edu.cornell.gdiac.rekindled.light.AuraLight;
 import edu.cornell.gdiac.rekindled.light.SightConeLight;
 import edu.cornell.gdiac.rekindled.obstacle.FeetHitboxObstacle;
 import edu.cornell.gdiac.util.FilmStrip;
+
+import java.util.Arrays;
 
 public class Enemy extends FeetHitboxObstacle {
     // Default physics values
@@ -36,7 +37,6 @@ public class Enemy extends FeetHitboxObstacle {
     private Animation savedAnimation;
     private Animation transformationAnimation;
     private Animation currentAnimation;
-
 
     private float timeElapsed;
 
@@ -88,7 +88,7 @@ public class Enemy extends FeetHitboxObstacle {
 
     private int type;
 
-    private int[][] wander;
+    public int[][] wander;
     private int pointer = 0; // Points to the current goal in wander
     private boolean forward = true; //Indicates if we are going forward in wander or backward
 
@@ -123,7 +123,14 @@ public class Enemy extends FeetHitboxObstacle {
     public int getPointer(){return pointer;}
 
     public int[] getWanderGoal(){
-        return wander[pointer];
+        return Arrays.copyOf(wander[pointer], 2); }
+
+    public void setWanderGoal(int[] goal){
+        for (int i = 0; i < wander.length; i++){
+            if (wander[i][0] == goal[0] && wander[i][1] == goal[1]){
+                pointer = i;
+            }
+        }
     }
 
     public int[][] getWanderPath(){
@@ -141,11 +148,6 @@ public class Enemy extends FeetHitboxObstacle {
             forward = true;
         }
         if (forward) {pointer++;} else {pointer--;}
-    }
-
-
-    public void setWander(int[][] path){
-        this.wander = path;
     }
 
     public void setWander(JsonValue pathJson){
@@ -409,10 +411,10 @@ public class Enemy extends FeetHitboxObstacle {
         this.sight.setActive(true);
         updateSightCone();
     }
-
     public void updateSightCone() {
         if (this.sight.isActive()) {
             this.sight.setPosition(this.getPosition());
+            System.out.println("Sight cone position: " + this.sight.getPosition());
             float angle =
                     (facingDirection == Constants.FORWARD) ? 270.0f :
                             (facingDirection == Constants.BACK) ? 90.f :
@@ -429,16 +431,17 @@ public class Enemy extends FeetHitboxObstacle {
     public void draw(GameCanvas canvas) {
         timeElapsed += Gdx.graphics.getDeltaTime();
 
+
         if(isTransitioning){
             currentAnimation = transformationAnimation;
             if(transformationAnimation.isAnimationFinished(timeElapsed)){
                 isTransitioning = false;
             }
-            super.draw(canvas, currentAnimation,false, timeElapsed, TILE_SIZE);
+            super.draw(canvas, currentAnimation,false, timeElapsed, TILE_SIZE, Color.WHITE);
 
         } else if(isLit){
             currentAnimation = savedAnimation;
-            super.draw(canvas, currentAnimation,true, timeElapsed, TILE_SIZE);
+            super.draw(canvas, currentAnimation,true, timeElapsed, TILE_SIZE, Color.WHITE);
 
         }
         else {
@@ -456,26 +459,22 @@ public class Enemy extends FeetHitboxObstacle {
                     currentAnimation = leftWalkingAnimation;
                     break;
             }
-            super.draw(canvas, currentAnimation,true, timeElapsed, TILE_SIZE);
+            super.draw(canvas, currentAnimation,true, timeElapsed, TILE_SIZE, Color.WHITE);
 
         }
-
-//        super.draw(canvas);  // Ship
-//        // Flames
-//        if (mainBurner != null) {
-//            float offsety = mainBurner.getRegionHeight()-origin.y;
-//            canvas.draw(mainBurner, Color.WHITE,origin.x,offsety,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
-//        }
-//        if (leftBurner != null) {
-//            canvas.draw(leftBurner,Color.WHITE,leftOrigin.x,leftOrigin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
-//        }
-//        if (rghtBurner != null) {
-//            canvas.draw(rghtBurner,Color.WHITE,rghtOrigin.x,rghtOrigin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
-//        }
     }
 
 
-    public boolean inSight(Vector2 position) {
+    public boolean inSight(Vector2 position, float rad) {
+//        return this.sight.contains(position.x, position.y) ||
+//                this.sight.contains(position.x + rad, position.y) ||
+//                this.sight.contains(position.x - rad, position.y) ||
+//                this.sight.contains(position.x, position.y + rad) ||
+//                this.sight.contains(position.x, position.y - rad);
         return this.sight.contains(position.x, position.y);
+    }
+
+    public int getFacingDirection() {
+        return facingDirection;
     }
 }

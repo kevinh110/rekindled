@@ -14,6 +14,7 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
+//import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Constants;
 
 import java.util.*;
 
@@ -70,6 +71,8 @@ public class AIController extends Entity_Controller {
     private final int WAIT_TIME = 300;
     /** How many ticks the enemy is stunned for */
     private final int STUN_TIME = 100;
+    /** How many times the enemy changes direction while waiting */
+    private final int SPIN_NUM = 8;
 
     private Enemy[] enemies;
 
@@ -177,6 +180,7 @@ public class AIController extends Entity_Controller {
             case WAIT:
                 if (hasLoS(playerLit)){
                     state = FSMState.CHASE;
+                    waitTimer = 0;
                 }
                 else {
                     waitTimer++;
@@ -198,7 +202,7 @@ public class AIController extends Entity_Controller {
 
             case LIT:
                 if(!board.isLitTileBoard((int) pos.x,(int) pos.y)){
-                    state = FSMState.RETURN;
+                    state = FSMState.WAIT;
                 }
                 break;
 
@@ -207,7 +211,7 @@ public class AIController extends Entity_Controller {
                 if (stunTimer % STUN_TIME == 0){
                     enemy.stunned = false;
                     stunTimer = 0;
-                    state = FSMState.RETURN;
+                    state = FSMState.WAIT;
                 }
                 break;
 
@@ -226,12 +230,13 @@ public class AIController extends Entity_Controller {
         board.clearVisited();
         return bfs();
     }
-
     public int[] getReturnGoal(){
         // Set Goal
         setReturnGoalTiles();
         board.clearVisited();
-        return bfs();
+        goal = bfs();
+        enemy.setWanderGoal(target);
+        return goal;
     }
 
     /**
@@ -332,6 +337,44 @@ public class AIController extends Entity_Controller {
             }
         }
         return true;
+    }
+
+    /**
+     * Sets the facing direction for the enemy when it loses sight of the player.
+     * Needed to avoid cases where the AI loses sight due to how cone works
+     */
+    private void setFacingDirWaiting(){
+        Vector2 ppos = player.getPosition();
+        Vector2 epos = enemy.getPosition();
+        float diffX = ppos.x - epos.x;
+        float diffY = ppos.y - epos.y;
+        if (Math.max(Math.abs(diffX), Math.abs(diffY)) == Math.abs(diffX)){
+            if (Math.signum(diffX) == -1){ // player to the left
+                enemy.facingDirection = Constants.LEFT;
+            }
+            else{ // player to the right
+                enemy.facingDirection = Constants.RIGHT;
+            }
+        }else{
+            if (Math.signum(diffY) == -1){ // player below
+                enemy.facingDirection = Constants.FORWARD;
+            }
+            else { // player above
+                enemy.facingDirection = Constants.BACK;
+            }
+        }
+    }
+
+    /**
+     * Spins the enemy clockwise.
+     * @param dir the current direction
+     */
+    private void spinEnemy(int dir) {
+        enemy.facingDirection =
+                (dir == Constants.BACK) ? Constants.RIGHT :
+                        (dir == Constants.RIGHT) ? Constants.FORWARD :
+                                (dir == Constants.FORWARD) ? Constants.LEFT :
+                                        Constants.BACK;
     }
 
 
@@ -442,15 +485,24 @@ public class AIController extends Entity_Controller {
                     goal = bfs();
                     break;
 
-                case STUNNED:
                 case WAIT:
+                    if (waitTimer == 1){
+                        setFacingDirWaiting();
+
+                    }
+                    if (waitTimer % (WAIT_TIME / SPIN_NUM) == 0){
+                        spinEnemy(enemy.facingDirection);
+                    }
+                    break;
+
+                case STUNNED:
                 case LIT:
                     goal[0] = (int) pos.x;
                     goal[1] = (int) pos.y;
                     break;
 
                 case RETURN:
-                    goal = getReturnGoal();
+                    goal = getReturnGoal(); // This really only needs to be calculated once
                     break;
             }
         }
@@ -480,6 +532,6 @@ public class AIController extends Entity_Controller {
             }
             return result;
         }
-        return enemy.inSight(player.getPosition());
+        return enemy.inSight(player.getPosition(), player.getAuraRadius());
     }
 }

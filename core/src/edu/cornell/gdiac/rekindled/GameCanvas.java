@@ -74,7 +74,7 @@ public class GameCanvas {
 	private BlendState blend;
 
 	/** Camera for the underlying SpriteBatch */
-	private OrthographicCamera camera;
+	public OrthographicCamera camera;
 
 	/** Value to cache window width (if we are currently full screen) */
 	int width;
@@ -454,6 +454,19 @@ public class GameCanvas {
 //		computeTransform(ox,oy,x,y,angle,sx,sy);
 //		spriteBatch.setColor(Color.WHITE);
 //		spriteBatch.draw(frame, frame.getRegionWidth(), frame.getRegionHeight(), local);
+
+	}
+
+	public void draw(Animation animation, float ElapsedTime, boolean looping, float ox, float oy,  float x, float y, float angle, float sx, float sy, Color tint){
+		if (active != DrawPass.STANDARD) {
+			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+			return;
+		}
+
+		computeTransform(ox,oy,x,y,angle,sx,sy);
+
+		spriteBatch.setColor(tint);
+		spriteBatch.draw((TextureRegion)animation.getKeyFrame(ElapsedTime, looping), x, y );
 
 	}
 

@@ -1,19 +1,12 @@
 {
-  "dimension": [32, 18],
+  "dimension": [25, 18],
   "spawn": [4, 4],
   "init_lights": 0,
   "lights": [
     {
       "position": [
-        6,
-        14
-      ],
-      "lit": false
-    },
-    {
-      "position": [
-        16,
-        9
+        3,
+        3
       ],
       "lit": true
     }

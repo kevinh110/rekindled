@@ -5,15 +5,8 @@
   "lights": [
     {
       "position": [
-        6,
-        14
-      ],
-      "lit": false
-    },
-    {
-      "position": [
-        16,
-        9
+        3,
+        3
       ],
       "lit": true
     }

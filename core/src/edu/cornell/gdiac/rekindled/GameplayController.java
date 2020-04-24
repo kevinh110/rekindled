@@ -446,7 +446,7 @@ public class GameplayController extends WorldController implements ContactListen
 		idx = 0;
 		while (light != null){
 			int[] pos = light.get("position").asIntArray();
-			lights[idx] = new LightSourceObject(pos[0], pos[1], 2, 2,light.getBoolean("lit"));
+			lights[idx] = new LightSourceObject(pos[0], pos[1], 1, 1,light.getBoolean("lit"));
 			idx++;
 			light = light.next();
 		}
@@ -611,38 +611,48 @@ public class GameplayController extends WorldController implements ContactListen
 			}
 
 
-
-
 		// Create border pieces
-		float[] border1 = {BOARD_WIDTH / 2f, BOARD_HEIGHT, BOARD_WIDTH / 2f, BOARD_HEIGHT - 0.5f, 0.5f, BOARD_HEIGHT - 0.5f,
-				0.5f,  0.5f, BOARD_WIDTH / 2f,  0.5f, BOARD_WIDTH / 2,  0.0f, 0.0f,  0.0f,  0.0f, BOARD_HEIGHT};
-		PolygonObstacle wall;
-		wall = new PolygonObstacle(border1, 0, 0);
-		wall.setBodyType(BodyDef.BodyType.KinematicBody);
-		wall.setDensity(BASIC_DENSITY);
-		wall.setFriction(BASIC_FRICTION);
-		wall.setRestitution(BASIC_RESTITUTION);
-		wall.setDrawScale(scale);
-		wall.setTexture(wallTexture);
-		wall.setName("wall1");
-		addObject(wall);
+		BoxObstacle border;
+		for (int ii = 0; ii < BOARD_WIDTH; ii++) {
+			border = new BoxObstacle(ii, 0, 1, 1);
+			border.setBodyType(BodyDef.BodyType.KinematicBody);
+			border.setDensity(BASIC_DENSITY);
+			border.setFriction(BASIC_FRICTION);
+			border.setRestitution(BASIC_RESTITUTION);
+			border.setDrawScale(scale);
+			border.setTexture(getWallTexture(ii, 0));
+			addObject(border);
+			border = new BoxObstacle(ii, BOARD_HEIGHT, 1, 1);
+			border.setBodyType(BodyDef.BodyType.KinematicBody);
+			border.setDensity(BASIC_DENSITY);
+			border.setFriction(BASIC_FRICTION);
+			border.setRestitution(BASIC_RESTITUTION);
+			border.setDrawScale(scale);
+			border.setTexture(getWallTexture(ii, (int)BOARD_HEIGHT));
+			addObject(border);
+		}
+		for (int jj = 1; jj < BOARD_WIDTH - 1; jj++) {
+			border = new BoxObstacle(0, jj, 1, 1);
+			border.setBodyType(BodyDef.BodyType.KinematicBody);
+			border.setDensity(BASIC_DENSITY);
+			border.setFriction(BASIC_FRICTION);
+			border.setRestitution(BASIC_RESTITUTION);
+			border.setDrawScale(scale);
+			border.setTexture(getWallTexture(0, jj));
+			addObject(border);
+			border = new BoxObstacle(BOARD_WIDTH, jj, 1, 1);
+			border.setBodyType(BodyDef.BodyType.KinematicBody);
+			border.setDensity(BASIC_DENSITY);
+			border.setFriction(BASIC_FRICTION);
+			border.setRestitution(BASIC_RESTITUTION);
+			border.setDrawScale(scale);
+			border.setTexture(getWallTexture((int)BOARD_WIDTH, jj));
+			addObject(border);
+		}
 
-		float[] border2 = {BOARD_WIDTH, BOARD_HEIGHT, BOARD_WIDTH,  0.0f, BOARD_WIDTH / 2f,  0.0f,
-				BOARD_WIDTH / 2f,  0.5f, BOARD_WIDTH - 0.5f,  0.5f, BOARD_WIDTH - 0.5f, BOARD_HEIGHT - 0.5f,
-				BOARD_WIDTH / 2f, BOARD_HEIGHT - 0.5f, BOARD_WIDTH / 2f, BOARD_HEIGHT};
-
-		wall = new PolygonObstacle(border2, 0, 0);
-		wall.setBodyType(BodyDef.BodyType.KinematicBody);
-		wall.setDensity(BASIC_DENSITY);
-		wall.setFriction(BASIC_FRICTION);
-		wall.setRestitution(BASIC_RESTITUTION);
-		wall.setDrawScale(scale);
-		wall.setTexture(wallTexture);
-//		wall.setName("wall2");
-		addObject(wall);
 
 		// Add Player
-		player = new Player(spawn[0], spawn[1], 1, 1, initLights);
+		player = new Player(spawn[0], spawn[1], 0.5f, 0.5f, initLights);
 		AuraLight light_a = new AuraLight(sourceRayHandler);
 		player.addAura(light_a);
 		player.setDrawScale(scale);
@@ -671,13 +681,13 @@ public class GameplayController extends WorldController implements ContactListen
 	}
 
 	public void initLighting() {
-		rayCamera = new OrthographicCamera(bounds.width,bounds.height);
-		rayCamera.position.set(bounds.width/2.0f, bounds.height/2.0f, 0);
+		rayCamera = new OrthographicCamera(Gdx.graphics.getWidth() / 64f, Gdx.graphics.getHeight()/64f);
+		rayCamera.position.set(10, 5.5f, 0);
 		rayCamera.update();
 
 		RayHandler.setGammaCorrection(true);
 		RayHandler.useDiffuseLight(true);
-		sourceRayHandler = new RayHandler(world, Gdx.graphics.getWidth(),  Gdx.graphics.getHeight());
+		sourceRayHandler = new RayHandler(world);
 		sourceRayHandler.setCombinedMatrix(rayCamera);
 
 		sourceRayHandler.setAmbientLight(Constants.AMBIANCE, Constants.AMBIANCE, Constants.AMBIANCE, Constants.AMBIANCE);
@@ -778,6 +788,8 @@ public class GameplayController extends WorldController implements ContactListen
 				}
 			}
 		}
+		// update board
+		board.update();
 
 		//update Art objects
 		for(ArtObject obj : artObjects){
@@ -792,7 +804,9 @@ public class GameplayController extends WorldController implements ContactListen
 		// Enemy Movement
 		for (AIController controller : controls){
 			controller.move(insideLightSource(player.getPosition()));
-			controller.getEnemy().updateSightCone();
+			Enemy enemy = controller.getEnemy();
+			//board.updateSeenTiles(enemy.getPosition(), enemy.getFacingDirection());
+			enemy.updateSightCone();
 		}
 
 		// Check win Condition
@@ -803,8 +817,6 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 		wonGame = (numLit == enemies.length);
 
-		//Update board
-		board.update();
 
 	}
 
@@ -816,7 +828,6 @@ public class GameplayController extends WorldController implements ContactListen
                 postUpdate(delta);
             }
             draw(delta, board);
-            //sourceRayHandler.render();
 
 
         }

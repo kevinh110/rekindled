@@ -74,7 +74,7 @@ public class GameCanvas {
 	private BlendState blend;
 
 	/** Camera for the underlying SpriteBatch */
-	private OrthographicCamera camera;
+	public OrthographicCamera camera;
 
 	/** Value to cache window width (if we are currently full screen) */
 	int width;

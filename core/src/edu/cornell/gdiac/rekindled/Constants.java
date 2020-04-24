@@ -26,8 +26,8 @@ public class Constants {
     public static final float AURA_RADIUS = 3f;
 
     // Defines how big the light from a light source is
-    public static final float SOURCE_LIGHT_RADIUS = 7f;
+    public static final float SOURCE_LIGHT_RADIUS = 3f;
 
     // Defines how dark shadows should be (0..1)
-    public static final float AMBIANCE = 0.35f;
+    public static final float AMBIANCE = 0.2f;
 }

@@ -104,6 +104,14 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String DIM_SOURCE_FILE = "images/dimLightSource.png";
 	private static final String LIGHT_ANIMATION_FILE = "spritesheets/spritesheet_lamp.png";
 
+	/** file location for the art objects */
+	private static final String GRASS_SOURCE_FILE = "spritesheets/spritesheet_grass.png";
+	private static final String MUSHROOM_SOURCE_FILE = "spritesheets/spritesheet_mushrooms.png";
+
+	/** texture for art objects */
+	private TextureRegion grassTexture;
+	private TextureRegion mushroomTexture;
+
 
 
 	/**texture region for wall*/
@@ -254,6 +262,10 @@ public class GameplayController extends WorldController implements ContactListen
 		assets.add(DIM_SOURCE_FILE);
 		manager.load(LIGHT_ANIMATION_FILE, Texture.class);
 		assets.add(LIGHT_ANIMATION_FILE);
+		manager.load(GRASS_SOURCE_FILE, Texture.class);
+		assets.add(GRASS_SOURCE_FILE);
+		manager.load(MUSHROOM_SOURCE_FILE, Texture.class);
+		assets.add(MUSHROOM_SOURCE_FILE);
 
 		super.preLoadContent(manager);
 	}
@@ -309,6 +321,9 @@ public class GameplayController extends WorldController implements ContactListen
 		dimSourceTexture = createTexture(manager, DIM_SOURCE_FILE, false);
 		litSourceTexture = createTexture(manager, LIT_SOURCE_FILE, false);
 		lightAnimation = createTexture(manager, LIGHT_ANIMATION_FILE, false);
+
+		grassTexture = createTexture(manager, GRASS_SOURCE_FILE, false);
+		mushroomTexture = createTexture(manager, MUSHROOM_SOURCE_FILE, false);
 
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
@@ -371,6 +386,10 @@ public class GameplayController extends WorldController implements ContactListen
 	private Player player;
 
 	private Enemy[] enemies;
+
+	private ArtObject[] artObjects;
+
+
 
 	/**
 	 * Stores all the AI controllers
@@ -441,11 +460,26 @@ public class GameplayController extends WorldController implements ContactListen
 		while (enemy != null){
 			int[] pos = enemy.get("position").asIntArray();
 			JsonValue wander = enemy.get("wander");
+			System.out.println("position");
+			System.out.println(pos[1]);
 			enemies[idx] = new Enemy(pos[0], pos[1], 1, 1, enemy.getInt("type"));
 			enemies[idx].setWander(wander);
 			idx++;
 			enemy = enemy.next();
 		}
+
+		//Add sample art objects
+		int grass_tile = 75;
+		int grass_frames = 7;
+		int mushroom_frames = 5;
+		artObjects = new ArtObject[4];
+		artObjects[0] = new ArtObject(15, 6, 1, 1, grass_tile, grass_frames, ArtObject.ASSET_TYPE.GRASS);
+		artObjects[1] = new ArtObject(3, 3, 1, 1, grass_tile, mushroom_frames, ArtObject.ASSET_TYPE.MUSHROOM);
+		artObjects[2] = new ArtObject(4, 13, 1, 1, grass_tile, grass_frames, ArtObject.ASSET_TYPE.GRASS);
+		artObjects[3] = new ArtObject(18, 7, 1, 1, grass_tile, mushroom_frames, ArtObject.ASSET_TYPE.MUSHROOM);
+
+
+
 	}
 
 
@@ -455,6 +489,7 @@ public class GameplayController extends WorldController implements ContactListen
 	 * The game has default gravity and other settings
 	 */
 	public GameplayController(String json) {
+		System.out.println(json);
 		jsonReader = new JsonReader();
 		LEVEL_PATH = json;
 		setDebug(false);
@@ -522,6 +557,7 @@ public class GameplayController extends WorldController implements ContactListen
 	 */
 	private void populateLevel() {
 		initLighting();
+
 		for (int i = 0; i < lights.length; i++){
 
 			LightSourceLight light_s = new LightSourceLight(sourceRayHandler);
@@ -556,6 +592,8 @@ public class GameplayController extends WorldController implements ContactListen
 			addObject(enemies[i]);
 		}
 
+
+
 		// Make Board
 		board = new Board((int) BOARD_WIDTH, (int) BOARD_HEIGHT, walls, lights);
 
@@ -571,6 +609,8 @@ public class GameplayController extends WorldController implements ContactListen
 			obj.setTexture(getWallTexture(walls[i], walls[i+1]));
 			addObject(obj);
 			}
+
+
 
 
 		// Create border pieces
@@ -616,6 +656,15 @@ public class GameplayController extends WorldController implements ContactListen
 		// Make AI Controllers
 		for (int idx = 0; idx < enemies.length; idx++){
 			controls[idx] = new AIController(enemies[idx], board, player, enemies, getWorldStep());
+		}
+
+		//Add Art Objects
+		for(int i = 0; i < artObjects.length; i++){
+			artObjects[i].setAnimation(artObjects[i].type == ArtObject.ASSET_TYPE.GRASS ? grassTexture : mushroomTexture);
+			artObjects[i].setDrawScale(scale);
+			artObjects[i].setBodyType(BodyDef.BodyType.StaticBody);
+			artObjects[i].setSensor(true);
+			addObject(artObjects[i]);
 		}
 
 
@@ -727,6 +776,15 @@ public class GameplayController extends WorldController implements ContactListen
 						e.stunned = true;
 					}
 				}
+			}
+		}
+
+		//update Art objects
+		for(ArtObject obj : artObjects){
+			if (board.isLitTileBoard((int)obj.getX(), (int)obj.getY())){
+				obj.setLit(true);
+			} else {
+				obj.setLit(false);
 			}
 		}
 

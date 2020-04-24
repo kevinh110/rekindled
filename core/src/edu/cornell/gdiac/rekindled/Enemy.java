@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
-import edu.cornell.gdiac.rekindled.light.AuraLight;
 import edu.cornell.gdiac.rekindled.light.SightConeLight;
 import edu.cornell.gdiac.rekindled.obstacle.FeetHitboxObstacle;
 import edu.cornell.gdiac.util.FilmStrip;
@@ -431,6 +430,7 @@ public class Enemy extends FeetHitboxObstacle {
      */
     public void draw(GameCanvas canvas) {
         timeElapsed += Gdx.graphics.getDeltaTime();
+
 
         if(isTransitioning){
             currentAnimation = transformationAnimation;

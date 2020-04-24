@@ -412,10 +412,10 @@ public class Enemy extends FeetHitboxObstacle {
         this.sight.setActive(true);
         updateSightCone();
     }
-
     public void updateSightCone() {
         if (this.sight.isActive()) {
             this.sight.setPosition(this.getPosition());
+            System.out.println("Sight cone position: " + this.sight.getPosition());
             float angle =
                     (facingDirection == Constants.FORWARD) ? 270.0f :
                             (facingDirection == Constants.BACK) ? 90.f :
@@ -472,5 +472,9 @@ public class Enemy extends FeetHitboxObstacle {
 //                this.sight.contains(position.x, position.y + rad) ||
 //                this.sight.contains(position.x, position.y - rad);
         return this.sight.contains(position.x, position.y);
+    }
+
+    public int getFacingDirection() {
+        return facingDirection;
     }
 }

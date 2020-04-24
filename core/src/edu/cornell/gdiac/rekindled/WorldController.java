@@ -324,8 +324,6 @@ public abstract class WorldController implements Screen {
         this.canvas = canvas;
         this.scale.x = 64;
         this.scale.y = 64;
-        System.out.println("Canvas Dim: " + canvas.getWidth()+ ", " + canvas.getHeight());
-        System.out.println("Bounds: " + bounds.getWidth()+ ", " + bounds.getHeight());
     }
 
     /**

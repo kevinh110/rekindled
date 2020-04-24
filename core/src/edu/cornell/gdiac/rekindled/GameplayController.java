@@ -441,7 +441,7 @@ public class GameplayController extends WorldController implements ContactListen
 		while (enemy != null){
 			int[] pos = enemy.get("position").asIntArray();
 			JsonValue wander = enemy.get("wander");
-			enemies[idx] = new Enemy(pos[0], pos[1], 1, 1, enemy.getInt("type"));
+			enemies[idx] = new Enemy(pos[0], pos[1], 0.5f, 0.5f, enemy.getInt("type"));
 			enemies[idx].setWander(wander);
 			idx++;
 			enemy = enemy.next();
@@ -613,7 +613,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 
 		// Add Player
-		player = new Player(spawn[0], spawn[1], 1, 1, initLights);
+		player = new Player(spawn[0], spawn[1], 0.5f, 0.5f, initLights);
 		AuraLight light_a = new AuraLight(sourceRayHandler);
 		player.addAura(light_a);
 		player.setDrawScale(scale);
@@ -633,13 +633,13 @@ public class GameplayController extends WorldController implements ContactListen
 	}
 
 	public void initLighting() {
-		rayCamera = new OrthographicCamera(bounds.width,bounds.height);
-		rayCamera.position.set(bounds.width/2.0f, bounds.height/2.0f, 0);
+		rayCamera = new OrthographicCamera(Gdx.graphics.getWidth() / 64f, Gdx.graphics.getHeight()/64f);
+		rayCamera.position.set(10, 5.5f, 0);
 		rayCamera.update();
 
 		RayHandler.setGammaCorrection(true);
 		RayHandler.useDiffuseLight(true);
-		sourceRayHandler = new RayHandler(world, Gdx.graphics.getWidth(),  Gdx.graphics.getHeight());
+		sourceRayHandler = new RayHandler(world);
 		sourceRayHandler.setCombinedMatrix(rayCamera);
 
 		sourceRayHandler.setAmbientLight(Constants.AMBIANCE, Constants.AMBIANCE, Constants.AMBIANCE, Constants.AMBIANCE);
@@ -740,12 +740,16 @@ public class GameplayController extends WorldController implements ContactListen
 				}
 			}
 		}
+		// update board
+		board.update();
 
 		// Do enemy movement
 		// Enemy Movement
 		for (AIController controller : controls){
 			controller.move(insideLightSource(player.getPosition()));
-			controller.getEnemy().updateSightCone();
+			Enemy enemy = controller.getEnemy();
+			//board.updateSeenTiles(enemy.getPosition(), enemy.getFacingDirection());
+			enemy.updateSightCone();
 		}
 
 		// Check win Condition
@@ -756,8 +760,6 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 		wonGame = (numLit == enemies.length);
 
-		//Update board
-		board.update();
 
 	}
 
@@ -769,7 +771,6 @@ public class GameplayController extends WorldController implements ContactListen
                 postUpdate(delta);
             }
             draw(delta, board);
-            //sourceRayHandler.render();
 
 
         }

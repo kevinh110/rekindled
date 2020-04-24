@@ -52,6 +52,7 @@ public class Board {
         public boolean isWall;
         public boolean isLitTile;
         public boolean isDimTile;
+        public boolean inSight;
 
         /** Is this a goal tiles */
         public boolean goal = false;
@@ -142,7 +143,7 @@ public class Board {
     /**texture region for wall*/
     private TextureRegion wallRegion;
 
-    private static final Color sightTint = new Color(1, 1, 1, 1);
+    private static final Color sightTint = Color.SALMON;
 
     /**
      * Creates a new board of the given size
@@ -193,38 +194,6 @@ public class Board {
 
 
 
-    }
-
-    public Board(int width, int height, int[] walls, int[] litSources, int[] dimSources) {
-        this(width, height);
-        Vector2 temp = new Vector2();
-        this.lightSources = new LinkedList<>();
-
-        // Set walls
-        for(int ii = 0; ii < walls.length-1; ii += 2){
-            tiles[walls[ii]][walls[ii+1]].setWall();
-        }
-        this.walls = walls;
-
-        // Set lit sources
-        for(int ii = 0; ii < litSources.length-1; ii += 2){
-            lightSources.add(litSources[ii]);
-            lightSources.add(litSources[ii + 1]);
-            tiles[litSources[ii]][litSources[ii+1]].setLitLightSource();
-            //URGENT: Change so new vector is not created
-            temp.set(litSources[ii], litSources[ii+1]);
-            updateLitTiles(temp);
-        }
-
-        // Set dim sources
-        for(int ii = 0; ii < dimSources.length-1; ii += 2){
-            lightSources.add(dimSources[ii]);
-            lightSources.add(dimSources[ii + 1]);
-            tiles[dimSources[ii]][dimSources[ii+1]].setDimLightSource();
-        }
-
-        // Resets visited/goal flags of tiles only. Used for pathfinding.
-        resetTiles();
     }
 
     public Board(int width, int height, int[] walls, LightSourceObject[] lights) {
@@ -354,6 +323,7 @@ public class Board {
             for (int y = 0; y < height; y++) {
                 TileState tile = tiles[x][y];
                 tile.isLitTile = false;
+                tile.inSight = false;
             }
         }
         for(int ii = 0; ii < lightSources.size() -1; ii += 2){
@@ -397,10 +367,12 @@ public class Board {
         float sx = boardToScreenCenter(x);
         float sy = boardToScreenCenter(y);
 
+        Color tint = (tile.inSight) ? sightTint : Color.WHITE;
+
         if (tile.isLitTile)
-            canvas.draw(lightRegion, sightTint, sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2, lightRegion.getRegionWidth(), lightRegion.getRegionHeight());
+            canvas.draw(lightRegion, tint, sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2, lightRegion.getRegionWidth(), lightRegion.getRegionHeight());
         else
-            canvas.draw(darkRegion, sightTint, sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2, darkRegion.getRegionWidth(), darkRegion.getRegionHeight());
+            canvas.draw(darkRegion, tint, sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2, darkRegion.getRegionWidth(), darkRegion.getRegionHeight());
 
     }
 
@@ -417,7 +389,7 @@ public class Board {
      * @return the board cell index for a screen position.
      */
     public int screenToBoard(float f) {
-        return (int)(f / (getTileSize() + getTileSpacing()));
+        return Math.round(f);
     }
 
     /**
@@ -637,7 +609,7 @@ public class Board {
         }
     }
 
-    public void clearLight() {
+    public void clearLightandSeen() {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 TileState state = tiles[x][y];
@@ -731,7 +703,11 @@ public class Board {
         spreadLight(LIGHT_RADIUS, x, y, top, bottom, left, right);
     }
 
-    public void spreadSight (int depth, Vector2 pos, int dir) {
+    public void updateSeenTiles (Vector2 pos, int dir) {
+        spreadSight(3, pos, dir);
+    }
+
+    private void spreadSight (int depth, Vector2 pos, int dir) {
         // position of first tile to "light" up
         int x = (dir == Constants.LEFT) ? screenToBoard(pos.x) - 1 : (dir == Constants.RIGHT) ? screenToBoard(pos.x) + 1 : screenToBoard(pos.x);
         int y = (dir == Constants.FORWARD) ? screenToBoard(pos.y) - 1 : (dir == Constants.BACK) ? screenToBoard(pos.y) + 1 : screenToBoard(pos.y);
@@ -741,12 +717,12 @@ public class Board {
 
     private void spreadSightHelp (int depth, int x, int y, int dir) {
 
-        if (depth == 0)
+        if (depth == 0 || x < 0 || y < 0  || x > width - 1  || y > height - 1)
             return;
 
         if (dir == Constants.LEFT) {
             TileState tile = tiles[x][y];
-            tile.setLit();
+            tile.inSight = true;
             spreadSightHelp(depth - 1, x - 1, y, dir);
             spreadSightHelp(depth - 1, x - 1, y - 1, dir);
             spreadSightHelp(depth - 1, x - 1, y + 1, dir);
@@ -754,7 +730,7 @@ public class Board {
 
         if (dir == Constants.RIGHT) {
             TileState tile = tiles[x][y];
-            tile.setLit();
+            tile.inSight = true;
             spreadSightHelp(depth - 1, x + 1, y, dir);
             spreadSightHelp(depth - 1, x + 1, y - 1, dir);
             spreadSightHelp(depth - 1, x + 1, y + 1, dir);
@@ -762,7 +738,7 @@ public class Board {
 
         if (dir == Constants.FORWARD) {
             TileState tile = tiles[x][y];
-            tile.setLit();
+            tile.inSight = true;
             spreadSightHelp(depth - 1, x, y - 1, dir);
             spreadSightHelp(depth - 1, x + 1, y - 1, dir);
             spreadSightHelp(depth - 1, x - 1, y - 1, dir);
@@ -770,7 +746,7 @@ public class Board {
 
         if (dir == Constants.BACK) {
             TileState tile = tiles[x][y];
-            tile.setLit();
+            tile.inSight = true;
             spreadSightHelp(depth - 1, x, y + 1, dir);
             spreadSightHelp(depth - 1, x + 1, y + 1, dir);
             spreadSightHelp(depth - 1, x - 1, y + 1, dir);

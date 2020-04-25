@@ -180,7 +180,8 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final float THROWN_LIGHT_RADIUS = 5f;
 
 	private static final float CAMERA_SCALE = 0.5f;
-
+	private int spawnx;
+	private int spawny;
 
 
 	/**
@@ -661,6 +662,8 @@ public class GameplayController extends WorldController implements ContactListen
 
 		// Add Player
 		player = new Player(spawn[0], spawn[1], 0.5f, 0.5f, initLights);
+		this.spawnx = spawn[0];
+		this.spawny = spawn[1];
 		AuraLight light_a = new AuraLight(sourceRayHandler);
 		player.addAura(light_a);
 		player.setDrawScale(scale);
@@ -689,14 +692,16 @@ public class GameplayController extends WorldController implements ContactListen
 	}
 
 	public void initLighting() {
-		rayCamera = new OrthographicCamera(Gdx.graphics.getWidth() / 64f, Gdx.graphics.getHeight()/64f);
-		rayCamera.position.set(10, 5.5f, 0);
+		rayCamera = new OrthographicCamera(Gdx.graphics.getWidth() /  (64f), Gdx.graphics.getHeight() / (64f));
+		rayCamera.position.set(spawnx, spawny, 0);
+		rayCamera.zoom = CAMERA_SCALE;
 		rayCamera.update();
 
 		RayHandler.setGammaCorrection(true);
 		RayHandler.useDiffuseLight(true);
 		sourceRayHandler = new RayHandler(world);
 		sourceRayHandler.setCombinedMatrix(rayCamera);
+		sourceRayHandler.useCustomViewport(0, 0, canvas.getWidth(), canvas.getHeight());
 
 		sourceRayHandler.setAmbientLight(Constants.AMBIANCE, Constants.AMBIANCE, Constants.AMBIANCE, Constants.AMBIANCE);
 		sourceRayHandler.setShadows(true);
@@ -723,6 +728,9 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 
 		if (sourceRayHandler != null) {
+			rayCamera.position.set(player.getPosition(), 0);
+			rayCamera.update();
+			sourceRayHandler.setCombinedMatrix(rayCamera);
 			sourceRayHandler.update();
 		}
 

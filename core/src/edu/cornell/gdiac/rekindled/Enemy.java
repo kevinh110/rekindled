@@ -414,7 +414,7 @@ public class Enemy extends FeetHitboxObstacle {
     public void updateSightCone() {
         if (this.sight.isActive()) {
             this.sight.setPosition(this.getPosition());
-            System.out.println("Sight cone position: " + this.sight.getPosition());
+//            System.out.println("Sight cone position: " + this.sight.getPosition());
             float angle =
                     (facingDirection == Constants.FORWARD) ? 270.0f :
                             (facingDirection == Constants.BACK) ? 90.f :

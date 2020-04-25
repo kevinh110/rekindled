@@ -30,7 +30,7 @@ public class AIController extends Entity_Controller {
     /**
      * Enumeration to encode the finite state machine.
      */
-    private static enum FSMState {
+    public static enum FSMState {
         /** The enemy just spawned */
         SPAWN,
         /** The enemy is patrolling around without a target */
@@ -46,7 +46,9 @@ public class AIController extends Entity_Controller {
         /** The enemy is inside a lit-up light source */
         LIT,
         /** The enemy is stunned */
-        STUNNED
+        STUNNED,
+        /** The enemy pauses before chasing */
+        PAUSED;
     }
 
 
@@ -59,10 +61,8 @@ public class AIController extends Entity_Controller {
     private Player player;
     /** The enemy's current state in the FSM */
     private FSMState state;
-    /** Timer used for wait */
-    private long waitTimer;
-    /** Timer used for stun */
-    private long stunTimer;
+    /** Timer used for stun/wait/pause */
+    private long timer;
     /** The enemies next goal tile. This is a tile adjacent to at least one axis */
     private int[] goal;
     /** The target tile the enemy eventually would like to reach */
@@ -73,6 +73,8 @@ public class AIController extends Entity_Controller {
     private final int STUN_TIME = 100;
     /** How many times the enemy changes direction while waiting */
     private final int SPIN_NUM = 8;
+    /** How long to pause before changing */
+    private final int PAUSE_TIME = 50;
 
     private Enemy[] enemies;
 
@@ -91,12 +93,14 @@ public class AIController extends Entity_Controller {
         this.board = board;
         this.player = player;
         this.enemies = enemies;
+        this.target = new int[2];
+        this.target[0] = (int) enemy.getPosition().x;
+        this.target[1] = (int) enemy.getPosition().y;
 
         state = FSMState.SPAWN;
         Vector2 pos = enemy.getPosition();
         goal = new int[]{(int) pos.x, (int) pos.y};
-        stunTimer = 0;
-        waitTimer = 0;
+        timer = 0;
     }
 
     public AIController(Enemy enemy, Board board, Player player, Enemy[] enemies, float del){
@@ -113,8 +117,6 @@ public class AIController extends Entity_Controller {
      * @return the enemy of this AIController
      */
     public Enemy getEnemy() { return this.enemy; }
-
-
 
     // FSM Code for Targeting (MODIFY ALL THE FOLLOWING METHODS)
 
@@ -136,10 +138,12 @@ public class AIController extends Entity_Controller {
                 enemy.setIsLit(true);
             }
             state = FSMState.LIT;
+            timer = 0;
             return;
         }
         if (enemy.stunned && state != FSMState.STUNNED){
             state = FSMState.STUNNED;
+            timer = 0;
             return;
         }
         enemy.setIsLit(false);
@@ -147,7 +151,7 @@ public class AIController extends Entity_Controller {
         switch (state) {
             case SPAWN:
                 if (hasLoS(playerLit)) {// has LoS
-                    state = FSMState.CHASE;
+                    state = FSMState.PAUSED;
                 } else { // no line of sight; wander
                     state = FSMState.WANDER;
                 }
@@ -155,7 +159,21 @@ public class AIController extends Entity_Controller {
 
             case WANDER:
                 if (hasLoS(playerLit)) {// has target
-                    state = FSMState.CHASE;
+                    state = FSMState.PAUSED;
+                }
+                break;
+
+            case PAUSED:
+                if (!hasLoS(playerLit)){
+                    state = FSMState.GOTO; // Go to prev goal
+                    timer = 0;
+                }
+                else {
+                    timer++;
+                    if (timer % PAUSE_TIME == 0){
+                        state = FSMState.CHASE;
+                        timer = 0;
+                    }
                 }
                 break;
 
@@ -169,7 +187,7 @@ public class AIController extends Entity_Controller {
 
             case GOTO:
                 if (hasLoS(playerLit)){
-                    state = FSMState.CHASE;
+                    state = FSMState.PAUSED;
                 }
                 else if (pos.x == target[0] && pos.y == target[1]){
                     state = FSMState.WAIT;
@@ -179,13 +197,13 @@ public class AIController extends Entity_Controller {
 
             case WAIT:
                 if (hasLoS(playerLit)){
-                    state = FSMState.CHASE;
-                    waitTimer = 0;
+                    state = FSMState.PAUSED;
+                    timer = 0;
                 }
                 else {
-                    waitTimer++;
-                    if (waitTimer % WAIT_TIME == 0){
-                        waitTimer = 0;
+                    timer++;
+                    if (timer % WAIT_TIME == 0){
+                        timer = 0;
                         state = FSMState.RETURN;
                     }
                 }
@@ -193,7 +211,7 @@ public class AIController extends Entity_Controller {
 
             case RETURN:
                 if (hasLoS(playerLit)){
-                    state = FSMState.CHASE;
+                    state = FSMState.PAUSED;
                 }
                 else if (pos.x == target[0] && pos.y == target[1]){
                     state = FSMState.WANDER;
@@ -207,14 +225,13 @@ public class AIController extends Entity_Controller {
                 break;
 
             case STUNNED:
-                stunTimer++;
-                if (stunTimer % STUN_TIME == 0){
+                timer++;
+                if (timer % STUN_TIME == 0){
                     enemy.stunned = false;
-                    stunTimer = 0;
+                    timer = 0;
                     state = FSMState.WAIT;
                 }
                 break;
-
 
             default:
                 // Unknown or unhandled state, should never get here
@@ -466,7 +483,7 @@ public class AIController extends Entity_Controller {
             enemy.setPosition(Math.round(pos.x), Math.round(pos.y)); // Center pos to account for slight drift
             pos = enemy.getPosition();
             changeStateIfApplicable(playerLit);
-//            System.out.println("State: " + state);
+            System.out.println("State: " + state);
             switch (state) {
                 case WANDER:
                     if (pos.x == goal[0] && pos.y == goal[1]){
@@ -485,12 +502,15 @@ public class AIController extends Entity_Controller {
                     goal = bfs();
                     break;
 
-                case WAIT:
-                    if (waitTimer == 1){
-                        setFacingDirWaiting();
+                case PAUSED:
+                    setFacingDirWaiting();
+                    break;
 
+                case WAIT:
+                    if (timer == 1){
+                        setFacingDirWaiting();
                     }
-                    if (waitTimer % (WAIT_TIME / SPIN_NUM) == 0){
+                    if (timer % (WAIT_TIME / SPIN_NUM) == 0){
                         spinEnemy(enemy.facingDirection);
                     }
                     break;

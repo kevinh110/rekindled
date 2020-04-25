@@ -78,6 +78,7 @@ public class GameplayController extends WorldController implements ContactListen
 	 * File storing the enemy
 	 */
 	private static final String ENEMY_FILE = "images/enemy.png";
+	private static final String SEEN_FILE = "images/exclamation.png";
 	private static final String SAVED_ENEMY_FILE = "images/savedEnemy.png";
 	private static final String ENEMY_ANIMATION_FRONT = "spritesheets/spritesheet_enemy_front.png";
 	private static final String ENEMY_ANIMATION_LEFT = "spritesheets/spritesheet_enemy_left.png";
@@ -152,6 +153,7 @@ public class GameplayController extends WorldController implements ContactListen
 	 * Texture for enemy
 	 */
 	private TextureRegion enemyTexture;
+	private TextureRegion seenTexture;
 	private TextureRegion savedEnemyTexture;
 
 	private TextureRegion winScreenTexture;
@@ -240,6 +242,8 @@ public class GameplayController extends WorldController implements ContactListen
 		assets.add(PLAYER_FILE_FRONT);
 		manager.load(ENEMY_FILE, Texture.class);
 		assets.add(ENEMY_FILE);
+		manager.load(SEEN_FILE, Texture.class);
+		assets.add(SEEN_FILE);
 		manager.load(SAVED_ENEMY_FILE, Texture.class);
 		assets.add(SAVED_ENEMY_FILE);
 		manager.load(WIN_SCREEN_FILE, Texture.class);
@@ -309,6 +313,7 @@ public class GameplayController extends WorldController implements ContactListen
 		playerTextureFront = createTexture(manager, PLAYER_FILE_FRONT, false);
 		playerTextureBack = createTexture(manager, PLAYER_FILE_BACK, false);
 		enemyTexture = createTexture(manager, ENEMY_FILE, false);
+		seenTexture = createTexture(manager, SEEN_FILE, false);
 		savedEnemyTexture = createTexture(manager, SAVED_ENEMY_FILE, false);
 		winScreenTexture = createTexture(manager, WIN_SCREEN_FILE, false);
 		lossScreenTexture = createTexture(manager, LOSS_SCREEN_FILE, false);
@@ -491,7 +496,7 @@ public class GameplayController extends WorldController implements ContactListen
 	 * The game has default gravity and other settings
 	 */
 	public GameplayController(String json) {
-		System.out.println(json);
+//		System.out.println(json);
 		jsonReader = new JsonReader();
 		LEVEL_PATH = json;
 		setDebug(false);
@@ -672,12 +677,12 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 
 		//Add Art Objects
-		for(int i = 0; i < artObjects.length; i++){
-			artObjects[i].setAnimation(artObjects[i].type == ArtObject.ASSET_TYPE.GRASS ? grassTexture : mushroomTexture);
-			artObjects[i].setDrawScale(scale);
-			artObjects[i].setBodyType(BodyDef.BodyType.StaticBody);
-			artObjects[i].setSensor(true);
-			addObject(artObjects[i]);
+		for (ArtObject artObject : artObjects) {
+			artObject.setAnimation(artObject.type == ArtObject.ASSET_TYPE.GRASS ? grassTexture : mushroomTexture);
+			artObject.setDrawScale(scale);
+			artObject.setBodyType(BodyDef.BodyType.StaticBody);
+			artObject.setSensor(true);
+			addObject(artObject);
 		}
 
 
@@ -866,6 +871,15 @@ public class GameplayController extends WorldController implements ContactListen
 			if (obj instanceof BoxObstacle || obj instanceof PolygonObstacle || obj instanceof FeetHitboxObstacle)
 				obj.draw(canvas);
 		}
+		// Draw Exclamation Points
+		for (AIController controller : controls){
+			if (controller.getState() == AIController.FSMState.PAUSED){
+				float x = board.boardToScreenCenter((int) controller.getEnemy().getPosition().x);
+				float y = board.boardToScreenCenter((int) controller.getEnemy().getPosition().y + 1);
+				canvas.draw(seenTexture, x, y);
+			}
+		}
+
 		canvas.end();
 
 		if (debug) {

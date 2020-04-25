@@ -442,7 +442,7 @@ public class GameCanvas {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
 		}
-		System.out.println("animated");
+//		System.out.println("animated");
 		TextureRegion frame = (TextureRegion) animation.getKeyFrame(ElapsedTime, looping);
 
 		if(computeView(ox,oy,x,y,angle,sx,sy, camera)) {

@@ -373,7 +373,6 @@ public class Board {
             canvas.draw(lightRegion, tint, sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2, lightRegion.getRegionWidth(), lightRegion.getRegionHeight());
         else
             canvas.draw(darkRegion, tint, sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2, darkRegion.getRegionWidth(), darkRegion.getRegionHeight());
-
     }
 
     /**

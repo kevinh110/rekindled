@@ -367,13 +367,18 @@ public class Board {
         float sx = boardToScreenCenter(x);
         float sy = boardToScreenCenter(y);
 
+
         Color tint = (tile.inSight) ? sightTint : Color.WHITE;
 
-        if (tile.isLitTile)
-            canvas.draw(lightRegion, tint, sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2, lightRegion.getRegionWidth(), lightRegion.getRegionHeight());
-        else
-            canvas.draw(darkRegion, tint, sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2, darkRegion.getRegionWidth(), darkRegion.getRegionHeight());
+//        if (tile.isLitTile)
+//            canvas.draw(lightRegion, tint, sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2, lightRegion.getRegionWidth(), lightRegion.getRegionHeight());
+//        else
+//            canvas.draw(darkRegion, tint, sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2, darkRegion.getRegionWidth(), darkRegion.getRegionHeight());
 
+        if (tile.isLitTile)
+            canvas.draw(lightRegion, tint, 0, 0, sx, sy, 0, 1 , 1 );
+        else
+            canvas.draw(darkRegion, tint, 0, 0, sx, sy, 0, 1 , 1 );
     }
 
     /**
@@ -435,7 +440,7 @@ public class Board {
      * @return
      */
     public float boardToScreenCenter(int n) {
-        return (float) (n) * (getTileSize() + getTileSpacing());
+        return ((float) (n) * (getTileSize())) - (getTileSize() / 2f);
     }
 
     /**

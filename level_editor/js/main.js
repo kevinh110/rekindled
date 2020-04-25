@@ -93,6 +93,9 @@ function confirmOpen() {
   let enemies = [];
   let litLights = [];
   let dimLights = [];
+  let grass = [];
+  let mushrooms = [];
+  let water = [];
 
   let level = document.querySelector('textarea').value.trim().split('\n');
   for (let i = 0; i < level.length; i++) {
@@ -188,6 +191,36 @@ function confirmOpen() {
       // console.log('walls:');
       // console.log(walls);
     } 
+
+    // Parse Grass
+    if (level[i].search(/grass/) > -1){
+      let matches = level[i].matchAll(/([0-9]+),([0-9]+)/g);
+      for(const match of matches){
+        grass.push([Number(match[1]),Number(match[2])]);
+        // console.log(match);
+      }
+      // console.log(grass);
+    } 
+
+    // Parse Mushrooms
+    if (level[i].search(/mushrooms/) > -1){
+      let matches = level[i].matchAll(/([0-9]+),([0-9]+)/g);
+      for(const match of matches){
+        mushrooms.push([Number(match[1]),Number(match[2])]);
+        // console.log(match);
+      }
+      // console.log(mushrooms);
+    } 
+
+    // Parse water
+    if (level[i].search(/water/) > -1){
+      let matches = level[i].matchAll(/([0-9]+),([0-9]+)/g);
+      for(const match of matches){
+        water.push([Number(match[1]),Number(match[2])]);
+        // console.log(match);
+      }
+      // console.log(water);
+    } 
   }
 
   // set number of init lights
@@ -238,6 +271,24 @@ function confirmOpen() {
   for(let i=0;i<walls.length;i++){
     // console.log(walls[i]);
     content[height-walls[i][1]][walls[i][0]-1] = 'W';
+  }
+
+  // add grass
+  for(let i=0;i<grass.length;i++){
+    console.log(grass[i]);
+    content[height-grass[i][1]][grass[i][0]-1] = 'G';
+  }
+
+  // add mushrooms
+  for(let i=0;i<mushrooms.length;i++){
+    console.log(mushrooms[i]);
+    content[height-mushrooms[i][1]][mushrooms[i][0]-1] = 'M';
+  }
+
+  // add water
+  for(let i=0;i<water.length;i++){
+    console.log(water[i]);
+    content[height-water[i][1]][water[i][0]-1] = 'T';
   }
 
   // add enemies
@@ -299,6 +350,9 @@ function copyLevel() {
   let player = '';
   let lights = '[\n';
   let walls = '[\n';
+  let grass = '[';
+  let mushrooms = '[';
+  let water = '[';
   let cells = Array.from(document.querySelectorAll('.cell'));
   let height = document.querySelectorAll('#view > div').length;
   let width = document.querySelector('#view > div').childNodes.length;
@@ -328,6 +382,18 @@ function copyLevel() {
       if (cell.textContent == 'W'){
         if (walls != '[\n') walls += ', \n';
         walls += '{"position": ['+((i%width)+1)+','+j+'],"movable": false}';
+      }
+      if (cell.textContent == 'M'){
+        if (mushrooms != '[') mushrooms += ', ';
+        mushrooms += '['+((i%width)+1)+','+j+']';
+      }
+      if (cell.textContent == 'G'){
+        if (grass != '[') grass += ', ';
+        grass += '['+((i%width)+1)+','+j+']';
+      }
+      if (cell.textContent == 'T'){
+        if (water != '[') water += ', ';
+        water += '['+((i%width)+1)+','+j+']';
       }
     }
     if ((i + 1) % width == 0) {
@@ -374,6 +440,9 @@ function copyLevel() {
   enemies += '\n]';
   lights += '\n]';
   walls += '\n]';
+  grass += ']';
+  water += ']';
+  mushrooms += ']';
   let initLights = document.querySelector('#initLightsCurrent').textContent;
   initLights = initLights.match(/[0-9]+/)[0];
   // console.log(initLights);
@@ -381,7 +450,10 @@ function copyLevel() {
   level += '"init_lights": '+initLights+', \n';
   level += '"lights": '+lights+', \n';
   level += '"enemies": '+enemies+', \n';
-  level += '"walls": '+walls+'\n';
+  level += '"walls": '+walls+', \n';
+  level += '"grass": '+grass+', \n';
+  level += '"mushrooms": '+mushrooms+', \n';
+  level += '"water": '+water+'\n';
   level += '}';
   info.textContent = level;
   info.select();
@@ -397,7 +469,10 @@ const PALETTE = {
   'W': {color: 'rgb(139,69,19)', help: 'wall'},
   'U': {color: 'rgb(169,169,169)', help: 'unlit light source'},
   'L': {color: 'rgb(241, 229, 89)', help: 'lit light source'},
-  'P': {color: 'rgb(52, 166, 251)', help: 'player'},
+  'P': {color: 'rgb(153,102,204)', help: 'player'},
+  'T': {color: 'rgb(52, 166, 251)', help: 'water'},
+  'G': {color: 'rgb(50,205,50)', help: 'grass'},
+  'M': {color: 'rgb(127,255,212)', help: 'mushrooms'},
   'E': {color: 'rgb(255, 100, 100)', help: 'enemy'},
   '@': {color: 'rgb(255, 100, 100)', help: 'enemy wander path'}
 };

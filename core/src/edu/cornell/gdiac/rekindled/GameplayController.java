@@ -871,7 +871,6 @@ public class GameplayController extends WorldController implements ContactListen
 		//draw the  UI
 		drawUI();
 
-
 		// draw things that should not be affected by shadows
 		canvas.begin();
 

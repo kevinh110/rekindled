@@ -187,7 +187,7 @@ public class AIController extends Entity_Controller {
 
             case GOTO:
                 if (hasLoS(playerLit)){
-                    state = FSMState.PAUSED;
+                    state = FSMState.CHASE;
                 }
                 else if (pos.x == target[0] && pos.y == target[1]){
                     state = FSMState.WAIT;

@@ -59,6 +59,7 @@ public class Board {
         public boolean isLitTile;
         public boolean isDimTile;
         public boolean inSight;
+        public boolean isWater;
 
         /** Is this a goal tiles */
         public boolean goal = false;
@@ -112,7 +113,7 @@ public class Board {
     private static final String LIT_SOURCE = "images/litLightSource.png";
     /** The file location of a dim light source*/
     private static final String DIM_SOURCE = "images/dimLightSource.png";
-    private static final int LIGHT_RADIUS = 2; //idk why we have to sub 3
+    private static final int LIGHT_RADIUS = 2;
 
     // Instance attributes
     /** The board width (in number of tiles) */

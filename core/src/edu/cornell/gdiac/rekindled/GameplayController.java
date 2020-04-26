@@ -452,8 +452,8 @@ public class GameplayController extends WorldController implements ContactListen
 	private int[] spawn;
 	private int initLights;
 	private int[] walls;
+	private int[] water;
 	private LinkedList<Pair<LightSourceLight, Long>> thrownLights;
-
 	CollisionController collisions;
 
 	boolean lostGame;
@@ -515,18 +515,29 @@ public class GameplayController extends WorldController implements ContactListen
 			enemy = enemy.next();
 		}
 
-		//Add sample art objects
-		int grass_tile = 75;
-		int grass_frames = 7;
-		int mushroom_frames = 5;
-		artObjects = new ArtObject[4];
-		artObjects[0] = new ArtObject(15, 6, 1, 1, grass_tile, grass_frames, ArtObject.ASSET_TYPE.GRASS);
-		artObjects[1] = new ArtObject(3, 3, 1, 1, grass_tile, mushroom_frames, ArtObject.ASSET_TYPE.MUSHROOM);
-		artObjects[2] = new ArtObject(4, 13, 1, 1, grass_tile, grass_frames, ArtObject.ASSET_TYPE.GRASS);
-		artObjects[3] = new ArtObject(18, 7, 1, 1, grass_tile, mushroom_frames, ArtObject.ASSET_TYPE.MUSHROOM);
+		// Parse Art Objects (Mushrooms / Grass)
+		JsonValue grass_json = levelFormat.get("grass");
+		JsonValue mushrooms_json = levelFormat.get("mushrooms");
+		artObjects = new ArtObject[grass_json.size + mushrooms_json.size];
+		JsonValue coord = grass_json.child();
+		idx = 0;
+		while (coord != null){
+			int[] pos = coord.asIntArray();
+			artObjects[idx] =
+					new ArtObject(pos[0], pos[1], 1, 1, 75, 7, ArtObject.ASSET_TYPE.GRASS);
+			coord = coord.next();
+			idx++;
+		}
+		coord = mushrooms_json.child();
+		while (coord != null) {
+			int[] pos = coord.asIntArray();
+			artObjects[idx] =
+					new ArtObject(pos[0], pos[1], 1, 1, 75, 5, ArtObject.ASSET_TYPE.MUSHROOM);
+			coord = coord.next();
+			idx++;
+		}
 
-
-
+		
 	}
 
 
@@ -745,7 +756,7 @@ public class GameplayController extends WorldController implements ContactListen
 		sourceRayHandler.useCustomViewport(0, 0, canvas.getWidth(), canvas.getHeight());
 
 		sourceRayHandler.setAmbientLight(Constants.AMBIANCE, Constants.AMBIANCE, Constants.AMBIANCE, Constants.AMBIANCE);
-		//sourceRayHandler.setShadows(false);
+		sourceRayHandler.setShadows(false);
 		sourceRayHandler.setBlur(true);
 		sourceRayHandler.setBlurNum(3);
 	}

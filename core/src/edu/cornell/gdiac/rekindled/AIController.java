@@ -197,7 +197,7 @@ public class AIController extends Entity_Controller {
 
             case WAIT:
                 if (hasLoS(playerLit)){
-                    state = FSMState.PAUSED;
+                    state = FSMState.CHASE;
                     timer = 0;
                 }
                 else {
@@ -406,8 +406,8 @@ public class AIController extends Entity_Controller {
         ArrayList<Integer> s = new ArrayList<Integer>();
 
         // Set Current Position to Visited
-        int px = (int) player.getPosition().x;
-        int py = (int) player.getPosition().y;
+        int px = Math.round(player.getPosition().x);
+        int py = Math.round(player.getPosition().y);
         s.add(px); s.add(py);
         board.setVisited(px,py); //visit s
         q.add(s);
@@ -484,6 +484,9 @@ public class AIController extends Entity_Controller {
             pos = enemy.getPosition();
             changeStateIfApplicable(playerLit);
             System.out.println("State: " + state);
+//            System.out.println("Enemy Pos: " + pos);
+//            System.out.println("Player Pos: " + player.getPosition());
+//            System.out.println("-----------");
             switch (state) {
                 case WANDER:
                     if (pos.x == goal[0] && pos.y == goal[1]){

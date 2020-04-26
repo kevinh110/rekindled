@@ -84,6 +84,12 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String ENEMY_ANIMATION_LEFT = "spritesheets/spritesheet_enemy_left.png";
 	private static final String ENEMY_ANIMATION_RIGHT = "spritesheets/spritesheet_enemy_right.png";
 	private static final String ENEMY_ANIMATION_BACK = "spritesheets/spritesheet_enemy_back.png";
+
+	private static final String ENEMY_ANGRY_ANIMATION_FRONT = "spritesheets/spritesheet_enemy_angry_front.png";
+	private static final String ENEMY_ANGRY_ANIMATION_LEFT = "spritesheets/spritesheet_enemy_angry_left.png";
+	private static final String ENEMY_ANGRY_ANIMATION_RIGHT = "spritesheets/spritesheet_enemy_angry_right.png";
+	private static final String ENEMY_ANGRY_ANIMATION_BACK = "spritesheets/spritesheet_enemy_angry_back.png";
+
 	private static final String ENEMY_TRANSFORMATION = "spritesheets/spritesheet_transformation.png";
 	private static final String ENEMY_ANIMATION_SAVED = "spritesheets/spritesheet_saved_soul.png";
 	/**
@@ -112,8 +118,6 @@ public class GameplayController extends WorldController implements ContactListen
 	/** texture for art objects */
 	private TextureRegion grassTexture;
 	private TextureRegion mushroomTexture;
-
-
 
 	/**texture region for wall*/
 	private TextureRegion wallTexture;
@@ -146,6 +150,10 @@ public class GameplayController extends WorldController implements ContactListen
 	private TextureRegion enemyAnimationBack;
 	private TextureRegion enemyAnimationLeft;
 	private TextureRegion enemyAnimationRight;
+	private TextureRegion enemyAngryAnimationFront;
+	private TextureRegion enemyAngryAnimationBack;
+	private TextureRegion enemyAngryAnimationLeft;
+	private TextureRegion enemyAngryAnimationRight;
 	private TextureRegion enemyTransformation;
 	private TextureRegion enemyAnimationSaved;
 
@@ -179,7 +187,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private static final float THROWN_LIGHT_RADIUS = 5f;
 
-	private static final float CAMERA_SCALE = 0.5f;
+	private static final float CAMERA_SCALE = 1.0f;
 	private int spawnx;
 	private int spawny;
 
@@ -230,6 +238,16 @@ public class GameplayController extends WorldController implements ContactListen
 		assets.add(ENEMY_ANIMATION_LEFT);
 		manager.load(ENEMY_ANIMATION_RIGHT, Texture.class);
 		assets.add(ENEMY_ANIMATION_RIGHT);
+
+		manager.load(ENEMY_ANGRY_ANIMATION_FRONT, Texture.class);
+		assets.add(ENEMY_ANGRY_ANIMATION_FRONT);
+		manager.load(ENEMY_ANGRY_ANIMATION_BACK, Texture.class);
+		assets.add(ENEMY_ANGRY_ANIMATION_BACK);
+		manager.load(ENEMY_ANGRY_ANIMATION_LEFT, Texture.class);
+		assets.add(ENEMY_ANGRY_ANIMATION_LEFT);
+		manager.load(ENEMY_ANGRY_ANIMATION_RIGHT, Texture.class);
+		assets.add(ENEMY_ANGRY_ANIMATION_RIGHT);
+
 		manager.load(ENEMY_TRANSFORMATION, Texture.class);
 		assets.add(ENEMY_TRANSFORMATION);
 		manager.load(ENEMY_ANIMATION_SAVED, Texture.class);
@@ -302,13 +320,18 @@ public class GameplayController extends WorldController implements ContactListen
 		placingLightRight = createTexture(manager, PLACING_LIGHT_RIGHT, false);
 		takingLightRight = createTexture(manager, TAKING_LIGHT_RIGHT, false);
 
+		enemyAngryAnimationFront = createTexture(manager, ENEMY_ANGRY_ANIMATION_FRONT, false);
+		enemyAngryAnimationBack = createTexture(manager, ENEMY_ANGRY_ANIMATION_BACK, false);
+		enemyAngryAnimationLeft = createTexture(manager, ENEMY_ANGRY_ANIMATION_LEFT, false);
+		enemyAngryAnimationRight = createTexture(manager, ENEMY_ANGRY_ANIMATION_RIGHT, false);
+
 		enemyAnimationFront = createTexture(manager, ENEMY_ANIMATION_FRONT, false);
 		enemyAnimationBack = createTexture(manager, ENEMY_ANIMATION_BACK, false);
 		enemyAnimationLeft = createTexture(manager, ENEMY_ANIMATION_LEFT, false);
 		enemyAnimationRight = createTexture(manager, ENEMY_ANIMATION_RIGHT, false);
+
 		enemyTransformation = createTexture(manager, ENEMY_TRANSFORMATION, false);
 		enemyAnimationSaved = createTexture(manager, ENEMY_ANIMATION_SAVED, false);
-
 
 		playerTextureLeft = createTexture(manager, PLAYER_FILE_LEFT, false);
 		playerTextureFront = createTexture(manager, PLAYER_FILE_FRONT, false);
@@ -468,8 +491,6 @@ public class GameplayController extends WorldController implements ContactListen
 		while (enemy != null){
 			int[] pos = enemy.get("position").asIntArray();
 			JsonValue wander = enemy.get("wander");
-			System.out.println("position");
-			System.out.println(pos[1]);
 			enemies[idx] = new Enemy(pos[0], pos[1], 1, 1, enemy.getInt("type"));
 			enemies[idx].setWander(wander);
 			idx++;
@@ -597,6 +618,8 @@ public class GameplayController extends WorldController implements ContactListen
 			enemies[i].setDrawScale(scale);
 			enemies[i].setAnimations(enemyAnimationFront, enemyAnimationBack, enemyAnimationLeft, enemyAnimationRight,
 					enemyTransformation, enemyAnimationSaved);
+			enemies[i].setAngryAnimations(enemyAngryAnimationFront, enemyAngryAnimationBack, enemyAngryAnimationLeft,
+					enemyAngryAnimationRight, enemyTransformation, enemyAnimationSaved);
 			enemies[i].setTexture(enemyTexture);
 			addObject(enemies[i]);
 		}
@@ -704,7 +727,7 @@ public class GameplayController extends WorldController implements ContactListen
 		sourceRayHandler.useCustomViewport(0, 0, canvas.getWidth(), canvas.getHeight());
 
 		sourceRayHandler.setAmbientLight(Constants.AMBIANCE, Constants.AMBIANCE, Constants.AMBIANCE, Constants.AMBIANCE);
-		sourceRayHandler.setShadows(true);
+		sourceRayHandler.setShadows(false);
 		sourceRayHandler.setBlur(true);
 		sourceRayHandler.setBlurNum(3);
 	}
@@ -823,6 +846,15 @@ public class GameplayController extends WorldController implements ContactListen
 			Enemy enemy = controller.getEnemy();
 			//board.updateSeenTiles(enemy.getPosition(), enemy.getFacingDirection());
 			enemy.updateSightCone();
+
+			// Update Enemy Angry
+			if (controller.getState() == AIController.FSMState.CHASE
+					|| controller.getState() == AIController.FSMState.GOTO){
+				enemy.angry = true;
+			}
+			else {
+				enemy.angry = false;
+			}
 		}
 
 		// Check win Condition

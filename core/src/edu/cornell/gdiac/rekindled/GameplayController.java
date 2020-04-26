@@ -115,6 +115,14 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String GRASS_SOURCE_FILE = "spritesheets/spritesheet_grass.png";
 	private static final String MUSHROOM_SOURCE_FILE = "spritesheets/spritesheet_mushrooms.png";
 
+	/** file location for UI elements */
+	private static final String LIGHTS_TEXT_FILE = "images/light_text.png";
+	private static final String LIGHT_COUNTER_FILE = "images/light_counter.png";
+
+	/** texture for UI elements */
+	private TextureRegion lightsTexture;
+	private TextureRegion lightCounterTexture;
+
 	/** texture for art objects */
 	private TextureRegion grassTexture;
 	private TextureRegion mushroomTexture;
@@ -292,6 +300,11 @@ public class GameplayController extends WorldController implements ContactListen
 		manager.load(MUSHROOM_SOURCE_FILE, Texture.class);
 		assets.add(MUSHROOM_SOURCE_FILE);
 
+		manager.load(LIGHTS_TEXT_FILE, Texture.class);
+		assets.add(LIGHTS_TEXT_FILE);
+		manager.load(LIGHT_COUNTER_FILE, Texture.class);
+		assets.add(LIGHT_COUNTER_FILE);
+
 		super.preLoadContent(manager);
 	}
 
@@ -355,6 +368,9 @@ public class GameplayController extends WorldController implements ContactListen
 
 		grassTexture = createTexture(manager, GRASS_SOURCE_FILE, false);
 		mushroomTexture = createTexture(manager, MUSHROOM_SOURCE_FILE, false);
+
+		lightsTexture = createTexture(manager, LIGHTS_TEXT_FILE, false);
+		lightCounterTexture = createTexture(manager, LIGHT_COUNTER_FILE, false);
 
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
@@ -900,9 +916,6 @@ public class GameplayController extends WorldController implements ContactListen
 		// render the light
 		sourceRayHandler.render();
 
-		//draw the  UI
-		drawUI();
-
 		// draw things that should not be affected by shadows
 		canvas.begin();
 
@@ -918,8 +931,11 @@ public class GameplayController extends WorldController implements ContactListen
 				canvas.draw(seenTexture, x, y);
 			}
 		}
+		drawUI();
 
 		canvas.end();
+
+		//draw the  UI
 
 		if (debug) {
 			canvas.beginDebug();
@@ -940,10 +956,13 @@ public class GameplayController extends WorldController implements ContactListen
 	}
 
 	private void drawUI() {
-		String s = "Lights: " + player.getLightCounter();
-		canvas.begin();
-		canvas.drawText(s, font, 20, canvas.getHeight() - 20);
-		canvas.end();
+		// Magic Numbers - will change later
+		canvas.draw(lightsTexture, 10, canvas.getHeight() - 75);
+		if (player.getLightCounter() > 0){
+			for (int i = 0; i < player.getLightCounter(); i++){
+				canvas.draw(lightCounterTexture, 105 + i*62, canvas.getHeight() - 90);
+			}
+		}
 	}
 
 	public boolean isAlive() {

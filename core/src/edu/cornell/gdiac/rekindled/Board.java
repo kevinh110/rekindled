@@ -41,6 +41,12 @@ import java.util.LinkedList;
  */
 public class Board {
 
+    public boolean isLit(Vector2 pos) {
+        int x = Math.round(pos.x);
+        int y = Math.round(pos.y);
+        return tiles[x][y].isLitTile;
+    }
+
     /**
      * Each tile on the board has a set of attributes associated with it.
      * However, no class other than board needs to access them directly.

@@ -415,6 +415,8 @@ public class GameplayController extends WorldController implements ContactListen
 	private boolean cooldown;
 
 	private Player player;
+	private boolean inLitTile;
+	private boolean insideThrownLight;
 
 	private Enemy[] enemies;
 
@@ -727,7 +729,7 @@ public class GameplayController extends WorldController implements ContactListen
 		sourceRayHandler.useCustomViewport(0, 0, canvas.getWidth(), canvas.getHeight());
 
 		sourceRayHandler.setAmbientLight(Constants.AMBIANCE, Constants.AMBIANCE, Constants.AMBIANCE, Constants.AMBIANCE);
-		sourceRayHandler.setShadows(false);
+		//sourceRayHandler.setShadows(false);
 		sourceRayHandler.setBlur(true);
 		sourceRayHandler.setBlurNum(3);
 	}
@@ -744,6 +746,8 @@ public class GameplayController extends WorldController implements ContactListen
 	 */
 	public void update(float dt) {
 
+		insideThrownLight = false;
+		inLitTile = false;
 		// Temp Code to reset game if lost
 		if (lostGame){
 			lostGame = false;
@@ -804,6 +808,11 @@ public class GameplayController extends WorldController implements ContactListen
 			}
 		}
 
+		// update board
+		board.update();
+
+		this.inLitTile = insideLightSource(player.getPosition());
+
 		//throw light
 		if(input.didShift() && player.lightCounter > 0){
 			if(thrownLights.isEmpty() || (System.currentTimeMillis() - thrownLights.get(0).getValue() > 500L)) {
@@ -827,8 +836,13 @@ public class GameplayController extends WorldController implements ContactListen
 				}
 			}
 		}
-		// update board
-		board.update();
+
+		for (Pair p: thrownLights) {
+			LightSourceLight l = (LightSourceLight) p.getKey();
+			if (l.isActive() && l.contains(player.getPosition().x, player.getPosition().y))
+				this.insideThrownLight = true;
+		}
+
 
 		//update Art objects
 		for(ArtObject obj : artObjects){
@@ -842,7 +856,7 @@ public class GameplayController extends WorldController implements ContactListen
 		// Do enemy movement
 		// Enemy Movement
 		for (AIController controller : controls){
-			controller.move(insideLightSource(player.getPosition()));
+			controller.move(isPlayerLit());
 			Enemy enemy = controller.getEnemy();
 			//board.updateSeenTiles(enemy.getPosition(), enemy.getFacingDirection());
 			enemy.updateSightCone();
@@ -958,13 +972,14 @@ public class GameplayController extends WorldController implements ContactListen
 		return lostGame;
 	}
 
-	public boolean insideLightSource(Vector2 pos) {
-		for (LightSourceObject l : lights) {
-			if (l.contains(pos) && l.isLit())
-				return true;
-		}
-		return false;
+	private boolean insideLightSource(Vector2 pos) {
+		return board.isLit(pos);
 	}
+
+	public boolean isPlayerLit() {
+		return this.inLitTile || this.insideThrownLight;
+	}
+
 
 
 	/// CONTACT LISTENER METHODS

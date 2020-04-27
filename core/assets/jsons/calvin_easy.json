@@ -1,0 +1,21 @@
+{
+"dimension": [14,10], 
+"spawn": [8,3], 
+"init_lights": 0, 
+"lights": [
+{"position": [11,7],"lit": false}, 
+{"position": [3,3],"lit": true}
+], 
+"enemies": [
+{"position": [5,7],"type": 0,"wander": [[8,7]]}
+], 
+"walls": [
+{"position": [2,5],"movable": false}, 
+{"position": [3,5],"movable": false}, 
+{"position": [4,5],"movable": false}, 
+{"position": [5,5],"movable": false}, 
+{"position": [6,5],"movable": false}, 
+{"position": [7,5],"movable": false}, 
+{"position": [8,5],"movable": false}
+]
+}

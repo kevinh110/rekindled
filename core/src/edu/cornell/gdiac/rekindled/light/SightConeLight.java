@@ -22,8 +22,7 @@ public class SightConeLight extends ConeLight {
      * @param coneDegree
      */
     public SightConeLight(RayHandler rayHandler) {
-        super(rayHandler, 512, Color.RED, Constants.SIGHT_CONE_RADIUS, 0, 0, 0f, Constants.SIGHT_CONE_SECTOR);
-
+        super(rayHandler, 512, null, Constants.SIGHT_CONE_RADIUS, 0, 0, 0f, Constants.SIGHT_CONE_SECTOR);
         Filter filter = new Filter();
         filter.maskBits = Constants.BIT_WALL;
         this.setContactFilter(filter);

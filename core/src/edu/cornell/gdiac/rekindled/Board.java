@@ -41,6 +41,12 @@ import java.util.LinkedList;
  */
 public class Board {
 
+    public boolean isLit(Vector2 pos) {
+        int x = Math.round(pos.x);
+        int y = Math.round(pos.y);
+        return tiles[x][y].isLitTile;
+    }
+
     /**
      * Each tile on the board has a set of attributes associated with it.
      * However, no class other than board needs to access them directly.
@@ -53,6 +59,7 @@ public class Board {
         public boolean isLitTile;
         public boolean isDimTile;
         public boolean inSight;
+        public boolean isWater;
 
         /** Is this a goal tiles */
         public boolean goal = false;
@@ -106,7 +113,18 @@ public class Board {
     private static final String LIT_SOURCE = "images/litLightSource.png";
     /** The file location of a dim light source*/
     private static final String DIM_SOURCE = "images/dimLightSource.png";
-    private static final int LIGHT_RADIUS = 2; //idk why we have to sub 3
+
+    /** The file locations for water */
+    private static final String WATER_DARK_FILE = "images/water_tile_dark.png";
+    private static final String WATER_LIGHT_FILE = "images/water_tile_light.png";
+
+    /** The file locations for grass edges */
+    private static final String UP_BORDER = "images/up-border.png";
+    private static final String DOWN_BORDER = "images/down-border.png";
+    private static final String LEFT_BORDER = "images/left-border.png";
+    private static final String RIGHT_BORDER = "images/right-border.png";
+
+    private static final int LIGHT_RADIUS = 2;
 
     // Instance attributes
     /** The board width (in number of tiles) */
@@ -132,6 +150,14 @@ public class Board {
     /**texture region for lit light source*/;
     private Texture litLightSource;
 
+    private Texture waterDarkTile;
+    private Texture waterLightTile;
+
+    private Texture upBorder;
+    private Texture downBorder;
+    private Texture leftBorder;
+    private Texture rightBorder;
+
     /**texture region for lightTile*/;
     private TextureRegion lightRegion
     /**texture region for darkTile*/;
@@ -142,6 +168,14 @@ public class Board {
     private TextureRegion dimSourceRegion;
     /**texture region for wall*/
     private TextureRegion wallRegion;
+
+    private TextureRegion waterLightRegion;
+    private TextureRegion waterDarkRegion;
+
+    private TextureRegion upBorderRegion;
+    private TextureRegion downBorderRegion;
+    private TextureRegion leftBorderRegion;
+    private TextureRegion rightBorderRegion;
 
     private static final Color sightTint = Color.SALMON;
 
@@ -161,12 +195,26 @@ public class Board {
         this.wallTexture = new Texture(WALL);
         this.dimLightSource = new Texture(DIM_SOURCE);
         this.litLightSource = new Texture(LIT_SOURCE);
+        this.waterDarkTile = new Texture(WATER_DARK_FILE);
+        this.waterLightTile = new Texture(WATER_LIGHT_FILE);
+        this.upBorder = new Texture(UP_BORDER);
+        this.downBorder = new Texture(DOWN_BORDER);
+        this.leftBorder = new Texture(LEFT_BORDER);
+        this.rightBorder = new Texture(RIGHT_BORDER);
 
         this.darkRegion = new TextureRegion(darkTile, TILE_WIDTH, TILE_WIDTH);
         this.lightRegion = new TextureRegion(lightTile, TILE_WIDTH, TILE_WIDTH);
         this.litSourceRegion = new TextureRegion(litLightSource, TILE_WIDTH, TILE_WIDTH);
         this.dimSourceRegion = new TextureRegion(dimLightSource, TILE_WIDTH, TILE_WIDTH);
         this.wallRegion = new TextureRegion(wallTexture, TILE_WIDTH, TILE_WIDTH);
+
+        this.waterLightRegion = new TextureRegion(waterLightTile, TILE_WIDTH, TILE_WIDTH);
+        this.waterDarkRegion = new TextureRegion(waterDarkTile, TILE_WIDTH, TILE_WIDTH);
+
+        this.upBorderRegion = new TextureRegion(upBorder, TILE_WIDTH + 16, TILE_WIDTH + 16);
+        this.downBorderRegion = new TextureRegion(downBorder, TILE_WIDTH + 16, TILE_WIDTH + 16);
+        this.leftBorderRegion = new TextureRegion(leftBorder, TILE_WIDTH + 16, TILE_WIDTH + 16);
+        this.rightBorderRegion = new TextureRegion(rightBorder, TILE_WIDTH + 16, TILE_WIDTH + 16);
 
         Vector2 temp = new Vector2();
         this.lightSources = new LinkedList<>();
@@ -196,7 +244,7 @@ public class Board {
 
     }
 
-    public Board(int width, int height, int[] walls, LightSourceObject[] lights) {
+    public Board(int width, int height, int[] walls, LightSourceObject[] lights, int[] water) {
         this(width, height);
         Vector2 temp;
         this.lightSources = new LinkedList<>();
@@ -206,6 +254,11 @@ public class Board {
             tiles[walls[ii]][walls[ii+1]].setWall();
         }
         this.walls = walls;
+
+        // Set Water
+        for (int ii = 0; ii < water.length -1 ; ii+= 2){
+            tiles[water[ii]][water[ii+1]].isWater = true;
+        }
 
         // Set light sources
         for (LightSourceObject light : lights) {
@@ -351,6 +404,13 @@ public class Board {
                 drawTile(x, y, canvas);
             }
         }
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                drawLit(x, y, canvas);
+            }
+        }
+
     }
 
     /**
@@ -368,19 +428,31 @@ public class Board {
         float sy = boardToScreenCenter(y);
 
 
-        Color tint = (tile.inSight) ? sightTint : Color.WHITE;
+        Color tint = Color.WHITE;
 
-//        if (tile.isLitTile)
-//            canvas.draw(lightRegion, tint, sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2, lightRegion.getRegionWidth(), lightRegion.getRegionHeight());
-//        else
-//            canvas.draw(darkRegion, tint, sx-(getTileSize()-getTileSpacing())/2, sy-(getTileSize()-getTileSpacing())/2, darkRegion.getRegionWidth(), darkRegion.getRegionHeight());
-
-        if (tile.isLitTile)
-            canvas.draw(lightRegion, tint, 0, 0, sx, sy, 0, 1 , 1 );
-        else
+        if (tile.isLitTile && tile.isWater){
+            canvas.draw(waterLightRegion, tint, 0, 0, sx, sy, 0, 1 , 1 );
+        } else if (tile.isWater){
+            canvas.draw(waterDarkRegion, tint, 0, 0, sx, sy, 0, 1 , 1 );
+        } else {
             canvas.draw(darkRegion, tint, 0, 0, sx, sy, 0, 1 , 1 );
+        }
     }
 
+    private void drawLit(int x, int y, GameCanvas canvas) {
+        TileState tile = tiles[x][y];
+        // Compute drawing coordinates
+        float sx = boardToScreenCenter(x);
+        float sy = boardToScreenCenter(y);
+
+        if (tile.isLitTile && !tile.isWater) {
+            canvas.draw(lightRegion, Color.WHITE, 0, 0, sx, sy, 0, 1, 1);
+            canvas.draw(upBorderRegion, Color.WHITE, 5, 8, sx, sy, 0, 1, 1);
+            canvas.draw(downBorderRegion, Color.WHITE, 8, 10, sx, sy, 0, 1, 1);
+            canvas.draw(leftBorderRegion, Color.WHITE, 11, 8, sx, sy, 0, 1, 1);
+            canvas.draw(rightBorderRegion, Color.WHITE, 5, 8, sx, sy, 0, 1, 1);
+        }
+    }
     /**
      * Returns the board cell index for a screen position.
      *
@@ -526,12 +598,12 @@ public class Board {
      */
     public boolean isObstructed(Vector2 position) {
         TileState tile = tiles[screenToBoard(position.x)][screenToBoard(position.y)];
-        return tile.isWall || tile.isLightSource;
+        return tile.isWall || tile.isLightSource || tile.isWater;
     }
 
     public boolean isObstructedBoard(int x, int y) {
         TileState tile = tiles[x][y];
-        return tile.isWall || tile.isLightSource;
+        return tile.isWall || tile.isLightSource || tile.isWater;
     }
 
     public boolean isLitTile(Vector2 position){
@@ -561,7 +633,7 @@ public class Board {
 //        System.out.println("Width: " + width);
 //        System.out.println("Height: " + height);
         TileState tile = tiles[x][y];
-        return tile.isWall || tile.isLitTile;
+        return tile.isWall || tile.isLitTile || tile.isWater;
     }
 
     public boolean isLitLightSource(Vector2 position){
@@ -676,8 +748,8 @@ public class Board {
     }
 
     private void updateLitTiles(Vector2 source) {
-        int x = (int) source.x;
-        int y = (int) source.y;
+        int x = Math.round(source.x);
+        int y = Math.round(source.y);
         tiles[x][y].setLit();
 
         boolean top = false;
@@ -722,7 +794,7 @@ public class Board {
 
     private void spreadSightHelp (int depth, int x, int y, int dir) {
 
-        if (depth == 0 || x < 0 || y < 0  || x > width - 1  || y > height - 1)
+        if (depth == 0 || x < 0 || y < 0  || x > width  || y > height)
             return;
 
         if (dir == Constants.LEFT) {

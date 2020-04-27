@@ -164,17 +164,17 @@ public class AIController extends Entity_Controller {
                 break;
 
             case PAUSED:
-                if (!hasLoS(playerLit)){
-                    state = FSMState.GOTO; // Go to prev goal
+//                if (!hasLoS(playerLit)){
+//                    state = FSMState.GOTO; // Go to prev goal
+//                    timer = 0;
+//                }
+//                else {
+                timer++;
+                if (timer % PAUSE_TIME == 0){
+                    state = FSMState.CHASE;
                     timer = 0;
                 }
-                else {
-                    timer++;
-                    if (timer % PAUSE_TIME == 0){
-                        state = FSMState.CHASE;
-                        timer = 0;
-                    }
-                }
+//                }
                 break;
 
             case CHASE:
@@ -187,7 +187,7 @@ public class AIController extends Entity_Controller {
 
             case GOTO:
                 if (hasLoS(playerLit)){
-                    state = FSMState.PAUSED;
+                    state = FSMState.CHASE;
                 }
                 else if (pos.x == target[0] && pos.y == target[1]){
                     state = FSMState.WAIT;
@@ -197,7 +197,7 @@ public class AIController extends Entity_Controller {
 
             case WAIT:
                 if (hasLoS(playerLit)){
-                    state = FSMState.PAUSED;
+                    state = FSMState.CHASE;
                     timer = 0;
                 }
                 else {
@@ -406,8 +406,8 @@ public class AIController extends Entity_Controller {
         ArrayList<Integer> s = new ArrayList<Integer>();
 
         // Set Current Position to Visited
-        int px = (int) player.getPosition().x;
-        int py = (int) player.getPosition().y;
+        int px = Math.round(player.getPosition().x);
+        int py = Math.round(player.getPosition().y);
         s.add(px); s.add(py);
         board.setVisited(px,py); //visit s
         q.add(s);
@@ -483,9 +483,13 @@ public class AIController extends Entity_Controller {
             enemy.setPosition(Math.round(pos.x), Math.round(pos.y)); // Center pos to account for slight drift
             pos = enemy.getPosition();
             changeStateIfApplicable(playerLit);
-            System.out.println("State: " + state);
+//            System.out.println("State: " + state);
+//            System.out.println("Enemy Pos: " + pos);
+//            System.out.println("Player Pos: " + player.getPosition());
+//            System.out.println("-----------");
             switch (state) {
                 case WANDER:
+                    enemy.setWanderSpeed();
                     if (pos.x == goal[0] && pos.y == goal[1]){
                         enemy.updateWanderGoal();
                     }
@@ -494,16 +498,20 @@ public class AIController extends Entity_Controller {
                     break;
 
                 case CHASE:
+                    enemy.setChaseSpeed();
                     goal = getChaseGoal();
                     break;
 
                 case GOTO:
+                    enemy.setChaseSpeed();
                     board.setGoal(target[0], target[1]);
                     goal = bfs();
                     break;
 
                 case PAUSED:
                     setFacingDirWaiting();
+                    goal[0] = (int) pos.x;
+                    goal[1] = (int) pos.y;
                     break;
 
                 case WAIT:
@@ -522,6 +530,7 @@ public class AIController extends Entity_Controller {
                     break;
 
                 case RETURN:
+                    enemy.setWanderSpeed();
                     goal = getReturnGoal(); // This really only needs to be calculated once
                     break;
             }

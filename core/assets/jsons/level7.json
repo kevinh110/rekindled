@@ -15,7 +15,8 @@
 {"position": [30,2],"type": 0,"wander": [[30,3]]}, 
 {"position": [3,2],"type": 0,"wander": [[3,3]]}
 ], 
-"walls": [
-
-]
+"walls": [],
+  "grass": [],
+  "mushrooms": [],
+  "water": []
 }

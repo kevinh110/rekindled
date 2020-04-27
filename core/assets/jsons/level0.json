@@ -1,7 +1,7 @@
 {
   "dimension": [25, 18],
   "spawn": [4, 4],
-  "init_lights": 0,
+  "init_lights": 1,
   "lights": [
     {
       "position": [
@@ -175,5 +175,8 @@
       ],
       "movable": false
     }
-  ]
+  ],
+  "grass": [[15, 6], [3, 3]],
+  "mushrooms": [[4, 3], [4,13], [18, 7]],
+  "water": [[5, 11], [5, 12], [5, 13] , [3, 5]]
 }

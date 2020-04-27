@@ -11,5 +11,8 @@
 ], 
 "walls": [
 {"position": [2,2],"movable": false}
-]
+],
+  "grass": [],
+  "mushrooms": [],
+  "water": []
 }

@@ -41,5 +41,8 @@
 {"position": [16,4],"movable": false}, 
 {"position": [17,4],"movable": false}, 
 {"position": [18,4],"movable": false}
-]
+],
+  "grass": [],
+  "mushrooms": [],
+  "water": []
 }

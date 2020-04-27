@@ -20,8 +20,11 @@ import com.badlogic.gdx.graphics.g2d.freetype.*;
 import com.badlogic.gdx.assets.loaders.*;
 import com.badlogic.gdx.assets.loaders.resolvers.*;
 
+import edu.cornell.gdiac.rekindled.obstacle.WheelObstacle;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.rekindled.*;
+
+import java.util.logging.Level;
 
 /**
  * Root class for a LibGDX.
@@ -39,6 +42,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	private GameCanvas canvas;
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
 	private LoadingMode loading;
+	/** Player mode for level complete screen */
+	private LevelCompleteMode levelComplete;
 	/** Player mode for the the game proper (CONTROLLER CLASS) */
 	private int current;
 	/** List of all WorldControllers */
@@ -68,10 +73,12 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void create() {
 		canvas  = new GameCanvas();
+//		levelComplete = new LevelCompleteMode(canvas, manager, 1);
 		loading = new LoadingMode(canvas,manager,1);
-
+		levelComplete = new LevelCompleteMode(canvas, manager, 1);
+		levelComplete.setScreenListener(this);
 		// Initialize the three game worlds
-		controllers = new GameplayController[4];
+		controllers = new GameplayController[8];
 		controllers[0] = new GameplayController("jsons/level0.json");
 		controllers[1] = new GameplayController("jsons/level1.json");
 		controllers[2] = new GameplayController("jsons/level2.json");
@@ -80,8 +87,10 @@ public class GDXRoot extends Game implements ScreenListener {
 //		controllers[5] = new GameplayController("jsons/level5.json");
 //		controllers[6] = new GameplayController("jsons/level6.json");
 //		controllers[7] = new GameplayController("jsons/level7.json");
-//		controllers[8] = new GameplayController("jsons/level8.json");
-//		controllers[9] = new GameplayController("jsons/level9.json");
+		controllers[4] = new GameplayController("jsons/level8.json");
+		controllers[5] = new GameplayController("jsons/level9.json");
+		controllers[6] = new GameplayController("jsons/calvin_easy.json");
+		controllers[7] = new GameplayController("jsons/calvin_medium.json");
 		for(int ii = 0; ii < controllers.length; ii++) {
 			controllers[ii].preLoadContent(manager);
 		}
@@ -136,6 +145,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == loading) {
+			System.out.println("loading");
 			for(int ii = 0; ii < controllers.length; ii++) {
 				controllers[ii].loadContent(manager);
 				controllers[ii].setScreenListener(this);
@@ -146,7 +156,15 @@ public class GDXRoot extends Game implements ScreenListener {
 
 			loading.dispose();
 			loading = null;
-		} else if (exitCode == WorldController.EXIT_NEXT) {
+		} else if (exitCode == WorldController.EXIT_COMPLETE){
+			setScreen(levelComplete);
+			Gdx.input.setInputProcessor(levelComplete);
+		} else if (screen == levelComplete){
+			current = (current+1) % controllers.length;
+			controllers[current].reset();
+			setScreen(controllers[current]);
+		}
+		else if (exitCode == WorldController.EXIT_NEXT) {
 			current = (current+1) % controllers.length;
 			controllers[current].reset();
 			setScreen(controllers[current]);

@@ -782,8 +782,15 @@ public abstract class SimpleObstacle extends Obstacle {
 	 */
 	public void draw(GameCanvas canvas) {
 		if (texture != null) {
-			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
+			this.draw(canvas, 1, 1);
 		}
+	}
+
+	public void draw(GameCanvas canvas, float sx,  float sy){
+		if (texture != null) {
+			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),sx,sy);
+		}
+
 	}
 
 	public void draw(GameCanvas canvas, Color tint) {
@@ -792,15 +799,22 @@ public abstract class SimpleObstacle extends Obstacle {
 		}
 	}
 
+
+
 	/**
 	 * Draws animated physics object
 	 */
 	public void draw(GameCanvas canvas, Animation animation, boolean looping, float elapseTime, int width, Color tint){
-		if(animation != null){
-			canvas.draw(animation, elapseTime, looping, 0, 0, getX() * drawScale.x - (width / 2f), getY()*drawScale.y - 20, getAngle(), 1, 1, false);
+		if(animation != null) {
+			this.draw(canvas, animation, looping, elapseTime, width, tint, 1, 1 );
 		}
 	}
 
+	public void draw(GameCanvas canvas, Animation animation, boolean looping, float elapseTime, int width, Color tint, float sx, float sy){
+		if(animation != null){
+			canvas.draw(animation, elapseTime, looping, 0, 0, getX() * drawScale.x - (width / 2f), getY()*drawScale.y - 20, getAngle(), sx, sy, false);
+		}
+	}
 	/**
 	 * Draws an animated object at the center of the screen. ie. the player
 	 */

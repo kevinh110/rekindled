@@ -20,8 +20,11 @@ import com.badlogic.gdx.graphics.g2d.freetype.*;
 import com.badlogic.gdx.assets.loaders.*;
 import com.badlogic.gdx.assets.loaders.resolvers.*;
 
+import edu.cornell.gdiac.rekindled.obstacle.WheelObstacle;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.rekindled.*;
+
+import java.util.logging.Level;
 
 /**
  * Root class for a LibGDX.
@@ -39,6 +42,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	private GameCanvas canvas;
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
 	private LoadingMode loading;
+	/** Player mode for level complete screen */
+	private LevelCompleteMode levelComplete;
 	/** Player mode for the the game proper (CONTROLLER CLASS) */
 	private int current;
 	/** List of all WorldControllers */
@@ -68,7 +73,10 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void create() {
 		canvas  = new GameCanvas();
+//		levelComplete = new LevelCompleteMode(canvas, manager, 1);
 		loading = new LoadingMode(canvas,manager,1);
+		levelComplete = new LevelCompleteMode(canvas, manager, 1);
+		levelComplete.setScreenListener(this);
 
 		// Initialize the three game worlds
 		controllers = new GameplayController[4];
@@ -136,6 +144,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == loading) {
+			System.out.println("loading");
 			for(int ii = 0; ii < controllers.length; ii++) {
 				controllers[ii].loadContent(manager);
 				controllers[ii].setScreenListener(this);
@@ -146,7 +155,15 @@ public class GDXRoot extends Game implements ScreenListener {
 
 			loading.dispose();
 			loading = null;
-		} else if (exitCode == WorldController.EXIT_NEXT) {
+		} else if (exitCode == WorldController.EXIT_COMPLETE){
+			setScreen(levelComplete);
+			Gdx.input.setInputProcessor(levelComplete);
+		} else if (screen == levelComplete){
+			current = (current+1) % controllers.length;
+			controllers[current].reset();
+			setScreen(controllers[current]);
+		}
+		else if (exitCode == WorldController.EXIT_NEXT) {
 			current = (current+1) % controllers.length;
 			controllers[current].reset();
 			setScreen(controllers[current]);

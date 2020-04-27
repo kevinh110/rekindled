@@ -31,4 +31,6 @@ public class Constants {
 
     // Defines how dark shadows should be (0..1)
     public static final float AMBIANCE = 0.3f;
+
+    public static final float TILE_SIZE = 64f;
 }

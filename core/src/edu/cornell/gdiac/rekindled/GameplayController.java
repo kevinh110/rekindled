@@ -708,6 +708,7 @@ public class GameplayController extends WorldController implements ContactListen
 			obj.setFriction(BASIC_FRICTION);
 			obj.setRestitution(BASIC_RESTITUTION);
 			obj.setDrawScale(scale);
+			obj.getFilterData().categoryBits = Constants.BIT_WATER;
 			addObject(obj);
 		}
 
@@ -797,7 +798,7 @@ public class GameplayController extends WorldController implements ContactListen
 		sourceRayHandler.useCustomViewport(0, 0, canvas.getWidth(), canvas.getHeight());
 
 		sourceRayHandler.setAmbientLight(Constants.AMBIANCE, Constants.AMBIANCE, Constants.AMBIANCE, Constants.AMBIANCE);
-		sourceRayHandler.setShadows(false);
+		//sourceRayHandler.setShadows(false);
 		sourceRayHandler.setBlur(true);
 		sourceRayHandler.setBlurNum(3);
 	}

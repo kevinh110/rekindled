@@ -242,62 +242,62 @@ function confirmOpen() {
     content[j] = [];
     if(j==0 || j == height-1){
       for(let i=0;i<width;i++){
-        content[j].push('W');
+        content[j].push('.');
       }
     } else{
-      content[j].push('W');
+      content[j].push('.');
       for(let i=1;i<width-1;i++){
           content[j].push('.');
       }
-      content[j].push('W');
+      content[j].push('.');
     }
   }
 
   // add player
   // console.log(player);
-  content[height-player[1]][player[0]-1] = 'P';
+  content[height-1-player[1]][player[0]] = 'P';
 
   // add lights
   for(let i=0;i<litLights.length;i++){
     // console.log(litLights[i]);
-    content[height-litLights[i][1]][litLights[i][0]-1] = 'L';
+    content[height-1-litLights[i][1]][litLights[i][0]] = 'L';
   }
   for(let i=0;i<dimLights.length;i++){
     // console.log(dimLights[i]);
-    content[height-dimLights[i][1]][dimLights[i][0]-1] = 'U';
+    content[height-1-dimLights[i][1]][dimLights[i][0]] = 'U';
   }
 
   // add walls
   for(let i=0;i<walls.length;i++){
     // console.log(walls[i]);
-    content[height-walls[i][1]][walls[i][0]-1] = 'W';
+    content[height-1-walls[i][1]][walls[i][0]] = 'W';
   }
 
   // add grass
   for(let i=0;i<grass.length;i++){
     console.log(grass[i]);
-    content[height-grass[i][1]][grass[i][0]-1] = 'G';
+    content[height-1-grass[i][1]][grass[i][0]] = 'G';
   }
 
   // add mushrooms
   for(let i=0;i<mushrooms.length;i++){
     console.log(mushrooms[i]);
-    content[height-mushrooms[i][1]][mushrooms[i][0]-1] = 'M';
+    content[height-1-mushrooms[i][1]][mushrooms[i][0]] = 'M';
   }
 
   // add water
   for(let i=0;i<water.length;i++){
     console.log(water[i]);
-    content[height-water[i][1]][water[i][0]-1] = 'T';
+    content[height-1-water[i][1]][water[i][0]] = 'T';
   }
 
   // add enemies
   for(let i=0;i<enemies.length;i++){
     // console.log("enemies");
     // console.log(enemies[i]);
-    content[height-enemies[i][0][1]][enemies[i][0][0]-1] = 'E'+(i+1);
+    content[height-1-enemies[i][0][1]][enemies[i][0][0]] = 'E'+(i+1);
     for(let j=0;j<enemies[i][2].length;j++){
-      content[height-enemies[i][2][j][1]][enemies[i][2][j][0]-1] = '@'+(i+1);
+      content[height-1-enemies[i][2][j][1]][enemies[i][2][j][0]] = '@'+(i+1);
     }
   }
   // console.log(content);
@@ -312,8 +312,6 @@ function confirmOpen() {
   // console.log(content1d);
 
 
-
-
   try {
     cells.forEach((cell, i) => {
       let char = content1d[i];
@@ -323,12 +321,61 @@ function confirmOpen() {
         }
       }
       cell.textContent = char;
-      if(char.search(/E/)>-1){
-        cell.style.backgroundColor = PALETTE['E'].color;
-      } else if(char.search(/\@/)>-1){
-        cell.style.backgroundColor = PALETTE['@'].color;
-      } else {
-        cell.style.backgroundColor = PALETTE[char].color;
+      cell.className = "cell darkzone";
+      if(char != '.'){
+        if(char.search(/E/)>-1){
+          let img = document.createElement('img');
+          img.src = "./assets/"+PALETTE['E'].img;
+          img.className = "enemysprite";
+          cell.appendChild(img);
+        } else if(char.search(/\@/)>-1){
+          let img = document.createElement('img');
+          img.src = "./assets/"+PALETTE['@'].img;
+          img.className = "wanderpointsprite";
+          cell.appendChild(img);
+        } else {
+          let img = document.createElement('img');
+          img.src = "./assets/"+PALETTE[char].img;
+          img.className = PALETTE[char].class;
+          cell.appendChild(img);
+        }
+      }
+      
+    });
+    cells.forEach((cell, i) => {
+      if (cell.textContent == 'L'){
+        let row = cell.parentNode;
+        let table = row.parentNode;
+        index = Array.prototype.indexOf.call(row.children,cell);
+        row_index = Array.prototype.indexOf.call(table.children,row);
+        console.log(row);
+        console.log(index);
+        console.log(table);
+        console.log(row_index);
+        console.log(row.children[index]);
+        // row 0
+        applyEdit(row.children[index-2], 'LZ');
+        applyEdit(row.children[index-1], 'LZ');
+        applyEdit(row.children[index], 'LZ');
+        applyEdit(row.children[index+1], 'LZ');
+        applyEdit(row.children[index+2], 'LZ');
+        // row -1
+        let prev_row = table.children[row_index-1];
+        applyEdit(prev_row.children[index-1], 'LZ');
+        applyEdit(prev_row.children[index], 'LZ');
+        applyEdit(prev_row.children[index+1], 'LZ');
+        // row +1
+        let next_row = table.children[row_index+1];
+        applyEdit(next_row.children[index-1], 'LZ');
+        applyEdit(next_row.children[index], 'LZ');
+        applyEdit(next_row.children[index+1], 'LZ');
+        // row -2
+        let prev_prev_row = table.children[row_index-2];
+        applyEdit(prev_prev_row.children[index], 'LZ');
+        // row +2
+        let next_next_row = table.children[row_index+2];
+        applyEdit(next_next_row.children[index], 'LZ');
+        
       }
     });
   }
@@ -357,43 +404,43 @@ function copyLevel() {
   let height = document.querySelectorAll('#view > div').length;
   let width = document.querySelector('#view > div').childNodes.length;
   level += '"dimension": ['+width+','+height+'], \n';
-  let j = height;
+  let j = height-1;
 
   cells.forEach((cell, i) => {
-    if ((i + 1) % width != 0 && (i + 1) % width != 1 && j != height && j != 1){
+    if ((i + 1) % width != 0 && (i + 1) % width != 1 && j != height-1 && j != 0){
       if (cell.textContent == 'P'){
-        player = '['+((i%width)+1)+','+j+']';
+        player = '['+((i%width))+','+j+']';
       }
       if (cell.textContent.search(/E/)>-1){
         let idx = cell.textContent.match(/[0-9]+/)[0];
         // console.log(idx);
-        enemiesArray[idx] = [(i%width)+1,j];
+        enemiesArray[idx] = [(i%width),j];
         // console.log(enemiesArray[idx]);
         // console.log(enemiesArray);
       }
       if (cell.textContent == 'L'){
         if (lights != '[\n') lights += ', \n';
-        lights += '{"position": ['+((i%width)+1)+','+j+'],"lit": true}';
+        lights += '{"position": ['+((i%width))+','+j+'],"lit": true}';
       }
       if (cell.textContent == 'U'){
         if (lights != '[\n') lights += ', \n';
-        lights += '{"position": ['+((i%width)+1)+','+j+'],"lit": false}';
+        lights += '{"position": ['+((i%width))+','+j+'],"lit": false}';
       }
       if (cell.textContent == 'W'){
         if (walls != '[\n') walls += ', \n';
-        walls += '{"position": ['+((i%width)+1)+','+j+'],"movable": false}';
+        walls += '{"position": ['+((i%width))+','+j+'],"movable": false}';
       }
       if (cell.textContent == 'M'){
         if (mushrooms != '[') mushrooms += ', ';
-        mushrooms += '['+((i%width)+1)+','+j+']';
+        mushrooms += '['+((i%width))+','+j+']';
       }
       if (cell.textContent == 'G'){
         if (grass != '[') grass += ', ';
-        grass += '['+((i%width)+1)+','+j+']';
+        grass += '['+((i%width))+','+j+']';
       }
       if (cell.textContent == 'T'){
         if (water != '[') water += ', ';
-        water += '['+((i%width)+1)+','+j+']';
+        water += '['+((i%width))+','+j+']';
       }
     }
     if ((i + 1) % width == 0) {
@@ -405,14 +452,15 @@ function copyLevel() {
     wanderPaths.push([]);
   }
 
-  j = height;
+  j = height-1;
   cells.forEach((cell, i) => {
-    if ((i + 1) % width != 0 && (i + 1) % width != 1 && j != height && j != 1){
+    console.log(i);
+    if ((i + 1) % width != 0 && (i + 1) % width != 1 && j != height-1 && j != 0){
       if (cell.textContent.search(/\@/)>-1){
         // console.log(cell.textContent);
         // console.log(cell.textContent.match(/[0-9]+/)[0]);
         // console.log(wanderPaths);
-        wanderPaths[cell.textContent.match(/[0-9]+/)[0]].push([((i%width)+1),j]);
+        wanderPaths[cell.textContent.match(/[0-9]+/)[0]].push([(i%width),j]);
       }
     }
     if ((i + 1) % width == 0) {
@@ -429,6 +477,7 @@ function copyLevel() {
     // console.log(wanderPaths[i]);
     if(wanderPaths[i].length >0){
       // console.log("inside if");
+      // enemies += '['+enemiesArray[i][0]+','+enemiesArray[i][1]+'],['+wanderPaths[i][0]+']';
       enemies += '['+wanderPaths[i][0]+']';
       for(let j=1;j<wanderPaths[i].length;j++){
         enemies += ',['+wanderPaths[i][j]+']';
@@ -465,16 +514,16 @@ function copyLevel() {
 -                          PALETTE & EDITING TOOLS                             -
 //////////////////////////////////////////////////////////////////////////////*/
 const PALETTE = {
-  '.': {color: 'rgb(255, 255, 255)', help: 'empty'},
-  'W': {color: 'rgb(139,69,19)', help: 'wall'},
-  'U': {color: 'rgb(169,169,169)', help: 'unlit light source'},
-  'L': {color: 'rgb(241, 229, 89)', help: 'lit light source'},
-  'P': {color: 'rgb(153,102,204)', help: 'player'},
-  'T': {color: 'rgb(52, 166, 251)', help: 'water'},
-  'G': {color: 'rgb(50,205,50)', help: 'grass'},
-  'M': {color: 'rgb(127,255,212)', help: 'mushrooms'},
-  'E': {color: 'rgb(255, 100, 100)', help: 'enemy'},
-  '@': {color: 'rgb(255, 100, 100)', help: 'enemy wander path'}
+  '.': {color: 'rgb(255, 255, 255)', help: 'empty', class: 'darkzone', img: 'background_unlit.png'},
+  'W': {color: 'rgb(139,69,19)', help: 'wall', class: 'wallsprite', img: '/wall/singular.png'},
+  'U': {color: 'rgb(169,169,169)', help: 'unlit light source', class: 'lampsprite', img: 'lamp_unlit.png'},
+  'L': {color: 'rgb(241, 229, 89)', help: 'lit light source', class: 'lampsprite', img: 'lamp_lit.png'},
+  'P': {color: 'rgb(153,102,204)', help: 'player', class: 'playersprite', img: 'player.png'},
+  'T': {color: 'rgb(52, 166, 251)', help: 'water', class: 'watersprite', img: 'water_dark.png'},
+  'G': {color: 'rgb(50,205,50)', help: 'grass', class: 'sprite', img: 'grass_lit.png'},
+  'M': {color: 'rgb(127,255,212)', help: 'mushrooms', class: 'sprite', img: 'mushrooms_lit.png'},
+  'E': {color: 'rgb(255, 100, 100)', help: 'enemy', class: 'enemysprite', img: 'enemy.png'},
+  '@': {color: 'rgb(255, 100, 100)', help: 'enemy wander path', class: 'wanderpointsprite', img: 'wander_point_marker.png'}
 };
 const TOOLS = [
   {tool: brush, icon: 'brush'},
@@ -484,21 +533,168 @@ const TOOLS = [
 let mouseTool = {tool: brush, char: '.'};
 
 function applyEdit(cell, char) {
-  cell.textContent = char;
+  console.log("applyEdit");
+  console.log(char);
+
   if(char.search(/E/)>-1){
-    cell.style.backgroundColor = PALETTE['E'].color;
+    cell.textContent = char;
+    // cell.className = "cell enemy";
+    // cell.style.backgroundColor = PALETTE['E'].color;
+    let img = document.createElement('img');
+    img.src = "./assets/"+PALETTE['E'].img;
+    img.className = PALETTE['E'].class;
+    cell.appendChild(img);
   } else if(char.search(/\@/)>-1){
-    cell.style.backgroundColor = PALETTE['@'].color;
+    cell.textContent = char;
+    // cell.style.backgroundColor = PALETTE['@'].color;
+    let img = document.createElement('img');
+    img.src = "./assets/"+PALETTE['@'].img;
+    img.className = PALETTE['@'].class;
+    cell.appendChild(img);
+    
+  } else if(char == 'T' && cell.className == 'cell litzone'){
+    cell.textContent = char;
+    let img = document.createElement('img');
+    img.src = "./assets/water_lit.png";
+    img.className = PALETTE[char].class;
+    cell.appendChild(img);
+  } else if(char == 'T' || char =='P' || char == 'W' || char == 'U' || char == 'L' || char == 'M' || char == 'G'){
+    cell.textContent = char;
+    let img = document.createElement('img');
+    img.src = "./assets/"+PALETTE[char].img;
+    img.className = PALETTE[char].class;
+    cell.appendChild(img);
+  // } else if(char == 'L'){
+  //   cell.textContent = char;
+  //   cell.className = "cell lit";
+  } else if(char == 'LZ'){
+    // change tiles to light tiles
+    cell.className = "cell litzone";
+    // change sprites to light sprites
+    if(cell.textContent.search(/E/)>-1){
+      cell.childNodes[1].src = './assets/saved_soul.png';
+      cell.childNodes[1].className = 'soulsprite';
+    } else if(cell.textContent == 'T'){
+      cell.childNodes[1].src = './assets/water_lit.png';
+    }
+  } else if(char == 'DZ') {
+    // change tiles to dark tiles
+    cell.className = "cell darkzone";
+    // change sprites to dark sprites
+    if(cell.textContent.search(/E/)>-1){
+      cell.childNodes[1].src = "./assets/"+PALETTE['E'].img;
+      cell.childNodes[1].className = PALETTE['E'].class;
+    } else if(cell.textContent == 'T'){
+      cell.childNodes[1].src = './assets/water_dark.png';
+    }
+  } else if(char == '.'){
+    if(cell.textContent == 'L'){
+      cell.className = "cell darkzone";
+      // cell.parentNode.className = "cell darkzone";
+      cell.removeChild(cell.childNodes[1]);
+      // console.log(cell.parentNode.childNodes[1]);
+      // cell.parentNode.remove(cell);
+      cell.textContent = '.';
+    } else if(cell.textContent == 'W' || cell.textContent == 'U' || cell.textContent == 'P' || cell.textContent == 'G' || cell.textContent == 'M' || cell.textContent == 'T' || cell.textContent.search(/E/)>-1 || cell.textContent.search(/@/)>-1) {
+      cell.removeChild(cell.childNodes[1]);
+      cell.textContent = '.';
+    }
   } else {
-    cell.style.backgroundColor = PALETTE[char].color;
+    cell.textContent = char;
+    cell.className = "cell darkzone";
   }
-  cell.style.color = 'rgb(255, 255, 255)';
+
 }
+
 function brush(event) {
   if (event.buttons == 1 && mouseTool.char != event.target.textContent) {
     let cell = event.target;
     updateHistory([cell], cell.textContent);
+
+    console.log(cell.textContent);
+    if (cell.className != 'cell darkzone' && cell.className != 'cell litzone'){
+      cell = cell.parentNode;
+    }
+    console.log(cell.textContent);
+    // remove all surrounding light tiles
+    console.log(mouseTool.char);
+    // console.log(cell.parentNode.textContent);
+    if ((mouseTool.char != 'L') && cell.textContent == 'L'){
+      console.log("inside if");
+      // cell = cell.parentNode;
+      let row = cell.parentNode;
+      let table = row.parentNode;
+      index = Array.prototype.indexOf.call(row.children,cell);
+      row_index = Array.prototype.indexOf.call(table.children,row);
+      console.log(row);
+      console.log(index);
+      console.log(table);
+      console.log(row_index);
+      console.log(row.children[index]);
+      // row 0
+      applyEdit(row.children[index-2], 'DZ');
+      applyEdit(row.children[index-1], 'DZ');
+      applyEdit(row.children[index], 'DZ');
+      applyEdit(row.children[index+1], 'DZ');
+      applyEdit(row.children[index+2], 'DZ');
+      // row -1
+      let prev_row = table.children[row_index-1];
+      applyEdit(prev_row.children[index-1], 'DZ');
+      applyEdit(prev_row.children[index], 'DZ');
+      applyEdit(prev_row.children[index+1], 'DZ');
+      // row +1
+      let next_row = table.children[row_index+1];
+      applyEdit(next_row.children[index-1], 'DZ');
+      applyEdit(next_row.children[index], 'DZ');
+      applyEdit(next_row.children[index+1], 'DZ');
+      // row -2
+      let prev_prev_row = table.children[row_index-2];
+      applyEdit(prev_prev_row.children[index], 'DZ');
+      // row +2
+      let next_next_row = table.children[row_index+2];
+      applyEdit(next_next_row.children[index], 'DZ');
+      
+    }
+
     applyEdit(cell, mouseTool.char);
+
+    // add surrounding light tiles
+    if (mouseTool.char == 'L'){
+      let row = cell.parentNode;
+      let table = row.parentNode;
+      index = Array.prototype.indexOf.call(row.children,cell);
+      row_index = Array.prototype.indexOf.call(table.children,row);
+      console.log(row);
+      console.log(index);
+      console.log(table);
+      console.log(row_index);
+      console.log(row.children[index]);
+      // row 0
+      applyEdit(row.children[index-2], 'LZ');
+      applyEdit(row.children[index-1], 'LZ');
+      applyEdit(row.children[index], 'LZ');
+      applyEdit(row.children[index+1], 'LZ');
+      applyEdit(row.children[index+2], 'LZ');
+      // row -1
+      let prev_row = table.children[row_index-1];
+      applyEdit(prev_row.children[index-1], 'LZ');
+      applyEdit(prev_row.children[index], 'LZ');
+      applyEdit(prev_row.children[index+1], 'LZ');
+      // row +1
+      let next_row = table.children[row_index+1];
+      applyEdit(next_row.children[index-1], 'LZ');
+      applyEdit(next_row.children[index], 'LZ');
+      applyEdit(next_row.children[index+1], 'LZ');
+      // row -2
+      let prev_prev_row = table.children[row_index-2];
+      applyEdit(prev_prev_row.children[index], 'LZ');
+      // row +2
+      let next_next_row = table.children[row_index+2];
+      applyEdit(next_next_row.children[index], 'LZ');
+      
+    }
+
+    
   }
 }
 
@@ -810,40 +1006,40 @@ function renderView(width, height) {
   Array.from(document.querySelectorAll('#view > div'))
     .forEach(div => div.remove());
   for (let y = 0; y < height; y++) {
-    if (y == 0 || y == height-1){
+    // if (y == 0 || y == height-1){
+    //   let row = document.createElement('div');
+    //   for (let x = 0; x < width; x++) {
+    //       let cell = document.createElement('div');
+    //       cell.className = 'cell wall';
+    //       cell.textContent = 'W';
+    //       // cell.style.backgroundColor = PALETTE['W'].color;
+    //       cell.addEventListener('mousedown', edit);
+    //       cell.addEventListener('mouseover', edit);
+    //       row.appendChild(cell);
+    //   }
+    //   view.appendChild(row);
+    // } else {
       let row = document.createElement('div');
       for (let x = 0; x < width; x++) {
+        // if (x==0 || x==width-1){
+        //   let cell = document.createElement('div');
+        //   cell.className = 'cell wall';
+        //   cell.textContent = 'W';
+        //   // cell.style.backgroundColor = PALETTE['W'].color;
+        //   cell.addEventListener('mousedown', edit);
+        //   cell.addEventListener('mouseover', edit);
+        //   row.appendChild(cell);
+        // } else {
           let cell = document.createElement('div');
-          cell.className = 'cell';
-          cell.textContent = 'W';
-          cell.style.backgroundColor = PALETTE['W'].color;
-          cell.addEventListener('mousedown', edit);
-          cell.addEventListener('mouseover', edit);
-          row.appendChild(cell);
-      }
-      view.appendChild(row);
-    } else {
-      let row = document.createElement('div');
-      for (let x = 0; x < width; x++) {
-        if (x==0 || x==width-1){
-          let cell = document.createElement('div');
-          cell.className = 'cell';
-          cell.textContent = 'W';
-          cell.style.backgroundColor = PALETTE['W'].color;
-          cell.addEventListener('mousedown', edit);
-          cell.addEventListener('mouseover', edit);
-          row.appendChild(cell);
-        } else {
-          let cell = document.createElement('div');
-          cell.className = 'cell';
+          cell.className = 'cell darkzone';
           cell.textContent = '.';
           cell.addEventListener('mousedown', edit);
           cell.addEventListener('mouseover', edit);
           row.appendChild(cell);
-        }
+        // }
       }
       view.appendChild(row);
-    }
+    // }
   }
 }
 function edit(event) {
@@ -854,7 +1050,7 @@ function edit(event) {
 -                                INITIAL SETUP                                 -
 //////////////////////////////////////////////////////////////////////////////*/
 openButton.dispatchEvent(new MouseEvent('click'));
-document.querySelector('.field').value = '{\n"dimension": [32,18], \n"spawn": [10,10], \n"init_lights": 0, \n"lights": [\n{"position": [6,14],"lit": true}, \n{"position": [16,9],"lit": false}, \n{"position": [5,5],"lit": true}\n], \n"enemies": [\n{"position": [5,15],"type": 0,"wander": [[4,15],[10,15],[10,5]]}, \n{"position": [27,5],"type": 0,"wander": [[30,5],[20,5]]}\n], \n"walls": [\n{"position": [6,5],"movable": false}, \n{"position": [6,4],"movable": false}\n]\n}';
+document.querySelector('.field').value = '{\n"dimension": [32,18], \n"spawn": [10,10], \n"init_lights": 0, \n"lights": [\n{"position": [6,14],"lit": true}, \n{"position": [16,9],"lit": false}, \n{"position": [5,5],"lit": true}\n], \n"enemies": [\n{"position": [5,15],"type": 0,"wander": [[4,15],[10,15],[10,5]]}, \n{"position": [27,5],"type": 0,"wander": [[30,5],[20,5]]}\n], \n"walls": [\n{"position": [6,5],"movable": false}, \n{"position": [6,4],"movable": false}\n],\n"grass": [[8,12], [9,12], [10,12]],\n"mushrooms": [[7,7], [8,7], [8,6]],\n"water": [[13,11], [13,10], [13,9]]\n"}';
 
 confirmOpen();
 toolButtons[0].dispatchEvent(new MouseEvent('click'));

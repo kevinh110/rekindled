@@ -8,20 +8,191 @@
 }
 
 .cell {
-  width: 25px; height: 25px;
-  border: 1px solid lightgray;
+  width: 30px; height: 30px;
+  /* border: 0.1px solid lightgray; */
   padding: 3px;
-  background-color: white;
+  /* background-color: white; */
   color: white;
+  /* color: rgba(0,0,0,0); */
   text-align: center; font-size: 17px;
   font-family: sans-serif;
   display: inline-block;
+
+  background-image: url("../assets/background_unlit.png");
+  background-size: cover;
+  background-position: center;
 
   -moz-user-select: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+.darkzone{
+  background-image: url("../assets/background_unlit.png");
+  background-size: cover;
+  background-position: center;
+  color: rgba(0,0,0,0);
+}
+
+.litzone{
+  background-image: url("../assets/background_lit.png");
+  background-size: cover;
+  background-position: center;
+  color: rgba(0,0,0,0);
+}
+/* .waterlit{
+  background-image: url("../assets/water_lit.png");
+  background-size: cover;
+  background-position: center;
+  color: rgba(0,0,0,0);
+}
+.waterunlit{
+  background-image: url("../assets/water_dark.png");
+  background-size: cover;
+  background-position: center;
+  color: rgba(0,0,0,0);
+} */
+/* 
+.wall{
+  background-image: url("../assets/stone_wall_back.png");
+  background-size: 255% 330%;
+  background-position: center;
+  color: rgba(0,0,0,0);
+} */
+/* .grassLit{
+  background-image: url("../assets/grass_with_lit_tile.png");
+  background-size: cover;
+  background-position: center;
+  color: rgba(0,0,0,0);
+} */
+/* .grass{
+  background-image: url("../assets/grass_with_dark_tile.png");
+  background-size: cover;
+  background-position: center;
+  color: rgba(0,0,0,0);
+} */
+
+/* .mushroomsLit{
+  background-image: url("../assets/mushrooms_with_lit_tile.png");
+  background-size: cover;
+  background-position: center;
+  color: rgba(0,0,0,0);
+} */
+/* .mushrooms{
+  background-image: url("../assets/mushrooms_with_dark_tile.png");
+  background-size: cover;
+  background-position: center;
+  color: rgba(0,0,0,0);
+} */
+
+/* .unlit{
+  background-image: url("../assets/lamp_unlit_with_tile.png");
+  background-size: cover;
+  background-position: center;
+  color: rgba(0,0,0,0);
+} */
+
+.lit{
+  background-image: url("../assets/lamp_lit_with_tile.png");
+  background-size: cover;
+  background-position: center;
+  color: rgba(0,0,0,0);
+}
+.savedsoul{
+  background-image: url("../assets/soul_with_tile.png");
+  background-size: cover;
+  background-position: center;
+  color: rgba(0,0,0,0);
+}
+
+.enemy{
+  background-image: url("../assets/enemy_with_tile.png");
+  background-size: cover;
+  background-position: center;
+  color: rgba(0,0,0,0);
+}
+
+/* .player{
+  width: 30px;
+  height: 45px;
+  margin-top: -15px;
+  margin-left: -21px;
+  position: absolute;
+  background-image: url("../assets/player_with_dark_tile.png");
+  background-size: cover;
+  background-position: center;
+  color: rgba(0,0,0,0);
+} */
+/* .playerLit{
+  background-image: url("../assets/player_with_lit_tile.png");
+  background-size: cover;
+  background-position: center;
+  color: rgba(0,0,0,0);
+} */
+.sprite{
+  width: 36px;
+  height: 36px;
+  margin-top: -3px;
+  margin-left: -25px;
+  position: absolute;
+}
+.watersprite{
+  width: 36px;
+  height: 36px;
+  margin-top: -3px;
+  margin-left: -23px;
+  position: absolute;
+}
+.lampsprite{
+  width: 36px;
+  height: 36px;
+  margin-top: -3px;
+  margin-left: -23px;
+  position: absolute;
+}
+.wanderpointsprite{
+  width: 36px;
+  height: 36px;
+  margin-top: -3px;
+  margin-left: -31px;
+  position: absolute;
+}
+.wallsprite{
+  width: 36px;
+  height: 36px;
+  margin-top: -3px;
+  margin-left: -26px;
+  position: absolute;
+}
+/* .wallsprite{
+  width: 91px;
+  height: 91px;
+  margin-top: -38px;
+  margin-left: -53px;
+  position: absolute;
+} */
+.soulsprite{
+  width: 36px;
+  height: 36px;
+  margin-top: 0px;
+  margin-left: -28px;
+  position: absolute;
+}
+.enemysprite{
+  width: 50px;
+  height: 50px;
+  margin-top: -13px;
+  margin-left: -35px;
+  position: absolute;
+}
+.playersprite{
+  width: 30px;
+  height: 45px;
+  margin-top: -15px;
+  margin-left: -21px;
+  position: absolute;
 }
 
 button {

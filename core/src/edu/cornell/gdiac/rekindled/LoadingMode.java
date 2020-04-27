@@ -49,11 +49,14 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private static final String BACKGROUND_FILE = "images/start.png";
 //	private static final String PROGRESS_FILE = "images/progressbar.png";
 	private static final String PLAY_BTN_FILE = "images/play.png";
+
+	private static final String LEVEL_COMPLETE_FILE = "images/winScreen.png";
 	
 	/** Background texture for start-up */
 	private Texture background;
 	/** Play button to display when done */
 	private Texture playButton;
+
 	/** Texture atlas to support a progress bar */
 //	private Texture statusBar;
 	
@@ -116,7 +119,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** Current progress (0 to 1) of the asset manager */
 	private float progress;
 	/** The current state of the play button */
-	private int   pressState;
+	private int pressState;
 	/** The amount of time to devote to loading assets (as opposed to on screen hints, etc.) */
 	private int   budget;
 	/** Support for the X-Box start button in place of play button */
@@ -271,6 +274,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private void draw() {
 		canvas.begin();
 		canvas.draw(background, 0, 0);
+
+
+
 //		if (playButton == null) {
 //			drawProgress(canvas);
 //		} else {
@@ -316,6 +322,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	public void render(float delta) {
+//		System.out.println("rendering");
 		if (active) {
 			update(delta);
 			draw();
@@ -408,6 +415,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return whether to hand the event to other listeners. 
 	 */
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		System.out.println("Loading Mode Touchdown");
 		if (playButton == null || pressState == 2) {
 			return true;
 		}
@@ -416,13 +424,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		if (screenX >= 781 && screenX <= 859 && screenY >= 63 && screenY <= 99){
 			pressState = 1;
 		}
-
-		// Play button is a circle
-//		float radius = BUTTON_SCALE*scale*playButton.getWidth()/2.0f;
-//		float dist = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-//		if (dist < radius*radius) {
-//			pressState = 1;
-//		}
 		return false;
 
 	}

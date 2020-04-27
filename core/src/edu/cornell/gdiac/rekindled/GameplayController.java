@@ -518,7 +518,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private static final int TURN_ON_DELAY = 2;
 
-	private float delayTimer;
+	private int timer;
 	private boolean cooldown;
 
 	private Player player;
@@ -548,7 +548,6 @@ public class GameplayController extends WorldController implements ContactListen
 	CollisionController collisions;
 
 	boolean lostGame;
-	boolean wonGame;
 
 	/** The reader to process JSON files */
 	private JsonReader jsonReader;

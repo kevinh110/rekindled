@@ -100,12 +100,35 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String LOSS_SCREEN_FILE = "images/lossScreen.png";
 
 	/** The file location of the wall*/
-	private static final String WALL_FILE = "images/ingame-wall-temp.png";
-	private static final String WALL_FRONT_FILE = "images/stone_wall_front.png";
-	private static final String WALL_BACK_FILE = "images/stone_wall_back.png";
-	private static final String WALL_LEFT_FILE = "images/stone_wall_left.png";
-	private static final String WALL_RIGHT_FILE = "images/stone_wall_right.png";
-	private static final String WALL_MID_FILE = "images/stone_wall_mid.png";
+//	private static final String WALL_FILE = "images/ingame-wall-temp.png";
+//	private static final String WALL_FRONT_FILE = "images/stone_wall_front.png";
+//	private static final String WALL_BACK_FILE = "images/stone_wall_back.png";
+//	private static final String WALL_LEFT_FILE = "images/stone_wall_left.png";
+//	private static final String WALL_RIGHT_FILE = "images/stone_wall_right.png";
+//	private static final String WALL_MID_FILE = "images/stone_wall_mid.png";
+	private static final String D_WALL = "wall/d.png";
+	private static final String DL_WALL = "wall/dl.png";
+	private static final String DL_SINGLE_WALL = "wall/dl-single.png";
+	private static final String DLR_WALL = "wall/dlr.png";
+	private static final String DR_WALL = "wall/dr.png";
+	private static final String DR_SINGLE_WALL = "wall/dr-single.png";
+	private static final String L_WALL = "wall/l.png";
+	private static final String LR_WALL = "wall/lr.png";
+	private static final String LR__SINGLE_WALL = "wall/lr-single.png";
+	private static final String R_WALL = "wall/r.png";
+	private static final String SINGULAR_WALL = "wall/singular.png";
+	private static final String U_WALL = "wall/u.png";
+	private static final String UD_WALL = "wall/ud.png";
+	private static final String UDL_WALL = "wall/udl.png";
+	private static final String UDLR_WALL = "wall/udlr.png";
+	private static final String UDR_WALL = "wall/udr.png";
+	private static final String UL_WALL = "wall/ul.png";
+	private static final String ULR_WALL = "wall/ulr.png";
+	private static final String UR_WALL = "wall/ur.png";
+	private static final String UR_SINGLE_WALL = "wall/ur-single.png";
+
+
+
 
 	/** file locations of the light sources*/
 	private static final String LIT_SOURCE_FILE = "images/litLightSource.png";
@@ -136,13 +159,8 @@ public class GameplayController extends WorldController implements ContactListen
 	private TextureRegion grassTexture;
 	private TextureRegion mushroomTexture;
 
-	/**texture region for wall*/
-	private TextureRegion wallTexture;
-	private TextureRegion wallFrontTexture;
-	private TextureRegion wallBackTexture;
-	private TextureRegion wallLeftTexture;
-	private TextureRegion wallRightTexture;
-	private TextureRegion wallMidTexture;
+	/** Array of Texture Regions for the wall*/
+	private TextureRegion[] wallTextures;
 
 	/**
 	 * Textures for player
@@ -287,18 +305,53 @@ public class GameplayController extends WorldController implements ContactListen
 		assets.add(WIN_SCREEN_FILE);
 		manager.load(LOSS_SCREEN_FILE, Texture.class);
 		assets.add(LOSS_SCREEN_FILE);
-		manager.load(WALL_FILE, Texture.class);
-		assets.add(WALL_FILE);
-		manager.load(WALL_FRONT_FILE, Texture.class);
-		assets.add(WALL_FRONT_FILE);
-		manager.load(WALL_LEFT_FILE, Texture.class);
-		assets.add(WALL_LEFT_FILE);
-		manager.load(WALL_RIGHT_FILE, Texture.class);
-		assets.add(WALL_RIGHT_FILE);
-		manager.load(WALL_BACK_FILE, Texture.class);
-		assets.add(WALL_BACK_FILE);
-		manager.load(WALL_MID_FILE, Texture.class);
-		assets.add(WALL_MID_FILE);
+
+		manager.load(D_WALL, Texture.class);
+		assets.add(D_WALL);
+		manager.load(DL_WALL, Texture.class);
+		assets.add(DL_WALL);
+		manager.load(DL_SINGLE_WALL, Texture.class);
+		assets.add(DL_SINGLE_WALL);
+		manager.load(DLR_WALL, Texture.class);
+		assets.add(DLR_WALL);
+		manager.load(DR_WALL, Texture.class);
+		assets.add(DR_WALL);
+		manager.load(DR_SINGLE_WALL, Texture.class);
+		assets.add(DR_SINGLE_WALL);
+		manager.load(L_WALL, Texture.class);
+		assets.add(L_WALL);
+		manager.load(LR_WALL, Texture.class);
+		assets.add(LR_WALL);
+		manager.load(LR__SINGLE_WALL, Texture.class);
+		assets.add(LR__SINGLE_WALL);
+		manager.load(R_WALL, Texture.class);
+		assets.add(R_WALL);
+		manager.load(SINGULAR_WALL, Texture.class);
+		assets.add(SINGULAR_WALL);
+		manager.load(U_WALL, Texture.class);
+		assets.add(U_WALL);
+		manager.load(UD_WALL, Texture.class);
+		assets.add(UD_WALL);
+		manager.load(UDL_WALL, Texture.class);
+		assets.add(UDL_WALL);
+		manager.load(UDLR_WALL, Texture.class);
+		assets.add(UDLR_WALL);
+		manager.load(UDR_WALL, Texture.class);
+		assets.add(UDR_WALL);
+		manager.load(UDLR_WALL, Texture.class);
+		assets.add(UDLR_WALL);
+		manager.load(UL_WALL, Texture.class);
+		assets.add(UL_WALL);
+		manager.load(ULR_WALL, Texture.class);
+		assets.add(ULR_WALL);
+		manager.load(UR_WALL, Texture.class);
+		assets.add(UR_WALL);
+		manager.load(UR_WALL, Texture.class);
+		assets.add(UR_WALL);
+		manager.load(UR_SINGLE_WALL, Texture.class);
+		assets.add(UR_SINGLE_WALL);
+
+
 		manager.load(LIT_SOURCE_FILE, Texture.class);
 		assets.add(LIT_SOURCE_FILE);
 		manager.load(DIM_SOURCE_FILE, Texture.class);
@@ -321,6 +374,30 @@ public class GameplayController extends WorldController implements ContactListen
 		assets.add(WATER_LIGHT_FILE);
 
 		super.preLoadContent(manager);
+	}
+
+	public void setWallTectures(AssetManager manager){
+		wallTextures = new TextureRegion[20];
+		wallTextures[0] = createTexture(manager, D_WALL, false);
+		wallTextures[1] = createTexture(manager, DL_WALL, false);
+		wallTextures[2] = createTexture(manager, DL_SINGLE_WALL, false);
+		wallTextures[3] = createTexture(manager, DLR_WALL, false);
+		wallTextures[4] = createTexture(manager, DR_WALL, false);
+		wallTextures[5] = createTexture(manager, DR_SINGLE_WALL, false);
+		wallTextures[6] = createTexture(manager, L_WALL, false);
+		wallTextures[7] = createTexture(manager, LR_WALL, false);
+		wallTextures[8] = createTexture(manager, LR__SINGLE_WALL, false);
+		wallTextures[9] = createTexture(manager, R_WALL, false);
+		wallTextures[10] = createTexture(manager, SINGULAR_WALL, false);
+		wallTextures[11] = createTexture(manager, U_WALL, false);
+		wallTextures[12] = createTexture(manager, UD_WALL, false);
+		wallTextures[13] = createTexture(manager, UDL_WALL, false);
+		wallTextures[14] = createTexture(manager, UDLR_WALL, false);
+		wallTextures[15] = createTexture(manager, UDR_WALL, false);
+		wallTextures[16] = createTexture(manager, UL_WALL, false);
+		wallTextures[17] = createTexture(manager, ULR_WALL, false);
+		wallTextures[18] = createTexture(manager, UR_WALL, false);
+		wallTextures[19] = createTexture(manager, UR_SINGLE_WALL, false);
 	}
 
 	/**
@@ -370,12 +447,6 @@ public class GameplayController extends WorldController implements ContactListen
 		winScreenTexture = createTexture(manager, WIN_SCREEN_FILE, false);
 		lossScreenTexture = createTexture(manager, LOSS_SCREEN_FILE, false);
 
-		wallTexture = createTexture(manager, WALL_FILE, true);
-		wallBackTexture = createTexture(manager, WALL_BACK_FILE, true);
-		wallFrontTexture = createTexture(manager, WALL_FRONT_FILE, true);
-		wallLeftTexture = createTexture(manager, WALL_LEFT_FILE, true);
-		wallRightTexture = createTexture(manager, WALL_RIGHT_FILE, true);
-		wallMidTexture = createTexture(manager, WALL_MID_FILE, true);
 
 		dimSourceTexture = createTexture(manager, DIM_SOURCE_FILE, false);
 		litSourceTexture = createTexture(manager, LIT_SOURCE_FILE, false);
@@ -389,6 +460,8 @@ public class GameplayController extends WorldController implements ContactListen
 
 		waterDarkTexture = createTexture(manager, WATER_DARK_FILE, false);
 		waterLightTexture = createTexture(manager, WATER_LIGHT_FILE, false);
+
+		setWallTectures(manager);
 
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
@@ -613,30 +686,30 @@ public class GameplayController extends WorldController implements ContactListen
 	}
 
 
-	/**
-	 * Returns the proper wall texture
-	 * Pre: board is initialized properly
-	 * @param x x coord of the wall we want to draw
-	 * @param y y coord of the wall we want to draw
-	 * @return the proper wall texture
-	 */
-	private TextureRegion getWallTexture(int x, int y){
-		if (!board.isWall(x - 1, y) && !board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
-			return wallFrontTexture;
-		}
-		else if (!board.isWall(x - 1, y) && board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
-			return wallLeftTexture;
-		}
-		else if (board.isWall(x - 1, y) && !board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
-			return wallRightTexture;
-		}
-		else if (board.isWall(x - 1, y) && board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
-			return wallMidTexture;
-		}
-		else {
-			return wallBackTexture;
-		}
-	}
+//	/**
+//	 * Returns the proper wall texture
+//	 * Pre: board is initialized properly
+//	 * @param x x coord of the wall we want to draw
+//	 * @param y y coord of the wall we want to draw
+//	 * @return the proper wall texture
+//	 */
+//	private TextureRegion getWallTexture(int x, int y){
+//		if (!board.isWall(x - 1, y) && !board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
+//			return wallFrontTexture;
+//		}
+//		else if (!board.isWall(x - 1, y) && board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
+//			return wallLeftTexture;
+//		}
+//		else if (board.isWall(x - 1, y) && !board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
+//			return wallRightTexture;
+//		}
+//		else if (board.isWall(x - 1, y) && board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
+//			return wallMidTexture;
+//		}
+//		else {
+//			return wallBackTexture;
+//		}
+//	}
 
 
 	/**
@@ -686,21 +759,23 @@ public class GameplayController extends WorldController implements ContactListen
 		board = new Board((int) BOARD_WIDTH, (int) BOARD_HEIGHT, walls, lights, water);
 
 		// Add Walls
-		BoxObstacle obj;
+		Wall wall;
 		for (int i = 0; i < walls.length; i+=2){
-			obj = new BoxObstacle(walls[i], walls[i + 1], 1, 1);
-			obj.setBodyType(BodyDef.BodyType.KinematicBody);
-			obj.setDensity(BASIC_DENSITY);
-			obj.setFriction(BASIC_FRICTION);
-			obj.setRestitution(BASIC_RESTITUTION);
-			obj.setDrawScale(scale);
-			obj.setTexture(getWallTexture(walls[i], walls[i+1]));
-			addObject(obj);
+			wall = new Wall(walls[i], walls[i + 1], 1, 1);
+			wall.setBodyType(BodyDef.BodyType.KinematicBody);
+			wall.setDensity(BASIC_DENSITY);
+			wall.setFriction(BASIC_FRICTION);
+			wall.setRestitution(BASIC_RESTITUTION);
+			wall.setDrawScale(scale);
+			wall.setTextures(wallTextures);
+			wall.setTexture(board);
+			addObject(wall);
 			}
 
 		// Add Water
 		// We don't set the texture here since it changes
 		// Texture is set by board
+		BoxObstacle obj;
 		for (int i = 0; i < water.length; i+=2){
 			obj = new BoxObstacle(water[i], water[i + 1], 1, 1);
 			obj.setBodyType(BodyDef.BodyType.KinematicBody);
@@ -714,42 +789,48 @@ public class GameplayController extends WorldController implements ContactListen
 
 
 		// Create border pieces
-		BoxObstacle border;
+		Wall border;
 		for (int ii = 0; ii < BOARD_WIDTH; ii++) {
-			border = new BoxObstacle(ii, 0, 1, 1);
+			border = new Wall(ii, 0, 1, 1);
 			border.setBodyType(BodyDef.BodyType.KinematicBody);
 			border.setDensity(BASIC_DENSITY);
 			border.setFriction(BASIC_FRICTION);
 			border.setRestitution(BASIC_RESTITUTION);
 			border.setDrawScale(scale);
-			border.setTexture(getWallTexture(ii, 0));
+			border.setTextures(wallTextures);
+			border.setTexture(board);
 			addObject(border);
-			border = new BoxObstacle(ii, BOARD_HEIGHT - 1, 1, 1);
+			border = new Wall(ii, BOARD_HEIGHT - 1, 1, 1);
+
 			border.setBodyType(BodyDef.BodyType.KinematicBody);
 			border.setDensity(BASIC_DENSITY);
 			border.setFriction(BASIC_FRICTION);
 			border.setRestitution(BASIC_RESTITUTION);
 			border.setDrawScale(scale);
-			border.setTexture(getWallTexture(ii, (int)BOARD_HEIGHT));
+			border.setTextures(wallTextures);
+			border.setTexture(board);
 			addObject(border);
 
 		}
 		for (int jj = 1; jj < BOARD_WIDTH - 1; jj++) {
-			border = new BoxObstacle(0, jj, 1, 1);
+			border = new Wall(0, jj, 1, 1);
 			border.setBodyType(BodyDef.BodyType.KinematicBody);
 			border.setDensity(BASIC_DENSITY);
 			border.setFriction(BASIC_FRICTION);
 			border.setRestitution(BASIC_RESTITUTION);
 			border.setDrawScale(scale);
-			border.setTexture(getWallTexture(0, jj));
+			border.setTextures(wallTextures);
+			border.setTexture(board);
 			addObject(border);
-			border = new BoxObstacle(BOARD_WIDTH - 1, jj, 1, 1);
+			border = new Wall(BOARD_WIDTH - 1, jj, 1, 1);
+
 			border.setBodyType(BodyDef.BodyType.KinematicBody);
 			border.setDensity(BASIC_DENSITY);
 			border.setFriction(BASIC_FRICTION);
 			border.setRestitution(BASIC_RESTITUTION);
 			border.setDrawScale(scale);
-			border.setTexture(getWallTexture((int)BOARD_WIDTH, jj));
+			border.setTextures(wallTextures);
+			border.setTexture(board);
 			addObject(border);
 		}
 

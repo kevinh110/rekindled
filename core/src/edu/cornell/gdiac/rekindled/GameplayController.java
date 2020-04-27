@@ -35,6 +35,7 @@ import edu.cornell.gdiac.rekindled.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.*;
 import javafx.util.Pair;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 
@@ -119,6 +120,14 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String LIGHTS_TEXT_FILE = "images/light_text.png";
 	private static final String LIGHT_COUNTER_FILE = "images/light_counter.png";
 
+	/** file location for water */
+	private static final String WATER_DARK_FILE = "images/water_tile_dark.png";
+	private static final String WATER_LIGHT_FILE = "images/water_tile_light.png";
+
+	/** texture for water */
+	private TextureRegion waterDarkTexture;
+	private TextureRegion waterLightTexture;
+
 	/** texture for UI elements */
 	private TextureRegion lightsTexture;
 	private TextureRegion lightCounterTexture;
@@ -196,6 +205,7 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final float THROWN_LIGHT_RADIUS = 5f;
 
 	private static final float CAMERA_SCALE = 1.0f;
+
 	private int spawnx;
 	private int spawny;
 
@@ -305,6 +315,11 @@ public class GameplayController extends WorldController implements ContactListen
 		manager.load(LIGHT_COUNTER_FILE, Texture.class);
 		assets.add(LIGHT_COUNTER_FILE);
 
+		manager.load(WATER_DARK_FILE, Texture.class);
+		assets.add(WATER_DARK_FILE);
+		manager.load(WATER_LIGHT_FILE, Texture.class);
+		assets.add(WATER_LIGHT_FILE);
+
 		super.preLoadContent(manager);
 	}
 
@@ -371,6 +386,9 @@ public class GameplayController extends WorldController implements ContactListen
 
 		lightsTexture = createTexture(manager, LIGHTS_TEXT_FILE, false);
 		lightCounterTexture = createTexture(manager, LIGHT_COUNTER_FILE, false);
+
+		waterDarkTexture = createTexture(manager, WATER_DARK_FILE, false);
+		waterLightTexture = createTexture(manager, WATER_LIGHT_FILE, false);
 
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
@@ -537,7 +555,18 @@ public class GameplayController extends WorldController implements ContactListen
 			idx++;
 		}
 
-		
+		// Parse Water
+		JsonValue water_json = levelFormat.get("water");
+		water = new int[water_json.size * 2];
+		coord = water_json.child();
+		idx = 0;
+		while (coord != null){
+			int[] pos = coord.asIntArray();
+			water[idx] = pos[0];
+			water[idx + 1] = pos[1];
+			idx+=2;
+			coord = coord.next();
+		}
 	}
 
 
@@ -653,10 +682,8 @@ public class GameplayController extends WorldController implements ContactListen
 			addObject(enemies[i]);
 		}
 
-
-
 		// Make Board
-		board = new Board((int) BOARD_WIDTH, (int) BOARD_HEIGHT, walls, lights);
+		board = new Board((int) BOARD_WIDTH, (int) BOARD_HEIGHT, walls, lights, water);
 
 		// Add Walls
 		BoxObstacle obj;
@@ -670,6 +697,19 @@ public class GameplayController extends WorldController implements ContactListen
 			obj.setTexture(getWallTexture(walls[i], walls[i+1]));
 			addObject(obj);
 			}
+
+		// Add Water
+		// We don't set the texture here since it changes
+		// Texture is set by board
+		for (int i = 0; i < water.length; i+=2){
+			obj = new BoxObstacle(water[i], water[i + 1], 1, 1);
+			obj.setBodyType(BodyDef.BodyType.KinematicBody);
+			obj.setDensity(BASIC_DENSITY);
+			obj.setFriction(BASIC_FRICTION);
+			obj.setRestitution(BASIC_RESTITUTION);
+			obj.setDrawScale(scale);
+			addObject(obj);
+		}
 
 
 		// Create border pieces
@@ -691,6 +731,7 @@ public class GameplayController extends WorldController implements ContactListen
 			border.setDrawScale(scale);
 			border.setTexture(getWallTexture(ii, (int)BOARD_HEIGHT));
 			addObject(border);
+
 		}
 		for (int jj = 1; jj < BOARD_WIDTH - 1; jj++) {
 			border = new BoxObstacle(0, jj, 1, 1);

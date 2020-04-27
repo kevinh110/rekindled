@@ -483,7 +483,7 @@ public class AIController extends Entity_Controller {
             enemy.setPosition(Math.round(pos.x), Math.round(pos.y)); // Center pos to account for slight drift
             pos = enemy.getPosition();
             changeStateIfApplicable(playerLit);
-            System.out.println("State: " + state);
+//            System.out.println("State: " + state);
 //            System.out.println("Enemy Pos: " + pos);
 //            System.out.println("Player Pos: " + player.getPosition());
 //            System.out.println("-----------");

@@ -222,7 +222,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private static final float THROWN_LIGHT_RADIUS = 5f;
 
-	private static final float CAMERA_SCALE = 1.5f;
+	private static final float CAMERA_SCALE = 1.0f;
 
 	private int spawnx;
 	private int spawny;

@@ -483,12 +483,13 @@ public class AIController extends Entity_Controller {
             enemy.setPosition(Math.round(pos.x), Math.round(pos.y)); // Center pos to account for slight drift
             pos = enemy.getPosition();
             changeStateIfApplicable(playerLit);
-            System.out.println("State: " + state);
+//            System.out.println("State: " + state);
 //            System.out.println("Enemy Pos: " + pos);
 //            System.out.println("Player Pos: " + player.getPosition());
 //            System.out.println("-----------");
             switch (state) {
                 case WANDER:
+                    enemy.setWanderSpeed();
                     if (pos.x == goal[0] && pos.y == goal[1]){
                         enemy.updateWanderGoal();
                     }
@@ -497,10 +498,12 @@ public class AIController extends Entity_Controller {
                     break;
 
                 case CHASE:
+                    enemy.setChaseSpeed();
                     goal = getChaseGoal();
                     break;
 
                 case GOTO:
+                    enemy.setChaseSpeed();
                     board.setGoal(target[0], target[1]);
                     goal = bfs();
                     break;
@@ -527,6 +530,7 @@ public class AIController extends Entity_Controller {
                     break;
 
                 case RETURN:
+                    enemy.setWanderSpeed();
                     goal = getReturnGoal(); // This really only needs to be calculated once
                     break;
             }

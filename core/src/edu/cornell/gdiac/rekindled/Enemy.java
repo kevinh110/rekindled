@@ -49,10 +49,12 @@ public class Enemy extends FeetHitboxObstacle {
 
     private SightConeLight sight;
 
-
-    /** The number of frames for the afterburner */
     // DEFAULT - 6
-    public static final int SPEED = 6;
+    public int speed = 6;
+
+    public static final int WANDER_SPEED = 4;
+
+    public static final int CHASE_SPEED = 6;
 
     public static final float FRAME_RATE = 1/10f;
 
@@ -72,6 +74,13 @@ public class Enemy extends FeetHitboxObstacle {
 
     public boolean getIsLit(){
         return isLit;
+    }
+
+    public void setChaseSpeed(){
+        speed = CHASE_SPEED;
+    }
+    public void setWanderSpeed(){
+        speed = WANDER_SPEED;
     }
 
     public void setIsLit(boolean value){
@@ -237,7 +246,7 @@ public class Enemy extends FeetHitboxObstacle {
 
         if (pos.x == goalX && goalY < pos.y) { // Move down
 //            System.out.println("move down");
-            float newPosY = pos.y - SPEED * delta;
+            float newPosY = pos.y - speed * delta;
             if (goalY > newPosY){
                 setPosition(goalX, goalY);
             }
@@ -248,7 +257,7 @@ public class Enemy extends FeetHitboxObstacle {
         }
         else if (pos.x == goalX && goalY > pos.y) { // Move up
 //            System.out.println("move up");
-            float newPosY = pos.y + SPEED * delta;
+            float newPosY = pos.y + speed * delta;
             if (goalY < newPosY){
                 setPosition(goalX, goalY);
             }
@@ -259,7 +268,7 @@ public class Enemy extends FeetHitboxObstacle {
         }
         else if (goalX > pos.x && goalY == pos.y) { // Move right
 //            System.out.println("move right");
-            float newPosX = pos.x + SPEED * delta;
+            float newPosX = pos.x + speed * delta;
             if (goalX < newPosX){
                 setPosition(goalX, goalY);
             }
@@ -270,7 +279,7 @@ public class Enemy extends FeetHitboxObstacle {
         }
         else if (goalX < pos.x && goalY == pos.y) { // Move left
 //            System.out.println("move left");
-            float newPosX = pos.x - SPEED * delta;
+            float newPosX = pos.x - speed * delta;
             if (goalX > newPosX){
                 setPosition(goalX, goalY);
             }
@@ -287,19 +296,19 @@ public class Enemy extends FeetHitboxObstacle {
 
     public void move(InputController.Move_Direction move){
         if (move == Entity_Controller.Move_Direction.MOVE_DOWN) {
-            body.setLinearVelocity(0, -SPEED);
+            body.setLinearVelocity(0, -speed);
             facingDirection = Constants.BACK;
         }
         else if (move == Entity_Controller.Move_Direction.MOVE_UP) {
-            body.setLinearVelocity(0, SPEED);
+            body.setLinearVelocity(0, speed);
             facingDirection = Constants.FORWARD;
         }
         else if (move == Entity_Controller.Move_Direction.MOVE_RIGHT) {
-            body.setLinearVelocity(SPEED, 0);
+            body.setLinearVelocity(speed, 0);
             facingDirection = Constants.RIGHT;
         }
         else if (move == Entity_Controller.Move_Direction.MOVE_LEFT) {
-            body.setLinearVelocity(-SPEED, 0);
+            body.setLinearVelocity(-speed, 0);
             facingDirection = Constants.LEFT;
         }
         else {

@@ -724,7 +724,7 @@ public class GameplayController extends WorldController implements ContactListen
 			border.setDrawScale(scale);
 			border.setTexture(getWallTexture(ii, 0));
 			addObject(border);
-			border = new BoxObstacle(ii, BOARD_HEIGHT, 1, 1);
+			border = new BoxObstacle(ii, BOARD_HEIGHT - 1, 1, 1);
 			border.setBodyType(BodyDef.BodyType.KinematicBody);
 			border.setDensity(BASIC_DENSITY);
 			border.setFriction(BASIC_FRICTION);
@@ -743,7 +743,7 @@ public class GameplayController extends WorldController implements ContactListen
 			border.setDrawScale(scale);
 			border.setTexture(getWallTexture(0, jj));
 			addObject(border);
-			border = new BoxObstacle(BOARD_WIDTH, jj, 1, 1);
+			border = new BoxObstacle(BOARD_WIDTH - 1, jj, 1, 1);
 			border.setBodyType(BodyDef.BodyType.KinematicBody);
 			border.setDensity(BASIC_DENSITY);
 			border.setFriction(BASIC_FRICTION);

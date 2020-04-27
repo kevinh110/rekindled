@@ -800,7 +800,8 @@ public class GameplayController extends WorldController implements ContactListen
 			border.setTextures(wallTextures);
 			border.setTexture(board);
 			addObject(border);
-			border = new Wall(ii, BOARD_HEIGHT, 1, 1);
+			border = new Wall(ii, BOARD_HEIGHT - 1, 1, 1);
+
 			border.setBodyType(BodyDef.BodyType.KinematicBody);
 			border.setDensity(BASIC_DENSITY);
 			border.setFriction(BASIC_FRICTION);
@@ -821,7 +822,8 @@ public class GameplayController extends WorldController implements ContactListen
 			border.setTextures(wallTextures);
 			border.setTexture(board);
 			addObject(border);
-			border = new Wall(BOARD_WIDTH, jj, 1, 1);
+			border = new Wall(BOARD_WIDTH - 1, jj, 1, 1);
+
 			border.setBodyType(BodyDef.BodyType.KinematicBody);
 			border.setDensity(BASIC_DENSITY);
 			border.setFriction(BASIC_FRICTION);

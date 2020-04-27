@@ -315,6 +315,8 @@ public class Enemy extends FeetHitboxObstacle {
     }
     public void updateSightCone() {
         if (this.sight.isActive()) {
+            Color col = (angry) ? Color.RED : Color.CYAN;
+            this.sight.setColor(col);
             this.sight.setPosition(this.getPosition());
 //            System.out.println("Sight cone position: " + this.sight.getPosition());
             float angle =

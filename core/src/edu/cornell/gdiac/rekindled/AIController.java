@@ -164,17 +164,17 @@ public class AIController extends Entity_Controller {
                 break;
 
             case PAUSED:
-                if (!hasLoS(playerLit)){
-                    state = FSMState.GOTO; // Go to prev goal
+//                if (!hasLoS(playerLit)){
+//                    state = FSMState.GOTO; // Go to prev goal
+//                    timer = 0;
+//                }
+//                else {
+                timer++;
+                if (timer % PAUSE_TIME == 0){
+                    state = FSMState.CHASE;
                     timer = 0;
                 }
-                else {
-                    timer++;
-                    if (timer % PAUSE_TIME == 0){
-                        state = FSMState.CHASE;
-                        timer = 0;
-                    }
-                }
+//                }
                 break;
 
             case CHASE:
@@ -483,7 +483,7 @@ public class AIController extends Entity_Controller {
             enemy.setPosition(Math.round(pos.x), Math.round(pos.y)); // Center pos to account for slight drift
             pos = enemy.getPosition();
             changeStateIfApplicable(playerLit);
-//            System.out.println("State: " + state);
+            System.out.println("State: " + state);
 //            System.out.println("Enemy Pos: " + pos);
 //            System.out.println("Player Pos: " + player.getPosition());
 //            System.out.println("-----------");
@@ -507,6 +507,8 @@ public class AIController extends Entity_Controller {
 
                 case PAUSED:
                     setFacingDirWaiting();
+                    goal[0] = (int) pos.x;
+                    goal[1] = (int) pos.y;
                     break;
 
                 case WAIT:

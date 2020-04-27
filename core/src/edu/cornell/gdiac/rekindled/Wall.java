@@ -8,9 +8,7 @@ import edu.cornell.gdiac.rekindled.obstacle.BoxObstacle;
 public class Wall extends BoxObstacle {
     static float DRAW_SCALE = .33f;
     TextureRegion[] wallTextures;
-
-    int TextureIndex;
-
+    
     public Wall(float x, float y, float width, float height){
         super(x, y, width, height);
     }
@@ -20,26 +18,72 @@ public class Wall extends BoxObstacle {
     }
 
     public void setTexture(Board board){
-//		if (!board.isWall(x - 1, y) && !board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
-//			return wallFrontTexture;
-//		}
-//		else if (!board.isWall(x - 1, y) && board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
-//			return wallLeftTexture;
-//		}
-//		else if (board.isWall(x - 1, y) && !board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
-//			return wallRightTexture;
-//		}
-//		else if (board.isWall(x - 1, y) && board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
-//			return wallMidTexture;
-//		}
-//		else {
-//			return wallBackTexture;
-//		}
-        setTexture(wallTextures[0]);
+        int x = (int)getX();
+        int y = (int)getY();
+		if (!board.isWall(x - 1, y) && !board.isWall(x + 1, y) && !board.isWall(x, y + 1) && board.isWall(x, y - 1)){
+			setTexture(wallTextures[0]);
+		}
+		else if (board.isWall(x - 1, y) && !board.isWall(x + 1, y) && !board.isWall(x, y + 1) && board.isWall(x, y - 1) && board.isWall(x-1, y-1)){
+            setTexture(wallTextures[1]);
+        }
+        else if (board.isWall(x - 1, y) && !board.isWall(x + 1, y) && !board.isWall(x, y + 1) && board.isWall(x, y - 1)){
+            setTexture(wallTextures[2]);
+        }
+        else if (board.isWall(x - 1, y) && board.isWall(x + 1, y) && !board.isWall(x, y + 1) && board.isWall(x, y - 1)){
+            setTexture(wallTextures[3]);
+        }
+        else if (!board.isWall(x - 1, y) && board.isWall(x + 1, y) && !board.isWall(x, y + 1) && board.isWall(x, y - 1) && board.isWall(x+1, y-1)){
+            setTexture(wallTextures[4]);
+        }
+        else if (!board.isWall(x - 1, y) && board.isWall(x + 1, y) && !board.isWall(x, y + 1) && board.isWall(x, y - 1) && !board.isWall(x+1, y-1)){
+            setTexture(wallTextures[5]);
+        }
+        else if (board.isWall(x - 1, y) && !board.isWall(x + 1, y) && !board.isWall(x, y + 1) && !board.isWall(x, y - 1)){
+            setTexture(wallTextures[6]);
+        }
+        else if (board.isWall(x - 1, y) && board.isWall(x + 1, y) && !board.isWall(x, y + 1) && !board.isWall(x, y - 1)){
+            setTexture(wallTextures[7]);
+        }
+        else if (board.isWall(x - 1, y) && !board.isWall(x + 1, y) && !board.isWall(x, y + 1) && board.isWall(x, y - 1) && !board.isWall(x - 1, y + 1)){
+            setTexture(wallTextures[8]);
+        }
+        else if (!board.isWall(x - 1, y) && board.isWall(x + 1, y) && !board.isWall(x, y + 1) && !board.isWall(x, y - 1)){
+            setTexture(wallTextures[9]);
+        }
+        else if (!board.isWall(x - 1, y) && !board.isWall(x + 1, y) && !board.isWall(x, y + 1) && !board.isWall(x, y - 1)){
+            setTexture(wallTextures[10]);
+        }
+        else if (!board.isWall(x - 1, y) && !board.isWall(x + 1, y) && board.isWall(x, y + 1) && !board.isWall(x, y - 1)){
+            setTexture(wallTextures[11]);
+        }
+        else if (!board.isWall(x - 1, y) && !board.isWall(x + 1, y) && board.isWall(x, y + 1) && board.isWall(x, y - 1)){
+            setTexture(wallTextures[12]);
+        }
+        else if (board.isWall(x - 1, y) && !board.isWall(x + 1, y) && board.isWall(x, y + 1) && board.isWall(x, y - 1)){
+            setTexture(wallTextures[13]);
+        }
+        else if (board.isWall(x - 1, y) && board.isWall(x + 1, y) && board.isWall(x, y + 1) && board.isWall(x, y - 1)){
+            setTexture(wallTextures[14]);
+        }
+        else if (!board.isWall(x - 1, y) && board.isWall(x + 1, y) && board.isWall(x, y + 1) && board.isWall(x, y - 1)){
+            setTexture(wallTextures[15]);
+        }
+        else if (board.isWall(x - 1, y) && !board.isWall(x + 1, y) && board.isWall(x, y + 1) && !board.isWall(x, y - 1)){
+            setTexture(wallTextures[16]);
+        }
+        else if (board.isWall(x - 1, y) && board.isWall(x + 1, y) && board.isWall(x, y + 1) && !board.isWall(x, y - 1)){
+            setTexture(wallTextures[17]);
+        }
+        else if (!board.isWall(x - 1, y) && board.isWall(x + 1, y) && board.isWall(x, y + 1) && !board.isWall(x, y - 1) && board.isWall(x + 1, y + 1)){
+            setTexture(wallTextures[18]);
+        }
+        else if (!board.isWall(x - 1, y) && board.isWall(x + 1, y) && board.isWall(x, y + 1) && !board.isWall(x, y - 1) && !board.isWall(x + 1, y + 1)){
+            setTexture(wallTextures[19]);
+        }
     }
 
     public void draw(GameCanvas canvas){
         super.draw(canvas, DRAW_SCALE, DRAW_SCALE);
     }
-    
+
 }

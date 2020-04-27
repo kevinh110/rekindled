@@ -22,10 +22,7 @@ public class Enemy extends FeetHitboxObstacle {
     private static final float DEFAULT_FRICTION = 0.1f;
     /** The restitution of this rocket */
     private static final float DEFAULT_RESTITUTION = 0.4f;
-    /** The thrust factor to convert player input into thrust */
-    private static final float DEFAULT_THRUST = 30.0f;
-    /** The number of frames for the afterburner */
-    public static final int FIRE_FRAMES = 4;
+
 
     private static final int TILE_SIZE = 75;
     private static final int NUMBER_FRAMES = 6;
@@ -34,45 +31,23 @@ public class Enemy extends FeetHitboxObstacle {
     private Animation backWalkingAnimation;
     private Animation leftWalkingAnimation;
     private Animation rightWalkingAnimation;
+    private Animation frontAngryWalkingAnimation;
+    private Animation backAngryWalkingAnimation;
+    private Animation leftAngryWalkingAnimation;
+    private Animation rightAngryWalkingAnimation;
     private Animation savedAnimation;
     private Animation transformationAnimation;
     private Animation currentAnimation;
 
     private float timeElapsed;
 
+    public boolean angry;
+
 
     /** The force to apply to this rocket */
     private Vector2 force;
 
     private SightConeLight sight;
-
-    /** The texture filmstrip for the left animation node */
-    FilmStrip mainBurner;
-    /** The associated sound for the main afterburner */
-    String mainSound;
-    /** The animation phase for the main afterburner */
-    boolean mainCycle = true;
-
-    /** The texture filmstrip for the left animation node */
-    FilmStrip leftBurner;
-    /** The associated sound for the left side burner */
-    String leftSound;
-    /** The animation phase for the left side burner */
-    boolean leftCycle = true;
-
-    /** The texture filmstrip for the left animation node */
-    FilmStrip rghtBurner;
-    /** The associated sound for the right side burner */
-    String rghtSound;
-    /** The associated sound for the right side burner */
-    boolean rghtCycle  = true;
-
-    /** Cache object for transforming the force according the object angle */
-    public Affine2 affineCache = new Affine2();
-    /** Cache object for left afterburner origin */
-    public Vector2 leftOrigin = new Vector2();
-    /** Cache object for right afterburner origin */
-    public Vector2 rghtOrigin = new Vector2();
 
 
     /** The number of frames for the afterburner */
@@ -163,89 +138,6 @@ public class Enemy extends FeetHitboxObstacle {
 
     }
 
-    /**
-     * Returns the force applied to this rocket.
-     *
-     * This method returns a reference to the force vector, allowing it to be modified.
-     * Remember to modify the input values by the thrust amount before assigning
-     * the value to force.
-     *
-     * @return the force applied to this rocket.
-     */
-    public Vector2 getForce() {
-        return force;
-    }
-
-    /**
-     * Returns the x-component of the force applied to this rocket.
-     *
-     * Remember to modify the input values by the thrust amount before assigning
-     * the value to force.
-     *
-     * @return the x-component of the force applied to this rocket.
-     */
-    public float getFX() {
-        return force.x;
-    }
-
-    /**
-     * Sets the x-component of the force applied to this rocket.
-     *
-     * Remember to modify the input values by the thrust amount before assigning
-     * the value to force.
-     *
-     * @param value the x-component of the force applied to this rocket.
-     */
-    public void setFX(float value) {
-        force.x = value;
-    }
-
-    /**
-     * Returns the y-component of the force applied to this rocket.
-     *
-     * Remember to modify the input values by the thrust amount before assigning
-     * the value to force.
-     *
-     * @return the y-component of the force applied to this rocket.
-     */
-    public float getFY() {
-        return force.y;
-    }
-
-    /**
-     * Sets the x-component of the force applied to this rocket.
-     *
-     * Remember to modify the input values by the thrust amount before assigning
-     * the value to force.
-     *
-     * @param value the x-component of the force applied to this rocket.
-     */
-    public void setFY(float value) {
-        force.y = value;
-    }
-
-    /**
-     * Returns the amount of thrust that this rocket has.
-     *
-     * Multiply this value times the horizontal and vertical values in the
-     * input controller to get the force.
-     *
-     * @return the amount of thrust that this rocket has.
-     */
-    public float getThrust() {
-        return DEFAULT_THRUST;
-    }
-
-    /**
-     * Creates a new rocket at the origin.
-     *
-     * The size is expressed in physics units NOT pixels.  In order for
-     * drawing to work properly, you MUST set the drawScale. The drawScale
-     * converts the physics units to pixels.
-     *
-     * @param width		The object width in physics units
-     * @param height	The object width in physics units
-     */
     public Enemy(float width, float height) {
         this(0,0,width,height);
     }
@@ -269,7 +161,7 @@ public class Enemy extends FeetHitboxObstacle {
         setDensity(DEFAULT_DENSITY);
         setFriction(DEFAULT_FRICTION);
         setRestitution(DEFAULT_RESTITUTION);
-        setName("rocket");
+        setName("enemy");
 
         this.getFilterData().categoryBits = Constants.BIT_ENEMY;
         facingDirection = Constants.BACK;
@@ -292,6 +184,16 @@ public class Enemy extends FeetHitboxObstacle {
         transformationAnimation = getAnimation(transformation, TILE_SIZE, TILE_SIZE, 8, FRAME_RATE);
         savedAnimation = getAnimation(saved, TILE_SIZE, TILE_SIZE, 8, FRAME_RATE);
     }
+
+    public void setAngryAnimations(TextureRegion frontTexture, TextureRegion backTexture, TextureRegion leftTexture,
+                              TextureRegion rightTexture, TextureRegion transformation, TextureRegion saved){
+        frontAngryWalkingAnimation = getAnimation(frontTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+        backAngryWalkingAnimation = getAnimation(backTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+        rightAngryWalkingAnimation = getAnimation(rightTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+        leftAngryWalkingAnimation = getAnimation(leftTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+        transformationAnimation = getAnimation(transformation, TILE_SIZE, TILE_SIZE, 8, FRAME_RATE);
+    }
+
 
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
@@ -447,16 +349,20 @@ public class Enemy extends FeetHitboxObstacle {
         else {
             switch (facingDirection) {
                 case Constants.FORWARD:
-                    currentAnimation = frontWalkingAnimation;
+                    if (angry){ currentAnimation = frontAngryWalkingAnimation; }
+                    else { currentAnimation = frontWalkingAnimation; }
                     break;
                 case Constants.BACK:
-                    currentAnimation = backWalkingAnimation;
+                    if (angry){ currentAnimation = backAngryWalkingAnimation; }
+                    else { currentAnimation = backWalkingAnimation; }
                     break;
                 case Constants.RIGHT:
-                    currentAnimation = rightWalkingAnimation;
+                    if (angry){ currentAnimation = rightAngryWalkingAnimation; }
+                    else { currentAnimation = rightWalkingAnimation; }
                     break;
                 case Constants.LEFT:
-                    currentAnimation = leftWalkingAnimation;
+                    if (angry){ currentAnimation = leftAngryWalkingAnimation; }
+                    else { currentAnimation = leftWalkingAnimation; }
                     break;
             }
             super.draw(canvas, currentAnimation,true, timeElapsed, TILE_SIZE, Color.WHITE);

@@ -6,6 +6,7 @@ public class Constants {
     public static final short BIT_ENEMY = 2;
     public static final short BIT_WALL = 4;
     public static final short BIT_SOURCE = 8;
+    public static final short BIT_WATER = 16;
 
     // Used in player/enemy facing direction
     public static final int FORWARD = 1;
@@ -29,5 +30,5 @@ public class Constants {
     public static final float SOURCE_LIGHT_RADIUS = 3f;
 
     // Defines how dark shadows should be (0..1)
-    public static final float AMBIANCE = 1f;
+    public static final float AMBIANCE = 0.7f;
 }

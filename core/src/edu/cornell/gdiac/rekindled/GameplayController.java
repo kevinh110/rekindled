@@ -35,6 +35,7 @@ import edu.cornell.gdiac.rekindled.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.*;
 import javafx.util.Pair;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 
@@ -84,6 +85,12 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String ENEMY_ANIMATION_LEFT = "spritesheets/spritesheet_enemy_left.png";
 	private static final String ENEMY_ANIMATION_RIGHT = "spritesheets/spritesheet_enemy_right.png";
 	private static final String ENEMY_ANIMATION_BACK = "spritesheets/spritesheet_enemy_back.png";
+
+	private static final String ENEMY_ANGRY_ANIMATION_FRONT = "spritesheets/spritesheet_enemy_angry_front.png";
+	private static final String ENEMY_ANGRY_ANIMATION_LEFT = "spritesheets/spritesheet_enemy_angry_left.png";
+	private static final String ENEMY_ANGRY_ANIMATION_RIGHT = "spritesheets/spritesheet_enemy_angry_right.png";
+	private static final String ENEMY_ANGRY_ANIMATION_BACK = "spritesheets/spritesheet_enemy_angry_back.png";
+
 	private static final String ENEMY_TRANSFORMATION = "spritesheets/spritesheet_transformation.png";
 	private static final String ENEMY_ANIMATION_SAVED = "spritesheets/spritesheet_saved_soul.png";
 	/**
@@ -109,11 +116,25 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String GRASS_SOURCE_FILE = "spritesheets/spritesheet_grass.png";
 	private static final String MUSHROOM_SOURCE_FILE = "spritesheets/spritesheet_mushrooms.png";
 
+	/** file location for UI elements */
+	private static final String LIGHTS_TEXT_FILE = "images/light_text.png";
+	private static final String LIGHT_COUNTER_FILE = "images/light_counter.png";
+
+	/** file location for water */
+	private static final String WATER_DARK_FILE = "images/water_tile_dark.png";
+	private static final String WATER_LIGHT_FILE = "images/water_tile_light.png";
+
+	/** texture for water */
+	private TextureRegion waterDarkTexture;
+	private TextureRegion waterLightTexture;
+
+	/** texture for UI elements */
+	private TextureRegion lightsTexture;
+	private TextureRegion lightCounterTexture;
+
 	/** texture for art objects */
 	private TextureRegion grassTexture;
 	private TextureRegion mushroomTexture;
-
-
 
 	/**texture region for wall*/
 	private TextureRegion wallTexture;
@@ -146,6 +167,10 @@ public class GameplayController extends WorldController implements ContactListen
 	private TextureRegion enemyAnimationBack;
 	private TextureRegion enemyAnimationLeft;
 	private TextureRegion enemyAnimationRight;
+	private TextureRegion enemyAngryAnimationFront;
+	private TextureRegion enemyAngryAnimationBack;
+	private TextureRegion enemyAngryAnimationLeft;
+	private TextureRegion enemyAngryAnimationRight;
 	private TextureRegion enemyTransformation;
 	private TextureRegion enemyAnimationSaved;
 
@@ -179,8 +204,10 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private static final float THROWN_LIGHT_RADIUS = 5f;
 
-	private static final float CAMERA_SCALE = 0.5f;
+	private static final float CAMERA_SCALE = 1.0f;
 
+	private int spawnx;
+	private int spawny;
 
 
 	/**
@@ -229,6 +256,16 @@ public class GameplayController extends WorldController implements ContactListen
 		assets.add(ENEMY_ANIMATION_LEFT);
 		manager.load(ENEMY_ANIMATION_RIGHT, Texture.class);
 		assets.add(ENEMY_ANIMATION_RIGHT);
+
+		manager.load(ENEMY_ANGRY_ANIMATION_FRONT, Texture.class);
+		assets.add(ENEMY_ANGRY_ANIMATION_FRONT);
+		manager.load(ENEMY_ANGRY_ANIMATION_BACK, Texture.class);
+		assets.add(ENEMY_ANGRY_ANIMATION_BACK);
+		manager.load(ENEMY_ANGRY_ANIMATION_LEFT, Texture.class);
+		assets.add(ENEMY_ANGRY_ANIMATION_LEFT);
+		manager.load(ENEMY_ANGRY_ANIMATION_RIGHT, Texture.class);
+		assets.add(ENEMY_ANGRY_ANIMATION_RIGHT);
+
 		manager.load(ENEMY_TRANSFORMATION, Texture.class);
 		assets.add(ENEMY_TRANSFORMATION);
 		manager.load(ENEMY_ANIMATION_SAVED, Texture.class);
@@ -273,6 +310,16 @@ public class GameplayController extends WorldController implements ContactListen
 		manager.load(MUSHROOM_SOURCE_FILE, Texture.class);
 		assets.add(MUSHROOM_SOURCE_FILE);
 
+		manager.load(LIGHTS_TEXT_FILE, Texture.class);
+		assets.add(LIGHTS_TEXT_FILE);
+		manager.load(LIGHT_COUNTER_FILE, Texture.class);
+		assets.add(LIGHT_COUNTER_FILE);
+
+		manager.load(WATER_DARK_FILE, Texture.class);
+		assets.add(WATER_DARK_FILE);
+		manager.load(WATER_LIGHT_FILE, Texture.class);
+		assets.add(WATER_LIGHT_FILE);
+
 		super.preLoadContent(manager);
 	}
 
@@ -301,13 +348,18 @@ public class GameplayController extends WorldController implements ContactListen
 		placingLightRight = createTexture(manager, PLACING_LIGHT_RIGHT, false);
 		takingLightRight = createTexture(manager, TAKING_LIGHT_RIGHT, false);
 
+		enemyAngryAnimationFront = createTexture(manager, ENEMY_ANGRY_ANIMATION_FRONT, false);
+		enemyAngryAnimationBack = createTexture(manager, ENEMY_ANGRY_ANIMATION_BACK, false);
+		enemyAngryAnimationLeft = createTexture(manager, ENEMY_ANGRY_ANIMATION_LEFT, false);
+		enemyAngryAnimationRight = createTexture(manager, ENEMY_ANGRY_ANIMATION_RIGHT, false);
+
 		enemyAnimationFront = createTexture(manager, ENEMY_ANIMATION_FRONT, false);
 		enemyAnimationBack = createTexture(manager, ENEMY_ANIMATION_BACK, false);
 		enemyAnimationLeft = createTexture(manager, ENEMY_ANIMATION_LEFT, false);
 		enemyAnimationRight = createTexture(manager, ENEMY_ANIMATION_RIGHT, false);
+
 		enemyTransformation = createTexture(manager, ENEMY_TRANSFORMATION, false);
 		enemyAnimationSaved = createTexture(manager, ENEMY_ANIMATION_SAVED, false);
-
 
 		playerTextureLeft = createTexture(manager, PLAYER_FILE_LEFT, false);
 		playerTextureFront = createTexture(manager, PLAYER_FILE_FRONT, false);
@@ -331,6 +383,12 @@ public class GameplayController extends WorldController implements ContactListen
 
 		grassTexture = createTexture(manager, GRASS_SOURCE_FILE, false);
 		mushroomTexture = createTexture(manager, MUSHROOM_SOURCE_FILE, false);
+
+		lightsTexture = createTexture(manager, LIGHTS_TEXT_FILE, false);
+		lightCounterTexture = createTexture(manager, LIGHT_COUNTER_FILE, false);
+
+		waterDarkTexture = createTexture(manager, WATER_DARK_FILE, false);
+		waterLightTexture = createTexture(manager, WATER_LIGHT_FILE, false);
 
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
@@ -391,6 +449,8 @@ public class GameplayController extends WorldController implements ContactListen
 	private boolean cooldown;
 
 	private Player player;
+	private boolean inLitTile;
+	private boolean insideThrownLight;
 
 	private Enemy[] enemies;
 
@@ -410,8 +470,8 @@ public class GameplayController extends WorldController implements ContactListen
 	private int[] spawn;
 	private int initLights;
 	private int[] walls;
+	private int[] water;
 	private LinkedList<Pair<LightSourceLight, Long>> thrownLights;
-
 	CollisionController collisions;
 
 	boolean lostGame;
@@ -467,26 +527,46 @@ public class GameplayController extends WorldController implements ContactListen
 		while (enemy != null){
 			int[] pos = enemy.get("position").asIntArray();
 			JsonValue wander = enemy.get("wander");
-			System.out.println("position");
-			System.out.println(pos[1]);
 			enemies[idx] = new Enemy(pos[0], pos[1], 1, 1, enemy.getInt("type"));
 			enemies[idx].setWander(wander);
 			idx++;
 			enemy = enemy.next();
 		}
 
-		//Add sample art objects
-		int grass_tile = 75;
-		int grass_frames = 7;
-		int mushroom_frames = 5;
-		artObjects = new ArtObject[4];
-		artObjects[0] = new ArtObject(15, 6, 1, 1, grass_tile, grass_frames, ArtObject.ASSET_TYPE.GRASS);
-		artObjects[1] = new ArtObject(3, 3, 1, 1, grass_tile, mushroom_frames, ArtObject.ASSET_TYPE.MUSHROOM);
-		artObjects[2] = new ArtObject(4, 13, 1, 1, grass_tile, grass_frames, ArtObject.ASSET_TYPE.GRASS);
-		artObjects[3] = new ArtObject(18, 7, 1, 1, grass_tile, mushroom_frames, ArtObject.ASSET_TYPE.MUSHROOM);
+		// Parse Art Objects (Mushrooms / Grass)
+		JsonValue grass_json = levelFormat.get("grass");
+		JsonValue mushrooms_json = levelFormat.get("mushrooms");
+		artObjects = new ArtObject[grass_json.size + mushrooms_json.size];
+		JsonValue coord = grass_json.child();
+		idx = 0;
+		while (coord != null){
+			int[] pos = coord.asIntArray();
+			artObjects[idx] =
+					new ArtObject(pos[0], pos[1], 1, 1, 75, 7, ArtObject.ASSET_TYPE.GRASS);
+			coord = coord.next();
+			idx++;
+		}
+		coord = mushrooms_json.child();
+		while (coord != null) {
+			int[] pos = coord.asIntArray();
+			artObjects[idx] =
+					new ArtObject(pos[0], pos[1], 1, 1, 75, 5, ArtObject.ASSET_TYPE.MUSHROOM);
+			coord = coord.next();
+			idx++;
+		}
 
-
-
+		// Parse Water
+		JsonValue water_json = levelFormat.get("water");
+		water = new int[water_json.size * 2];
+		coord = water_json.child();
+		idx = 0;
+		while (coord != null){
+			int[] pos = coord.asIntArray();
+			water[idx] = pos[0];
+			water[idx + 1] = pos[1];
+			idx+=2;
+			coord = coord.next();
+		}
 	}
 
 
@@ -596,14 +676,14 @@ public class GameplayController extends WorldController implements ContactListen
 			enemies[i].setDrawScale(scale);
 			enemies[i].setAnimations(enemyAnimationFront, enemyAnimationBack, enemyAnimationLeft, enemyAnimationRight,
 					enemyTransformation, enemyAnimationSaved);
+			enemies[i].setAngryAnimations(enemyAngryAnimationFront, enemyAngryAnimationBack, enemyAngryAnimationLeft,
+					enemyAngryAnimationRight, enemyTransformation, enemyAnimationSaved);
 			enemies[i].setTexture(enemyTexture);
 			addObject(enemies[i]);
 		}
 
-
-
 		// Make Board
-		board = new Board((int) BOARD_WIDTH, (int) BOARD_HEIGHT, walls, lights);
+		board = new Board((int) BOARD_WIDTH, (int) BOARD_HEIGHT, walls, lights, water);
 
 		// Add Walls
 		BoxObstacle obj;
@@ -617,6 +697,20 @@ public class GameplayController extends WorldController implements ContactListen
 			obj.setTexture(getWallTexture(walls[i], walls[i+1]));
 			addObject(obj);
 			}
+
+		// Add Water
+		// We don't set the texture here since it changes
+		// Texture is set by board
+		for (int i = 0; i < water.length; i+=2){
+			obj = new BoxObstacle(water[i], water[i + 1], 1, 1);
+			obj.setBodyType(BodyDef.BodyType.KinematicBody);
+			obj.setDensity(BASIC_DENSITY);
+			obj.setFriction(BASIC_FRICTION);
+			obj.setRestitution(BASIC_RESTITUTION);
+			obj.setDrawScale(scale);
+			obj.getFilterData().categoryBits = Constants.BIT_WATER;
+			addObject(obj);
+		}
 
 
 		// Create border pieces
@@ -638,6 +732,7 @@ public class GameplayController extends WorldController implements ContactListen
 			border.setDrawScale(scale);
 			border.setTexture(getWallTexture(ii, (int)BOARD_HEIGHT));
 			addObject(border);
+
 		}
 		for (int jj = 1; jj < BOARD_WIDTH - 1; jj++) {
 			border = new BoxObstacle(0, jj, 1, 1);
@@ -661,6 +756,8 @@ public class GameplayController extends WorldController implements ContactListen
 
 		// Add Player
 		player = new Player(spawn[0], spawn[1], 0.5f, 0.5f, initLights);
+		this.spawnx = spawn[0];
+		this.spawny = spawn[1];
 		AuraLight light_a = new AuraLight(sourceRayHandler);
 		player.addAura(light_a);
 		player.setDrawScale(scale);
@@ -689,17 +786,19 @@ public class GameplayController extends WorldController implements ContactListen
 	}
 
 	public void initLighting() {
-		rayCamera = new OrthographicCamera(Gdx.graphics.getWidth() / 64f, Gdx.graphics.getHeight()/64f);
-		rayCamera.position.set(10, 5.5f, 0);
+		rayCamera = new OrthographicCamera(Gdx.graphics.getWidth() /  (64f), Gdx.graphics.getHeight() / (64f));
+		rayCamera.position.set(spawnx, spawny, 0);
+		rayCamera.zoom = CAMERA_SCALE;
 		rayCamera.update();
 
 		RayHandler.setGammaCorrection(true);
 		RayHandler.useDiffuseLight(true);
 		sourceRayHandler = new RayHandler(world);
 		sourceRayHandler.setCombinedMatrix(rayCamera);
+		sourceRayHandler.useCustomViewport(0, 0, canvas.getWidth(), canvas.getHeight());
 
 		sourceRayHandler.setAmbientLight(Constants.AMBIANCE, Constants.AMBIANCE, Constants.AMBIANCE, Constants.AMBIANCE);
-		sourceRayHandler.setShadows(true);
+		//sourceRayHandler.setShadows(false);
 		sourceRayHandler.setBlur(true);
 		sourceRayHandler.setBlurNum(3);
 	}
@@ -716,6 +815,8 @@ public class GameplayController extends WorldController implements ContactListen
 	 */
 	public void update(float dt) {
 
+		insideThrownLight = false;
+		inLitTile = false;
 		// Temp Code to reset game if lost
 		if (lostGame){
 			lostGame = false;
@@ -723,6 +824,9 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 
 		if (sourceRayHandler != null) {
+			rayCamera.position.set(player.getPosition(), 0);
+			rayCamera.update();
+			sourceRayHandler.setCombinedMatrix(rayCamera);
 			sourceRayHandler.update();
 		}
 
@@ -773,6 +877,11 @@ public class GameplayController extends WorldController implements ContactListen
 			}
 		}
 
+		// update board
+		board.update();
+
+		this.inLitTile = insideLightSource(player.getPosition());
+
 		//throw light
 		if(input.didShift() && player.lightCounter > 0){
 			if(thrownLights.isEmpty() || (System.currentTimeMillis() - thrownLights.get(0).getValue() > 500L)) {
@@ -796,8 +905,13 @@ public class GameplayController extends WorldController implements ContactListen
 				}
 			}
 		}
-		// update board
-		board.update();
+
+		for (Pair p: thrownLights) {
+			LightSourceLight l = (LightSourceLight) p.getKey();
+			if (l.isActive() && l.contains(player.getPosition().x, player.getPosition().y))
+				this.insideThrownLight = true;
+		}
+
 
 		//update Art objects
 		for(ArtObject obj : artObjects){
@@ -811,10 +925,19 @@ public class GameplayController extends WorldController implements ContactListen
 		// Do enemy movement
 		// Enemy Movement
 		for (AIController controller : controls){
-			controller.move(insideLightSource(player.getPosition()));
+			controller.move(isPlayerLit());
 			Enemy enemy = controller.getEnemy();
 			//board.updateSeenTiles(enemy.getPosition(), enemy.getFacingDirection());
 			enemy.updateSightCone();
+
+			// Update Enemy Angry
+			if (controller.getState() == AIController.FSMState.CHASE
+					|| controller.getState() == AIController.FSMState.GOTO){
+				enemy.angry = true;
+			}
+			else {
+				enemy.angry = false;
+			}
 		}
 
 		// Check win Condition
@@ -860,10 +983,6 @@ public class GameplayController extends WorldController implements ContactListen
 		// render the light
 		sourceRayHandler.render();
 
-		//draw the  UI
-		drawUI();
-
-
 		// draw things that should not be affected by shadows
 		canvas.begin();
 
@@ -879,8 +998,11 @@ public class GameplayController extends WorldController implements ContactListen
 				canvas.draw(seenTexture, x, y);
 			}
 		}
+		drawUI();
 
 		canvas.end();
+
+		//draw the  UI
 
 		if (debug) {
 			canvas.beginDebug();
@@ -901,10 +1023,13 @@ public class GameplayController extends WorldController implements ContactListen
 	}
 
 	private void drawUI() {
-		String s = "Lights: " + player.getLightCounter();
-		canvas.begin();
-		canvas.drawText(s, font, 20, canvas.getHeight() - 20);
-		canvas.end();
+		// Magic Numbers - will change later
+		canvas.draw(lightsTexture, 10, canvas.getHeight() - 75);
+		if (player.getLightCounter() > 0){
+			for (int i = 0; i < player.getLightCounter(); i++){
+				canvas.draw(lightCounterTexture, 105 + i*62, canvas.getHeight() - 90);
+			}
+		}
 	}
 
 	public boolean isAlive() {
@@ -919,13 +1044,14 @@ public class GameplayController extends WorldController implements ContactListen
 		return lostGame;
 	}
 
-	public boolean insideLightSource(Vector2 pos) {
-		for (LightSourceObject l : lights) {
-			if (l.contains(pos) && l.isLit())
-				return true;
-		}
-		return false;
+	private boolean insideLightSource(Vector2 pos) {
+		return board.isLit(pos);
 	}
+
+	public boolean isPlayerLit() {
+		return this.inLitTile || this.insideThrownLight;
+	}
+
 
 
 	/// CONTACT LISTENER METHODS

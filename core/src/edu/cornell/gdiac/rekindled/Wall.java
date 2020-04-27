@@ -8,7 +8,7 @@ import edu.cornell.gdiac.rekindled.obstacle.BoxObstacle;
 public class Wall extends BoxObstacle {
     static float DRAW_SCALE = .33f;
     TextureRegion[] wallTextures;
-    
+
     public Wall(float x, float y, float width, float height){
         super(x, y, width, height);
     }

@@ -430,12 +430,6 @@ public class Board {
 
         Color tint = Color.WHITE;
 
-//        if (tile.isLitTile && !tile.isWater){
-//            canvas.draw(lightRegion, Color.WHITE, 0, 0, sx, sy, 0, 1 , 1 );
-//           canvas.draw(upBorderRegion, Color.WHITE, 5, 8, sx, sy, 0, 1, 1);
-//            canvas.draw(downBorderRegion, Color.WHITE, 8, 10, sx, sy, 0, 1, 1);
-//           canvas.draw(leftBorderRegion, Color.WHITE, 11, 8, sx, sy, 0, 1, 1);
-//            canvas.draw(rightBorderRegion, Color.WHITE, 5, 8, sx, sy, 0, 1, 1);
         if (tile.isLitTile && tile.isWater){
             canvas.draw(waterLightRegion, tint, 0, 0, sx, sy, 0, 1 , 1 );
         } else if (tile.isWater){

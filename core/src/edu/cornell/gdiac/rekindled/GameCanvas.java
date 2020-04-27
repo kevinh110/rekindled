@@ -445,7 +445,7 @@ public class GameCanvas {
 //		System.out.println("animated");
 		TextureRegion frame = (TextureRegion) animation.getKeyFrame(ElapsedTime, looping);
 
-		if(computeView(ox,oy,x,y,angle,sx,sy, camera)) {
+		if(computeView(ox,oy,x,y,angle,sx,sy, camera, frame.getRegionWidth(), frame.getRegionHeight())) {
 
 			spriteBatch.setColor(Color.WHITE);
 			spriteBatch.draw(frame, frame.getRegionWidth(), frame.getRegionHeight(), local);
@@ -729,8 +729,9 @@ public class GameCanvas {
 		// BUG: The draw command for texture regions does not work properly.
 		// There is a workaround, but it will break if the bug is fixed.
 		// For now, it is better to set the affine transform directly.
-		if(computeView(ox,oy,x,y,angle,sx,sy, false)) {
+		if(computeView(ox,oy,x,y,angle,sx,sy, false, region.getRegionWidth(), region.getRegionHeight())) {
 
+//			computeView(ox,oy,x,y,angle,sx,sy, false);
 			spriteBatch.setColor(tint);
 			spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
 		};
@@ -1243,16 +1244,21 @@ public class GameCanvas {
 	 * @param sx 	The x-axis scaling factor
 	 * @param sy 	The y-axis scaling factor
 	 */
-    private boolean computeView (float ox, float oy, float x, float y, float angle, float sx, float sy, boolean camera) {
+    private boolean computeView (float ox, float oy, float x, float y, float angle, float sx, float sy, boolean camera, float width, float height) {
 		float view_x;
 		float view_y;
 		if(camera) { //camera should be at the center of the screen
 			view_x = getWidth() / 2f - 150; //sorry 150 is the size of the tile I'll change this later i swear
 			view_y	= getHeight() / 2f - 100;
 		} else {
-			if (Math.abs(camera_coordinates.x - x) > (viewport_width / 2f) ||
-					Math.abs(camera_coordinates.y - y) > (viewport_height / 2f)) {
+			if ((Math.abs(camera_coordinates.x - (x +(3 * width / 2f))) > (viewport_width / 2f) && Math.abs(camera_coordinates.x - (x - (3 * width / 2f))) > (viewport_width / 2f)) ||
+					(Math.abs(camera_coordinates.y - (y + (3 *height / 2f))) > (viewport_height / 2f) && Math.abs(camera_coordinates.y - (y - (3 *height / 2f))) > (viewport_height / 2f))) {
 				return false;
+
+//				camera_coordinates.x - (x + 0.5f) < 0 ||
+//						camera_coordinates.y - (y + 0.5f)  < 0 ||
+//						camera_coordinates.x + (x - 0.5f) > viewport_width ||
+//						camera_coordinates.y + (y - 0.5f) > viewport_height)
 			}
 			view_x = -(camera_coordinates.x - x) * (1 / scale) + (getWidth() / 2);
 			view_y = -(camera_coordinates.y - y) * (1 / scale) + (getHeight() / 2);

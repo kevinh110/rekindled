@@ -74,7 +74,7 @@ public class AIController extends Entity_Controller {
     /** How many times the enemy changes direction while waiting */
     private final int SPIN_NUM = 8;
     /** How long to pause before changing */
-    private final int PAUSE_TIME = 50;
+    private final int PAUSE_TIME = 65;
 
     private Enemy[] enemies;
 

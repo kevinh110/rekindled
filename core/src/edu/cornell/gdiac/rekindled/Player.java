@@ -98,13 +98,12 @@ public class Player extends FeetHitboxObstacle {
 
 
     /** The number of frames for the afterburner */
-    public static final int SPEED = 5;
-
+    public static final int SPEED = 4;
 
     public int lightCounter;
     private float delayTimer;
     private boolean cooldown;
-    private static final float TURN_ON_DELAY = 1.5f;
+    private static final float TURN_ON_DELAY = 1.3f;
 
     private boolean placingLight;
     private boolean takingLight;

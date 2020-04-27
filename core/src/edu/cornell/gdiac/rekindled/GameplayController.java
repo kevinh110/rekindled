@@ -789,7 +789,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 		// Create border pieces
 		Wall border;
-		for (int ii = 0; ii < BOARD_WIDTH; ii++) {
+		for (int ii = 0; ii < BOARD_WIDTH ; ii++) {
 			border = new Wall(ii, 0, 1, 1);
 			border.setBodyType(BodyDef.BodyType.KinematicBody);
 			border.setDensity(BASIC_DENSITY);
@@ -811,7 +811,7 @@ public class GameplayController extends WorldController implements ContactListen
 			addObject(border);
 
 		}
-		for (int jj = 1; jj < BOARD_WIDTH - 1; jj++) {
+		for (int jj = 1; jj < BOARD_HEIGHT; jj++) {
 			border = new Wall(0, jj, 1, 1);
 			border.setBodyType(BodyDef.BodyType.KinematicBody);
 			border.setDensity(BASIC_DENSITY);
@@ -1070,6 +1070,7 @@ public class GameplayController extends WorldController implements ContactListen
 			if (obj instanceof BoxObstacle || obj instanceof PolygonObstacle || obj instanceof FeetHitboxObstacle)
 				obj.draw(canvas);
 		}
+		player.draw(canvas);
 		// Draw Exclamation Points
 		for (AIController controller : controls){
 			if (controller.getState() == AIController.FSMState.PAUSED){

@@ -1251,8 +1251,8 @@ public class GameCanvas {
 			view_x = getWidth() / 2f - 150; //sorry 150 is the size of the tile I'll change this later i swear
 			view_y	= getHeight() / 2f - 100;
 		} else {
-			if ((Math.abs(camera_coordinates.x - (x +(3 * width / 2f))) > (viewport_width / 2f) && Math.abs(camera_coordinates.x - (x - (3 * width / 2f))) > (viewport_width / 2f)) ||
-					(Math.abs(camera_coordinates.y - (y + (3 *height / 2f))) > (viewport_height / 2f) && Math.abs(camera_coordinates.y - (y - (3 *height / 2f))) > (viewport_height / 2f))) {
+			if ((Math.abs(camera_coordinates.x - (x +(3 * Constants.TILE_SIZE / 2f))) > (viewport_width / 2f) && Math.abs(camera_coordinates.x - (x - (3 * Constants.TILE_SIZE / 2f))) > (viewport_width / 2f)) ||
+					(Math.abs(camera_coordinates.y - (y + (3 * Constants.TILE_SIZE / 2f))) > (viewport_height / 2f) && Math.abs(camera_coordinates.y - (y - (3 * Constants.TILE_SIZE / 2f))) > (viewport_height / 2f))) {
 				return false;
 
 //				camera_coordinates.x - (x + 0.5f) < 0 ||

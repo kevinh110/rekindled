@@ -242,14 +242,14 @@ function confirmOpen() {
     content[j] = [];
     if(j==0 || j == height-1){
       for(let i=0;i<width;i++){
-        content[j].push('.');
+        content[j].push('W');
       }
     } else{
-      content[j].push('.');
+      content[j].push('W');
       for(let i=1;i<width-1;i++){
           content[j].push('.');
       }
-      content[j].push('.');
+      content[j].push('W');
     }
   }
 
@@ -376,6 +376,34 @@ function confirmOpen() {
         let next_next_row = table.children[row_index+2];
         applyEdit(next_next_row.children[index], 'LZ');
         
+      }
+    });
+
+    // add border wall
+    cells.forEach((cell,i)=>{
+      let row = cell.parentNode;
+      let table = row.parentNode;
+      index = Array.prototype.indexOf.call(row.children,cell);
+      row_index = Array.prototype.indexOf.call(table.children,row);
+
+      if(row_index == 0){
+        if(index == 0){
+          cell.childNodes[1].src = "./assets/wall/dr-single.png";
+        } else if(index == width-1){
+          cell.childNodes[1].src = "./assets/wall/dl-single.png";
+        } else{
+          cell.childNodes[1].src = "./assets/wall/lr.png";
+        }
+      } else if(row_index == height-1){
+        if(index == 0){
+          cell.childNodes[1].src = "./assets/wall/ur-single.png";
+        } else if(index == width-1){
+        cell.childNodes[1].src = "./assets/wall/lr-single.png";
+        } else{
+          cell.childNodes[1].src = "./assets/wall/lr.png";
+        }
+      } else if(index == 0 || index == width-1){
+          cell.childNodes[1].src = "./assets/wall/ud.png";
       }
     });
   }
@@ -877,14 +905,14 @@ let undoButton = createButton(
   undo, 'edit', 'undo (ctrl/cmd + z)'
 );
 undoButton.disabled = true;
-toolPanel.appendChild(undoButton);
+// toolPanel.appendChild(undoButton);
 
 let redoButton = createButton(
   {'innerHTML': '<i class="material-icons">redo</i>'},
   redo, 'edit', 'redo (ctrl/cmd + y)'
 );
 redoButton.disabled = true;
-toolPanel.appendChild(redoButton);
+// toolPanel.appendChild(redoButton);
 
 document.addEventListener('historyupdate', () => {
   if (past.length) undoButton.disabled = false;
@@ -1006,40 +1034,47 @@ function renderView(width, height) {
   Array.from(document.querySelectorAll('#view > div'))
     .forEach(div => div.remove());
   for (let y = 0; y < height; y++) {
-    // if (y == 0 || y == height-1){
-    //   let row = document.createElement('div');
-    //   for (let x = 0; x < width; x++) {
-    //       let cell = document.createElement('div');
-    //       cell.className = 'cell wall';
-    //       cell.textContent = 'W';
-    //       // cell.style.backgroundColor = PALETTE['W'].color;
-    //       cell.addEventListener('mousedown', edit);
-    //       cell.addEventListener('mouseover', edit);
-    //       row.appendChild(cell);
-    //   }
-    //   view.appendChild(row);
-    // } else {
+    if (y == 0 || y == height-1){
+      let row = document.createElement('div');
+
+      for (let x = 0; x < width; x++) {
+          let cell = document.createElement('div');
+          cell.className = 'cell darkzone';
+          cell.textContent = 'W';
+          let img = document.createElement('img');
+          img.src = "./assets/wall/singular.png";
+          img.className = "wallsprite";
+          cell.appendChild(img);
+          cell.addEventListener('mousedown', edit);
+          cell.addEventListener('mouseover', edit);
+          row.appendChild(cell);
+      }
+      view.appendChild(row);
+    } else {
       let row = document.createElement('div');
       for (let x = 0; x < width; x++) {
-        // if (x==0 || x==width-1){
-        //   let cell = document.createElement('div');
-        //   cell.className = 'cell wall';
-        //   cell.textContent = 'W';
-        //   // cell.style.backgroundColor = PALETTE['W'].color;
-        //   cell.addEventListener('mousedown', edit);
-        //   cell.addEventListener('mouseover', edit);
-        //   row.appendChild(cell);
-        // } else {
+        if (x==0 || x==width-1){
+          let cell = document.createElement('div');
+          cell.className = 'cell darkzone';
+          cell.textContent = 'W';
+          let img = document.createElement('img');
+          img.src = "./assets/wall/singular.png";
+          img.className = "wallsprite";
+          cell.appendChild(img);
+          cell.addEventListener('mousedown', edit);
+          cell.addEventListener('mouseover', edit);
+          row.appendChild(cell);
+        } else {
           let cell = document.createElement('div');
           cell.className = 'cell darkzone';
           cell.textContent = '.';
           cell.addEventListener('mousedown', edit);
           cell.addEventListener('mouseover', edit);
           row.appendChild(cell);
-        // }
+        }
       }
       view.appendChild(row);
-    // }
+    }
   }
 }
 function edit(event) {

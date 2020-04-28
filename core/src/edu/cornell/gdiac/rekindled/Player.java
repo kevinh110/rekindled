@@ -97,7 +97,6 @@ public class Player extends FeetHitboxObstacle {
     private Animation rightTakingAnimation;
 
 
-    /** The number of frames for the afterburner */
     public static final int SPEED = 4;
 
     public int lightCounter;

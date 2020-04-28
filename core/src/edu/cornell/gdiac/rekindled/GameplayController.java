@@ -326,8 +326,6 @@ public class GameplayController extends WorldController implements ContactListen
 		assets.add(PLAYER_RIGHT_IDLE);
 
 
-
-
 		manager.load(ENEMY_FILE, Texture.class);
 		assets.add(ENEMY_FILE);
 		manager.load(SEEN_FILE, Texture.class);
@@ -457,6 +455,18 @@ public class GameplayController extends WorldController implements ContactListen
 		takingLightLeft = createTexture(manager, TAKING_LIGHT_LEFT, false);
 		placingLightRight = createTexture(manager, PLACING_LIGHT_RIGHT, false);
 		takingLightRight = createTexture(manager, TAKING_LIGHT_RIGHT, false);
+		throwingLightFront = createTexture(manager, THROW_LIGHT_FRONT, false);
+		throwingLightBack = createTexture(manager, THROW_LIGHT_BACK, false);
+		throwingLightLeft = createTexture(manager, THROW_LIGHT_LEFT, false);
+		throwingLightRight = createTexture(manager, THROW_LIGHT_RIGHT, false);
+		playerFrontIdle = createTexture(manager, PLAYER_FRONT_IDLE, false);
+		playerBackIdle = createTexture(manager, PLAYER_BACK_IDLE, false);
+		playerLeftIdle = createTexture(manager, PLAYER_LEFT_IDLE, false);
+		playerRightIdle = createTexture(manager, PLAYER_RIGHT_IDLE, false);
+
+
+
+
 
 		enemyAngryAnimationFront = createTexture(manager, ENEMY_ANGRY_ANIMATION_FRONT, false);
 		enemyAngryAnimationBack = createTexture(manager, ENEMY_ANGRY_ANIMATION_BACK, false);
@@ -802,7 +812,7 @@ public class GameplayController extends WorldController implements ContactListen
 			wall.setTextures(wallTextures);
 			wall.setTexture(board);
 			addObject(wall);
-			}
+		}
 
 		// Add Water
 		// We don't set the texture here since it changes
@@ -876,7 +886,8 @@ public class GameplayController extends WorldController implements ContactListen
 		player.setDrawScale(scale);
 		player.setAnimations(playerAnimationFront, playerAnimationBack, playerAnimationLeft, playerAnimationRight,
 				placingLightFront, takingLightFront, placingLightLeft, takingLightLeft, placingLightRight,
-				takingLightRight); //setting animation
+				takingLightRight, playerFrontIdle, playerBackIdle, playerLeftIdle, playerRightIdle, throwingLightFront,
+				throwingLightBack, throwingLightLeft, throwingLightRight); //setting animation
 		player.setTexture(playerTextureFront);
 
 		addObject(player);
@@ -957,19 +968,6 @@ public class GameplayController extends WorldController implements ContactListen
 		player.move(next_move);
 		player.updateAura();
 		player.updateCooldown(dt);
-//		System.out.println(player.getLightCounter());
-
-		//placing and taking light
-//		if (input.didSecondary() && player.getTouchingLight() && !player.getCooldown()) {
-//			LightSourceObject goalLight;
-//			for (LightSourceObject light : lights){
-//				if (light.getTouchingPlayer()){
-//					if (light.isLit())
-//						// Changes texture if applicable
-//					board.toggleSource(light.getPosition());
-//				};
-//			}
-//		}
 
 		if (input.didSecondary() && player.getTouchingLight() && !player.getCooldown()) {
 			LightSourceObject goalLight = null;
@@ -1002,7 +1000,7 @@ public class GameplayController extends WorldController implements ContactListen
 				LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius
 				light.setPosition(player.getX(), player.getY());
 				thrownLights.add(new Pair<>(light, System.currentTimeMillis()));
-				player.placeLight();
+				player.throwLight();
 
 				//find enemies in range
 				for (Enemy e : enemies) {
@@ -1010,9 +1008,11 @@ public class GameplayController extends WorldController implements ContactListen
 					if (distance <= THROWN_LIGHT_RADIUS) {
 						float dx = e.getPosition().x - player.getX();
 						float dy = e.getPosition().y - player.getY();
+						Vector2 direction = (new Vector2(dx, dy)).nor();
 						float ratio = THROWN_LIGHT_RADIUS / distance;
 						Vector2 new_pos = new Vector2(Math.round((dx * ratio) + player.getX()), Math.round((dy * ratio) + player.getY()));
-						e.setPosition(new_pos);
+						Vector2 thrown_pos = getThrownPosition(player.getPosition(), e.getPosition(), direction);
+						e.setPosition(new Vector2((int)thrown_pos.x, (int)thrown_pos.y));
 						e.stunned = true;
 					}
 				}
@@ -1064,17 +1064,32 @@ public class GameplayController extends WorldController implements ContactListen
 
 	}
 
+	public Vector2 getThrownPosition(Vector2 playerPosition,Vector2 enemyPosition, Vector2 direction){
+		float distance = playerPosition.dst(enemyPosition);
+		if(distance >= THROWN_LIGHT_RADIUS){
+			return enemyPosition;
+		}
+		Vector2 scaler = new Vector2(0.1f * direction.x, 0.1f * direction.y);
+		
+		Vector2 newPos = new Vector2(enemyPosition.x + scaler.x, enemyPosition.y + scaler.y);
+		if(board.isWall((int)newPos.x, (int)newPos.y) || board.isWall((int)newPos.x + 1, (int)newPos.y) ||
+				board.isWall((int)newPos.x, (int)newPos.y + 1) || board.isWall((int)newPos.x + 1, (int)newPos.y + 1)){
+			return enemyPosition;
+		}
+		return getThrownPosition(playerPosition, newPos, direction);
+	}
+
 	@Override
 	public void render(float delta) {
 		if (isActive()) {
-            if (preUpdate(delta)) {
-                update(delta); // This is the one that must be defined.
-                postUpdate(delta);
-            }
-            draw(delta, board);
+			if (preUpdate(delta)) {
+				update(delta); // This is the one that must be defined.
+				postUpdate(delta);
+			}
+			draw(delta, board);
 
 
-        }
+		}
 	}
 
 	@Override

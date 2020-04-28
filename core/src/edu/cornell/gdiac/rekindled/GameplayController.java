@@ -998,7 +998,7 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 
 		// update board
-		board.update();
+		board.update(player.getPosition());
 
 		this.inLitTile = insideLightSource(player.getPosition());
 

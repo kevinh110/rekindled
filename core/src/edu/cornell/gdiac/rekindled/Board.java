@@ -58,7 +58,7 @@ public class Board {
         public boolean isWall;
         public boolean isLitTile;
         public boolean isDimTile;
-        public boolean inSight;
+        public boolean isTinted;
         public boolean isWater;
 
         /** Is this a goal tiles */
@@ -267,7 +267,7 @@ public class Board {
             lightSources.add((int) temp.y);
             if (light.isLit()){
                 tiles[(int) temp.x][(int) temp.y].setLitLightSource();
-                updateLitTiles(temp);
+                updateLitTiles(temp, false);
             }
             else {
                 tiles[(int) temp.x][(int) temp.y].setDimLightSource();
@@ -370,22 +370,29 @@ public class Board {
      *
      * All we do is animate falling tiles.
      */
-    public void update() {
+    public void update(Vector2 pos) {
+        int xx = Math.round(pos.x);
+        int yy = Math.round(pos.y);
+
         Vector2 temp = new Vector2();
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 TileState tile = tiles[x][y];
                 tile.isLitTile = false;
-                tile.inSight = false;
+                tile.isTinted = false;
             }
         }
+
+        if (tiles[xx][yy].isLightSource && !tiles[xx][yy].isLitLightSource)
+            updateLitTiles(pos, true);
+
         for(int ii = 0; ii < lightSources.size() -1; ii += 2){
             TileState source = tiles[lightSources.get(ii)][lightSources.get(ii+1)];
             //URGENT: Change so new vector is not created
             if (source.isLitLightSource) {
                 temp.set(lightSources.get(ii), lightSources.get(ii + 1));
 
-                updateLitTiles(temp);
+                updateLitTiles(temp, false);
             }
         }
     }
@@ -428,7 +435,7 @@ public class Board {
         float sy = boardToScreenCenter(y);
 
 
-        Color tint = Color.WHITE;
+        Color tint = (tile.isTinted) ? Color.CYAN : Color.WHITE;
 
         if (tile.isLitTile && tile.isWater){
             canvas.draw(waterLightRegion, tint, 0, 0, sx, sy, 0, 1 , 1 );
@@ -747,10 +754,13 @@ public class Board {
         tiles[(int) source.x][(int) source.y].isLitLightSource = !tiles[(int)source.x][(int)source.y].isLitLightSource;
     }
 
-    private void updateLitTiles(Vector2 source) {
+    public void updateLitTiles(Vector2 source, boolean tint) {
         int x = Math.round(source.x);
         int y = Math.round(source.y);
-        tiles[x][y].setLit();
+        if (tint)
+            tiles[x][y].isTinted = true;
+        else
+            tiles[x][y].setLit();
 
         boolean top = false;
         boolean bottom = false;
@@ -777,60 +787,11 @@ public class Board {
             if (!tile.isWall)
                 right = true;
         }
-        spreadLight(LIGHT_RADIUS, x, y, top, bottom, left, right);
+        spreadLight(LIGHT_RADIUS, x, y, top, bottom, left, right, tint);
     }
 
-    public void updateSeenTiles (Vector2 pos, int dir) {
-        spreadSight(3, pos, dir);
-    }
 
-    private void spreadSight (int depth, Vector2 pos, int dir) {
-        // position of first tile to "light" up
-        int x = (dir == Constants.LEFT) ? screenToBoard(pos.x) - 1 : (dir == Constants.RIGHT) ? screenToBoard(pos.x) + 1 : screenToBoard(pos.x);
-        int y = (dir == Constants.FORWARD) ? screenToBoard(pos.y) - 1 : (dir == Constants.BACK) ? screenToBoard(pos.y) + 1 : screenToBoard(pos.y);
-
-        spreadSightHelp(depth, x, y, dir);
-    }
-
-    private void spreadSightHelp (int depth, int x, int y, int dir) {
-
-        if (depth == 0 || x < 0 || y < 0  || x > width  || y > height)
-            return;
-
-        if (dir == Constants.LEFT) {
-            TileState tile = tiles[x][y];
-            tile.inSight = true;
-            spreadSightHelp(depth - 1, x - 1, y, dir);
-            spreadSightHelp(depth - 1, x - 1, y - 1, dir);
-            spreadSightHelp(depth - 1, x - 1, y + 1, dir);
-        }
-
-        if (dir == Constants.RIGHT) {
-            TileState tile = tiles[x][y];
-            tile.inSight = true;
-            spreadSightHelp(depth - 1, x + 1, y, dir);
-            spreadSightHelp(depth - 1, x + 1, y - 1, dir);
-            spreadSightHelp(depth - 1, x + 1, y + 1, dir);
-        }
-
-        if (dir == Constants.FORWARD) {
-            TileState tile = tiles[x][y];
-            tile.inSight = true;
-            spreadSightHelp(depth - 1, x, y - 1, dir);
-            spreadSightHelp(depth - 1, x + 1, y - 1, dir);
-            spreadSightHelp(depth - 1, x - 1, y - 1, dir);
-        }
-
-        if (dir == Constants.BACK) {
-            TileState tile = tiles[x][y];
-            tile.inSight = true;
-            spreadSightHelp(depth - 1, x, y + 1, dir);
-            spreadSightHelp(depth - 1, x + 1, y + 1, dir);
-            spreadSightHelp(depth - 1, x - 1, y + 1, dir);
-        }
-    }
-
-    public void spreadLight(int depth, int x, int y, boolean top, boolean bottom, boolean left, boolean right) {
+    public void spreadLight(int depth, int x, int y, boolean top, boolean bottom, boolean left, boolean right, boolean tint) {
         if (depth == 0)
             return;
 
@@ -838,7 +799,10 @@ public class Board {
             int xx = x;
             int yy = y+1;
             TileState tile = tiles[xx][yy];
-            tile.setLit();
+            if (tint)
+                tile.isTinted = true;
+            else
+                tile.setLit();
 
             boolean top1 = false;
             boolean bottom1 = false;
@@ -865,14 +829,17 @@ public class Board {
                 if (!tile.isWall)
                     right1 = true;
             }
-            spreadLight(depth-1, xx, yy, top1, bottom1, left1, right1);
+            spreadLight(depth-1, xx, yy, top1, bottom1, left1, right1, tint);
         }
 
         if (bottom) {
             int xx = x;
             int yy = y-1;
             TileState tile = tiles[xx][yy];
-            tile.setLit();
+            if (tint)
+                tile.isTinted = true;
+            else
+                tile.setLit();
 
             boolean top1 = false;
             boolean bottom1 = false;
@@ -899,13 +866,16 @@ public class Board {
                 if (!tile.isWall)
                     right1 = true;
             }
-            spreadLight(depth-1, xx, yy, top1, bottom1, left1, right1);
+            spreadLight(depth-1, xx, yy, top1, bottom1, left1, right1,  tint);
         }
         if (left) {
             int xx = x -1;
             int yy = y;
             TileState tile = tiles[xx][yy];
-            tile.setLit();
+            if (tint)
+                tile.isTinted = true;
+            else
+                tile.setLit();
 
             boolean top1 = false;
             boolean bottom1 = false;
@@ -932,13 +902,16 @@ public class Board {
                 if (!tile.isWall)
                     right1 = true;
             }
-            spreadLight(depth-1, xx, yy, top1, bottom1, left1, right1);
+            spreadLight(depth-1, xx, yy, top1, bottom1, left1, right1, tint);
         }
         if (right) {
             int xx = x+1;
             int yy = y;
             TileState tile = tiles[xx][yy];
-            tile.setLit();
+            if (tint)
+                tile.isTinted = true;
+            else
+                tile.setLit();
 
             boolean top1 = false;
             boolean bottom1 = false;
@@ -965,7 +938,7 @@ public class Board {
                 if (!tile.isWall)
                     right1 = true;
             }
-            spreadLight(depth-1, xx, yy, top1, bottom1, left1, right1);
+            spreadLight(depth-1, xx, yy, top1, bottom1, left1, right1, tint);
         }
     }
     public void dimTiles(Vector2 pos) {

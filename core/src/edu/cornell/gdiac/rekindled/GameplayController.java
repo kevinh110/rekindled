@@ -1115,9 +1115,17 @@ public class GameplayController extends WorldController implements ContactListen
 		canvas.begin();
 
 		for(Obstacle obj : objects) {
-			if (obj instanceof BoxObstacle || obj instanceof PolygonObstacle || obj instanceof FeetHitboxObstacle)
+			if (obj instanceof Wall)
 				obj.draw(canvas);
 		}
+
+		for(Obstacle obj : objects) {
+			if ((obj instanceof BoxObstacle || obj instanceof PolygonObstacle || obj instanceof FeetHitboxObstacle)
+					&& !(obj instanceof Wall))
+				obj.draw(canvas);
+		}
+
+
 		player.draw(canvas);
 		// Draw Exclamation Points
 		for (AIController controller : controls){

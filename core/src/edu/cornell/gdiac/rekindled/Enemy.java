@@ -43,7 +43,6 @@ public class Enemy extends FeetHitboxObstacle {
 
     public boolean angry;
 
-
     /** The force to apply to this rocket */
     private Vector2 force;
 

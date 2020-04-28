@@ -10,6 +10,8 @@
  */
 package edu.cornell.gdiac.rekindled;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
@@ -81,6 +83,14 @@ public class AIController extends Entity_Controller {
     // Custom fields for AI algorithms
     public float delta;
 
+    private Sound alarmSound;
+    private static final float ALARM_DELAY = 1.5f;
+    private boolean soundPlaying;
+    private float soundTimer;
+
+    private Sound enemySound;
+    private boolean enemySoundPlaying;
+
     /**
      * Creates an AIController for an enemy.
      *
@@ -101,6 +111,9 @@ public class AIController extends Entity_Controller {
         Vector2 pos = enemy.getPosition();
         goal = new int[]{(int) pos.x, (int) pos.y};
         timer = 0;
+
+        alarmSound = Gdx.audio.newSound(Gdx.files.internal("sounds/alarm.mp3"));
+        enemySound = Gdx.audio.newSound(Gdx.files.internal("sounds/enemy.mp3"));
     }
 
     public AIController(Enemy enemy, Board board, Player player, Enemy[] enemies, float del){
@@ -150,6 +163,12 @@ public class AIController extends Entity_Controller {
 
         switch (state) {
             case SPAWN:
+                soundPlaying = false;
+                soundTimer = 0;
+                if(enemySoundPlaying){
+                    enemySound.stop();
+                    enemySoundPlaying = false;
+                }
                 if (hasLoS(playerLit)) {// has LoS
                     state = FSMState.PAUSED;
                 } else { // no line of sight; wander
@@ -158,12 +177,22 @@ public class AIController extends Entity_Controller {
                 break;
 
             case WANDER:
+                if(enemySoundPlaying){
+                    enemySound.stop();
+                    enemySoundPlaying = false;
+                }
+                soundPlaying = false;
+                soundTimer = 0;
                 if (hasLoS(playerLit)) {// has target
                     state = FSMState.PAUSED;
                 }
                 break;
 
             case PAUSED:
+                if(enemySoundPlaying){
+                    enemySound.stop();
+                    enemySoundPlaying = false;
+                }
 //                if (!hasLoS(playerLit)){
 //                    state = FSMState.GOTO; // Go to prev goal
 //                    timer = 0;
@@ -172,22 +201,38 @@ public class AIController extends Entity_Controller {
                 timer++;
                 if (timer % PAUSE_TIME == 0){
                     state = FSMState.CHASE;
+                    if(!enemySoundPlaying) {
+                        enemySound.loop(.3f);
+                        enemySoundPlaying = true;
+                    }
                     timer = 0;
                 }
 //                }
                 break;
 
             case CHASE:
+                soundPlaying = false;
+                soundTimer = 0;
                 if (!hasLoS(playerLit)) {
                     // has no target
                     state = FSMState.GOTO;
+                    if(!enemySoundPlaying) {
+                        enemySound.loop(.3f);
+                        enemySoundPlaying = true;
+                    }
                 }   // else: has target, keep chasing
 
                 break;
 
             case GOTO:
+                soundPlaying = false;
+                soundTimer = 0;
                 if (hasLoS(playerLit)){
                     state = FSMState.CHASE;
+                    if(!enemySoundPlaying) {
+                        enemySound.loop(.3f);
+                        enemySoundPlaying = true;
+                    }
                 }
                 else if (pos.x == target[0] && pos.y == target[1]){
                     state = FSMState.WAIT;
@@ -196,8 +241,16 @@ public class AIController extends Entity_Controller {
                 break;
 
             case WAIT:
+                if(enemySoundPlaying){
+                    enemySound.stop();
+                    enemySoundPlaying = false;
+                }
                 if (hasLoS(playerLit)){
                     state = FSMState.CHASE;
+                    if(!enemySoundPlaying) {
+                        enemySound.loop(.3f);
+                        enemySoundPlaying = true;
+                    }
                     timer = 0;
                 }
                 else {
@@ -210,6 +263,12 @@ public class AIController extends Entity_Controller {
                 break;
 
             case RETURN:
+                if(enemySoundPlaying){
+                    enemySound.stop();
+                    enemySoundPlaying = false;
+                }
+                soundPlaying = false;
+                soundTimer = 0;
                 if (hasLoS(playerLit)){
                     state = FSMState.PAUSED;
                 }
@@ -219,12 +278,24 @@ public class AIController extends Entity_Controller {
                 break;
 
             case LIT:
+                if(enemySoundPlaying){
+                    enemySound.stop();
+                    enemySoundPlaying = false;
+                }
+                soundPlaying = false;
+                soundTimer = 0;
                 if(!board.isLitTileBoard((int) pos.x,(int) pos.y)){
                     state = FSMState.WAIT;
                 }
                 break;
 
             case STUNNED:
+                if(enemySoundPlaying){
+                    enemySound.stop();
+                    enemySoundPlaying = false;
+                }
+                soundPlaying = false;
+                soundTimer = 0;
                 timer++;
                 if (timer % STUN_TIME == 0){
                     enemy.stunned = false;
@@ -562,5 +633,24 @@ public class AIController extends Entity_Controller {
             return result;
         }
         return enemy.inSight(player.getPosition(), player.getAuraRadius());
+    }
+
+    public void playAlarm(){
+        if(soundPlaying) {
+            soundTimer += Gdx.graphics.getDeltaTime();
+            if (soundTimer >= ALARM_DELAY){
+                soundTimer = 0;
+                soundPlaying = false;
+            }
+        }
+        else {
+            alarmSound.play(.5f);
+            soundPlaying = true;
+        }
+    }
+
+    public void resetSound(){
+        enemySound.stop();
+        enemySoundPlaying = false;
     }
 }

@@ -15,6 +15,8 @@ package edu.cornell.gdiac.rekindled;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.assets.*;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.*;
 import com.badlogic.gdx.assets.loaders.*;
@@ -49,6 +51,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	/** List of all WorldControllers */
 	private WorldController controllers[];
 
+	private Music music;
+
 	/**
 	 * Creates a new game from the configuration settings.
 	 *
@@ -63,6 +67,8 @@ public class GDXRoot extends Game implements ScreenListener {
 		FileHandleResolver resolver = new InternalFileHandleResolver();
 		manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
 		manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
+
+
 	}
 
 	/**
@@ -77,6 +83,11 @@ public class GDXRoot extends Game implements ScreenListener {
 		loading = new LoadingMode(canvas,manager,1);
 		levelComplete = new LevelCompleteMode(canvas, manager, 1);
 		levelComplete.setScreenListener(this);
+
+		music = Gdx.audio.newMusic(Gdx.files.internal("sounds/bgm.mp3"));
+		music.setLooping(true);
+		music.play();
+
 		// Initialize the three game worlds
 		controllers = new GameplayController[7];
 		controllers[0] = new GameplayController("jsons/Megan_0.json");
@@ -86,6 +97,8 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers[4] = new GameplayController("jsons/emeka3.json");
 		controllers[5] = new GameplayController("jsons/level11_Emeka.json");
 		controllers[6] = new GameplayController("jsons/levelhard2.json");
+
+
 
 
 		for(int ii = 0; ii < controllers.length; ii++) {

@@ -13,6 +13,7 @@ package edu.cornell.gdiac.rekindled;/*
  */
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
@@ -73,6 +74,9 @@ public class Player extends FeetHitboxObstacle {
 
     private static final float FRAME_RATE = 1 / 10f;
     private static final float THROW_RATE = 1 / 10f;
+
+
+    private Sound grassStep;
 
 
     /**
@@ -166,6 +170,14 @@ public class Player extends FeetHitboxObstacle {
     private boolean touchingLight;
     private boolean idle;
     private AuraLight aura;
+    private float delayTimer2;
+    private boolean cooldown2;
+
+    private static final float SOUND_DELAY = .5f;
+    private float soundTimer;
+    private boolean soundPlaying;
+
+    private Sound throwSound;
 
     /**
      * Returns the force applied to this rocket.
@@ -283,6 +295,8 @@ public class Player extends FeetHitboxObstacle {
         takingLight = false;
         throwingLight = false;
         idle = true;
+        throwSound = Gdx.audio.newSound(Gdx.files.internal("sounds/throw.mp3"));
+        grassStep = Gdx.audio.newSound(Gdx.files.internal("sounds/grassStep.mp3"));
 
         this.getFilterData().categoryBits = Constants.BIT_PLAYER;
     }
@@ -332,7 +346,19 @@ public class Player extends FeetHitboxObstacle {
             idle = true;
             body.setLinearVelocity(0, 0);
             timeElapsed += Gdx.graphics.getDeltaTime();
+        }
 
+        if(soundPlaying){
+            soundTimer += Gdx.graphics.getDeltaTime();
+            if (soundTimer >= SOUND_DELAY){
+                grassStep.stop();
+                soundPlaying = false;
+                soundTimer = 0;
+            }
+        }
+        else if (idle == false){
+            grassStep.play();
+            soundPlaying = true;
         }
     }
 
@@ -367,6 +393,13 @@ public class Player extends FeetHitboxObstacle {
                 cooldown = false;
             }
         }
+
+        if (cooldown2) {
+            delayTimer2 += dt;
+            if (delayTimer2 >= TURN_ON_DELAY) {
+                cooldown2 = false;
+            }
+        }
     }
 
     public void takeLight() {
@@ -393,8 +426,11 @@ public class Player extends FeetHitboxObstacle {
     }
 
     public void throwLight() {
+        throwSound.play();
         delayTimer = 0;
         cooldown = true;
+        delayTimer2 = 0;
+        cooldown2 = true;
         lightCounter -= 1;
         throwingLight = true;
         super.timeElapsed = 0;
@@ -577,4 +613,7 @@ public class Player extends FeetHitboxObstacle {
         return this.aura.getDistance();
     }
 
+    public boolean getCooldown2() {
+        return this.cooldown2;
+    }
 }

@@ -231,7 +231,7 @@ public class GameplayController extends WorldController implements ContactListen
 	/** The restitution for all of (external) objects */
 	private static final float BASIC_RESTITUTION = 0.1f;
 
-	private static final float THROWN_LIGHT_RADIUS = 5f;
+	private static final float THROWN_LIGHT_RADIUS = 3f;
 
 	private static final float CAMERA_SCALE = 1.0f;
 

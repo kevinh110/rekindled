@@ -832,7 +832,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 		// Create border pieces
 		Wall border;
-		for (int ii = 0; ii < BOARD_WIDTH - 1 ; ii++) {
+		for (int ii = 0; ii < BOARD_WIDTH  ; ii++) {
 			border = new Wall(ii, 0, 1, 1);
 			border.setBodyType(BodyDef.BodyType.KinematicBody);
 			border.setDensity(BASIC_DENSITY);
@@ -854,7 +854,7 @@ public class GameplayController extends WorldController implements ContactListen
 			addObject(border);
 
 		}
-		for (int jj = 0; jj < BOARD_HEIGHT - 1; jj++) {
+		for (int jj = 0; jj < BOARD_HEIGHT ; jj++) {
 			border = new Wall(0, jj, 1, 1);
 			border.setBodyType(BodyDef.BodyType.KinematicBody);
 			border.setDensity(BASIC_DENSITY);
@@ -998,6 +998,7 @@ public class GameplayController extends WorldController implements ContactListen
 			if(thrownLights.isEmpty() || (System.currentTimeMillis() - thrownLights.get(0).getValue() > 500L)) {
 
 				LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius
+				light.setColor(Color.GOLD);
 				light.setPosition(player.getX(), player.getY());
 				thrownLights.add(new Pair<>(light, System.currentTimeMillis()));
 				player.throwLight();

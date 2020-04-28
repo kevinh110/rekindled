@@ -1,0 +1,30 @@
+{
+  "dimension": [25,15],
+  "spawn": [2,7],
+  "init_lights": 1,
+  "lights": [
+    {"position": [4,5],"lit": true}
+  ],
+  "enemies": [
+    {"position": [22,13],"type": 0,"wander": [[22,12]]}
+  ],
+  "walls": [
+    {"position": [1,9],"movable": false},
+    {"position": [2,9],"movable": false},
+    {"position": [3,9],"movable": false},
+    {"position": [4,9],"movable": false},
+    {"position": [5,9],"movable": false},
+    {"position": [6,9],"movable": false},
+    {"position": [7,9],"movable": false},
+    {"position": [8,9],"movable": false},
+    {"position": [9,9],"movable": false},
+    {"position": [10,9],"movable": false},
+    {"position": [11,9],"movable": false},
+    {"position": [12,9],"movable": false},
+    {"position": [13,9],"movable": false},
+    {"position": [14,9],"movable": false}
+  ],
+  "grass": [],
+  "mushrooms": [],
+  "water": []
+}

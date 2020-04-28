@@ -994,8 +994,9 @@ public class GameplayController extends WorldController implements ContactListen
 		this.inLitTile = insideLightSource(player.getPosition());
 
 		//throw light
-		if(input.didShift() && player.lightCounter > 0){
-			if(thrownLights.isEmpty() || (System.currentTimeMillis() - thrownLights.get(0).getValue() > 500L)) {
+
+			if((input.didShift() && player.lightCounter > 0 && !player.getCooldown()) &&
+					(thrownLights.isEmpty() || (System.currentTimeMillis() - thrownLights.get(0).getValue() > 500L))) {
 
 				LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius
 				light.setColor(Color.GOLD);
@@ -1018,7 +1019,7 @@ public class GameplayController extends WorldController implements ContactListen
 					}
 				}
 			}
-		}
+
 
 		for (Pair p: thrownLights) {
 			LightSourceLight l = (LightSourceLight) p.getKey();

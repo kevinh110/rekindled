@@ -1,40 +1,40 @@
 {
-  "dimension": [15,15],
-  "spawn": [1,9],
-  "init_lights": 5,
-  "lights": [
-    {"position": [7,9],"lit": true}
-  ],
-  "enemies": [
-    {"position": [13,13],"type": 0,"wander": [[12,13]]}
-  ],
-  "walls": [
-    {"position": [2,12],"movable": false},
-    {"position": [3,12],"movable": false},
-    {"position": [4,12],"movable": false},
-    {"position": [5,12],"movable": false},
-    {"position": [6,12],"movable": false},
-    {"position": [7,12],"movable": false},
-    {"position": [8,12],"movable": false},
-    {"position": [9,12],"movable": false},
-    {"position": [10,12],"movable": false},
-    {"position": [11,12],"movable": false},
-    {"position": [12,12],"movable": false},
-    {"position": [13,12],"movable": false},
-    {"position": [2,11],"movable": false},
-    {"position": [2,10],"movable": false},
-    {"position": [2,9],"movable": false},
-    {"position": [2,8],"movable": false},
-    {"position": [2,7],"movable": false},
-    {"position": [2,6],"movable": false},
-    {"position": [2,5],"movable": false},
-    {"position": [2,4],"movable": false},
-    {"position": [3,4],"movable": false},
-    {"position": [4,4],"movable": false},
-    {"position": [5,4],"movable": false},
-    {"position": [6,4],"movable": false}
-  ],
-  "grass": [],
-  "mushrooms": [],
-  "water": []
+"dimension": [15,15], 
+"spawn": [1,10], 
+"init_lights": 3, 
+"lights": [
+{"position": [7,9],"lit": true}
+], 
+"enemies": [
+{"position": [13,13],"type": 0,"wander": [[12,13]]}
+], 
+"walls": [
+{"position": [2,12],"movable": false}, 
+{"position": [3,12],"movable": false}, 
+{"position": [4,12],"movable": false}, 
+{"position": [5,12],"movable": false}, 
+{"position": [6,12],"movable": false}, 
+{"position": [7,12],"movable": false}, 
+{"position": [8,12],"movable": false}, 
+{"position": [9,12],"movable": false}, 
+{"position": [10,12],"movable": false}, 
+{"position": [11,12],"movable": false}, 
+{"position": [12,12],"movable": false}, 
+{"position": [13,12],"movable": false}, 
+{"position": [2,11],"movable": false}, 
+{"position": [2,10],"movable": false}, 
+{"position": [2,9],"movable": false}, 
+{"position": [2,8],"movable": false}, 
+{"position": [2,7],"movable": false}, 
+{"position": [2,6],"movable": false}, 
+{"position": [2,5],"movable": false}, 
+{"position": [2,4],"movable": false}, 
+{"position": [3,4],"movable": false}, 
+{"position": [4,4],"movable": false}, 
+{"position": [5,4],"movable": false}, 
+{"position": [6,4],"movable": false}
+], 
+"grass": [[7,10], [11,10], [12,10], [3,9], [8,9], [9,9], [11,9], [12,9], [7,8], [9,6], [8,4], [9,4], [10,4], [8,3], [9,3], [10,3], [12,3]], 
+"mushrooms": [[5,13], [7,11], [8,10], [6,9], [1,8], [4,6], [5,2]], 
+"water": []
 }

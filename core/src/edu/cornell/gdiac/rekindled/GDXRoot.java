@@ -79,12 +79,12 @@ public class GDXRoot extends Game implements ScreenListener {
 		levelComplete.setScreenListener(this);
 		// Initialize the three game worlds
 		controllers = new GameplayController[6];
-		controllers[0] = new GameplayController("jsons/emeka_2.json");
+		controllers[0] = new GameplayController("jsons/Megan_0.json");
 		controllers[1] = new GameplayController("jsons/level10.json");
-		controllers[2] = new GameplayController("jsons/level11_Emeka.json");
-		controllers[3] = new GameplayController("jsons/levelhard.json");
-		controllers[4] = new GameplayController("jsons/level20.json");
-		controllers[5] = new GameplayController("jsons/Megan_0.json");
+		controllers[2] = new GameplayController("jsons/level20.json");
+		controllers[3] = new GameplayController("jsons/emeka_2.json");
+		controllers[4] = new GameplayController("jsons/level11_Emeka.json");
+		controllers[5] = new GameplayController("jsons/levelhard.json");
 
 		for(int ii = 0; ii < controllers.length; ii++) {
 			controllers[ii].preLoadContent(manager);

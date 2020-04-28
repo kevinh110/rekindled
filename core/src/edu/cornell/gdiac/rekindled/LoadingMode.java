@@ -421,7 +421,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		}
 		// Flip to match graphics coordinates
 		screenY = heightY-screenY;
-		if (screenX >= 781 && screenX <= 859 && screenY >= 63 && screenY <= 99){
+		System.out.println(screenX + ", " + screenY);
+		if (screenX >= 704 && screenX <= 810 && screenY >= 60 && screenY <= 140){
 			pressState = 1;
 		}
 		return false;

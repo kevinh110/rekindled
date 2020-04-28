@@ -822,7 +822,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 		// Create border pieces
 		Wall border;
-		for (int ii = 0; ii < BOARD_WIDTH ; ii++) {
+		for (int ii = 0; ii < BOARD_WIDTH - 1 ; ii++) {
 			border = new Wall(ii, 0, 1, 1);
 			border.setBodyType(BodyDef.BodyType.KinematicBody);
 			border.setDensity(BASIC_DENSITY);
@@ -844,7 +844,7 @@ public class GameplayController extends WorldController implements ContactListen
 			addObject(border);
 
 		}
-		for (int jj = 1; jj < BOARD_HEIGHT; jj++) {
+		for (int jj = 0; jj < BOARD_HEIGHT - 1; jj++) {
 			border = new Wall(0, jj, 1, 1);
 			border.setBodyType(BodyDef.BodyType.KinematicBody);
 			border.setDensity(BASIC_DENSITY);
@@ -854,8 +854,8 @@ public class GameplayController extends WorldController implements ContactListen
 			border.setTextures(wallTextures);
 			border.setTexture(board);
 			addObject(border);
-			border = new Wall(BOARD_WIDTH - 1, jj, 1, 1);
 
+			border = new Wall(BOARD_WIDTH - 1, jj, 1, 1);
 			border.setBodyType(BodyDef.BodyType.KinematicBody);
 			border.setDensity(BASIC_DENSITY);
 			border.setFriction(BASIC_FRICTION);

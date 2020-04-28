@@ -170,6 +170,8 @@ public class Player extends FeetHitboxObstacle {
     private boolean touchingLight;
     private boolean idle;
     private AuraLight aura;
+    private float delayTimer2;
+    private boolean cooldown2;
 
     private static final float SOUND_DELAY = .5f;
     private float soundTimer;
@@ -391,6 +393,13 @@ public class Player extends FeetHitboxObstacle {
                 cooldown = false;
             }
         }
+
+        if (cooldown2) {
+            delayTimer2 += dt;
+            if (delayTimer2 >= TURN_ON_DELAY) {
+                cooldown2 = false;
+            }
+        }
     }
 
     public void takeLight() {
@@ -420,6 +429,8 @@ public class Player extends FeetHitboxObstacle {
         throwSound.play();
         delayTimer = 0;
         cooldown = true;
+        delayTimer2 = 0;
+        cooldown2 = true;
         lightCounter -= 1;
         throwingLight = true;
         super.timeElapsed = 0;
@@ -602,4 +613,7 @@ public class Player extends FeetHitboxObstacle {
         return this.aura.getDistance();
     }
 
+    public boolean getCooldown2() {
+        return this.cooldown2;
+    }
 }

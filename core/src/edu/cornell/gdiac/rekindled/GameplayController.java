@@ -1003,8 +1003,9 @@ public class GameplayController extends WorldController implements ContactListen
 		this.inLitTile = insideLightSource(player.getPosition());
 
 		//throw light
-		if(input.didShift() && player.lightCounter > 0){
-			if(thrownLights.isEmpty() || (System.currentTimeMillis() - thrownLights.get(0).getValue() > 500L)) {
+
+			if((input.didShift() && player.lightCounter > 0 && !player.getCooldown2()) &&
+					(thrownLights.isEmpty() || (System.currentTimeMillis() - thrownLights.get(0).getValue() > 500L))) {
 
 				LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius
 				light.setColor(Color.GOLD);
@@ -1027,7 +1028,7 @@ public class GameplayController extends WorldController implements ContactListen
 					}
 				}
 			}
-		}
+
 
 		for (Pair p: thrownLights) {
 			LightSourceLight l = (LightSourceLight) p.getKey();
@@ -1085,7 +1086,7 @@ public class GameplayController extends WorldController implements ContactListen
 			return enemyPosition;
 		}
 		Vector2 scaler = new Vector2(0.1f * direction.x, 0.1f * direction.y);
-		
+
 		Vector2 newPos = new Vector2(enemyPosition.x + scaler.x, enemyPosition.y + scaler.y);
 		if(board.isWall((int)newPos.x, (int)newPos.y) || board.isWall((int)newPos.x + 1, (int)newPos.y) ||
 				board.isWall((int)newPos.x, (int)newPos.y + 1) || board.isWall((int)newPos.x + 1, (int)newPos.y + 1)){

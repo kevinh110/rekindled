@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.graphics.*;
@@ -74,6 +75,14 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String TAKING_LIGHT_LEFT = "spritesheets/spritesheet_left-take-light.png";
 	private static final String PLACING_LIGHT_RIGHT = "spritesheets/spritesheet_right-place-light.png";
 	private static final String TAKING_LIGHT_RIGHT = "spritesheets/spritesheet_right-take-light.png";
+	private static final String THROW_LIGHT_BACK = "spritesheets/spritesheet_back_throw_light.png";
+	private static final String THROW_LIGHT_FRONT = "spritesheets/spritesheet_front_throw_light.png";
+	private static final String THROW_LIGHT_LEFT =  "spritesheets/spritesheet_left_throw_light.png";
+	private static final String THROW_LIGHT_RIGHT = "spritesheets/spritesheet_right_throw_light.png";
+	private static final String PLAYER_FRONT_IDLE = "spritesheets/spritesheet_front_idle.png";
+	private static final String PLAYER_BACK_IDLE = "spritesheets/spritesheet_back_idle.png";
+	private static final String PLAYER_LEFT_IDLE = "spritesheets/spritesheet_left_idle.png";
+	private static final String PLAYER_RIGHT_IDLE = "spritesheets/spritesheet_right_idle.png";
 
 	/**
 	 * File storing the enemy
@@ -100,12 +109,6 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String LOSS_SCREEN_FILE = "images/lossScreen.png";
 
 	/** The file location of the wall*/
-//	private static final String WALL_FILE = "images/ingame-wall-temp.png";
-//	private static final String WALL_FRONT_FILE = "images/stone_wall_front.png";
-//	private static final String WALL_BACK_FILE = "images/stone_wall_back.png";
-//	private static final String WALL_LEFT_FILE = "images/stone_wall_left.png";
-//	private static final String WALL_RIGHT_FILE = "images/stone_wall_right.png";
-//	private static final String WALL_MID_FILE = "images/stone_wall_mid.png";
 	private static final String D_WALL = "wall/d.png";
 	private static final String DL_WALL = "wall/dl.png";
 	private static final String DL_SINGLE_WALL = "wall/dl-single.png";
@@ -179,6 +182,14 @@ public class GameplayController extends WorldController implements ContactListen
 	private TextureRegion takingLightLeft;
 	private TextureRegion placingLightRight;
 	private TextureRegion takingLightRight;
+	private TextureRegion throwingLightFront;
+	private TextureRegion throwingLightBack;
+	private TextureRegion throwingLightRight;
+	private TextureRegion throwingLightLeft;
+	private TextureRegion playerFrontIdle;
+	private TextureRegion playerBackIdle;
+	private TextureRegion playerLeftIdle;
+	private TextureRegion playerRightIdle;
 
 
 	private TextureRegion enemyAnimationFront;
@@ -295,6 +306,28 @@ public class GameplayController extends WorldController implements ContactListen
 		assets.add(PLAYER_FILE_BACK);
 		manager.load(PLAYER_FILE_FRONT, Texture.class);
 		assets.add(PLAYER_FILE_FRONT);
+
+		manager.load(THROW_LIGHT_FRONT, Texture.class);
+		assets.add(THROW_LIGHT_FRONT);
+		manager.load(THROW_LIGHT_BACK, Texture.class);
+		assets.add(THROW_LIGHT_BACK);
+		manager.load(THROW_LIGHT_LEFT, Texture.class);
+		assets.add(THROW_LIGHT_LEFT);
+		manager.load(THROW_LIGHT_RIGHT, Texture.class);
+		assets.add(THROW_LIGHT_RIGHT);
+
+		manager.load(PLAYER_FRONT_IDLE, Texture.class);
+		assets.add(PLAYER_FRONT_IDLE);
+		manager.load(PLAYER_BACK_IDLE, Texture.class);
+		assets.add(PLAYER_BACK_IDLE);
+		manager.load(PLAYER_LEFT_IDLE, Texture.class);
+		assets.add(PLAYER_LEFT_IDLE);
+		manager.load(PLAYER_RIGHT_IDLE, Texture.class);
+		assets.add(PLAYER_RIGHT_IDLE);
+
+
+
+
 		manager.load(ENEMY_FILE, Texture.class);
 		assets.add(ENEMY_FILE);
 		manager.load(SEEN_FILE, Texture.class);

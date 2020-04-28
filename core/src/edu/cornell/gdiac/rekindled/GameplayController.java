@@ -1072,7 +1072,7 @@ public class GameplayController extends WorldController implements ContactListen
 			return enemyPosition;
 		}
 		Vector2 scaler = new Vector2(0.1f * direction.x, 0.1f * direction.y);
-		
+
 		Vector2 newPos = new Vector2(enemyPosition.x + scaler.x, enemyPosition.y + scaler.y);
 		if(board.isWall((int)newPos.x, (int)newPos.y) || board.isWall((int)newPos.x + 1, (int)newPos.y) ||
 				board.isWall((int)newPos.x, (int)newPos.y + 1) || board.isWall((int)newPos.x + 1, (int)newPos.y + 1)){

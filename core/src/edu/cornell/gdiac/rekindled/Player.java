@@ -72,7 +72,7 @@ public class Player extends FeetHitboxObstacle {
     private static final int THROW_FRAMES = 17;
 
     private static final float FRAME_RATE = 1 / 10f;
-    private static final float THROW_RATE = 1 / 20f;
+    private static final float THROW_RATE = 1 / 10f;
 
 
     /**

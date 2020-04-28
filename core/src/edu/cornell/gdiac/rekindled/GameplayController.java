@@ -995,7 +995,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 		//throw light
 
-			if((input.didShift() && player.lightCounter > 0 && !player.getCooldown()) &&
+			if((input.didShift() && player.lightCounter > 0 && !player.getCooldown2()) &&
 					(thrownLights.isEmpty() || (System.currentTimeMillis() - thrownLights.get(0).getValue() > 500L))) {
 
 				LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius

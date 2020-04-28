@@ -166,6 +166,8 @@ public class Player extends FeetHitboxObstacle {
     private boolean touchingLight;
     private boolean idle;
     private AuraLight aura;
+    private float delayTimer2;
+    private boolean cooldown2;
 
     /**
      * Returns the force applied to this rocket.
@@ -393,8 +395,8 @@ public class Player extends FeetHitboxObstacle {
     }
 
     public void throwLight() {
-        delayTimer = 0;
-        cooldown = true;
+        delayTimer2 = 0;
+        cooldown2 = true;
         lightCounter -= 1;
         throwingLight = true;
         super.timeElapsed = 0;
@@ -577,4 +579,7 @@ public class Player extends FeetHitboxObstacle {
         return this.aura.getDistance();
     }
 
+    public boolean getCooldown2() {
+        return this.cooldown2;
+    }
 }

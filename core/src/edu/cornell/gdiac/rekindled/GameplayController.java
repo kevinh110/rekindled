@@ -1122,12 +1122,15 @@ public class GameplayController extends WorldController implements ContactListen
 
 		for(Obstacle obj : objects) {
 			if ((obj instanceof BoxObstacle || obj instanceof PolygonObstacle || obj instanceof FeetHitboxObstacle)
-					&& !(obj instanceof Wall))
+					&& !(obj instanceof Wall) && !(obj instanceof Enemy))
 				obj.draw(canvas);
 		}
 
-
+		// Draw enemies + player; this is redundant but needed for correct ordering of textures
 		player.draw(canvas);
+		for (Enemy e: enemies){
+			e.draw(canvas);
+		}
 		// Draw Exclamation Points
 		for (AIController controller : controls){
 			if (controller.getState() == AIController.FSMState.PAUSED){

@@ -275,19 +275,19 @@ function confirmOpen() {
 
   // add grass
   for(let i=0;i<grass.length;i++){
-    console.log(grass[i]);
+    // console.log(grass[i]);
     content[height-1-grass[i][1]][grass[i][0]] = 'G';
   }
 
   // add mushrooms
   for(let i=0;i<mushrooms.length;i++){
-    console.log(mushrooms[i]);
+    // console.log(mushrooms[i]);
     content[height-1-mushrooms[i][1]][mushrooms[i][0]] = 'M';
   }
 
   // add water
   for(let i=0;i<water.length;i++){
-    console.log(water[i]);
+    // console.log(water[i]);
     content[height-1-water[i][1]][water[i][0]] = 'T';
   }
 
@@ -348,11 +348,11 @@ function confirmOpen() {
         let table = row.parentNode;
         index = Array.prototype.indexOf.call(row.children,cell);
         row_index = Array.prototype.indexOf.call(table.children,row);
-        console.log(row);
-        console.log(index);
-        console.log(table);
-        console.log(row_index);
-        console.log(row.children[index]);
+        // console.log(row);
+        // console.log(index);
+        // console.log(table);
+        // console.log(row_index);
+        // console.log(row.children[index]);
         // row 0
         applyEdit(row.children[index-2], 'LZ');
         applyEdit(row.children[index-1], 'LZ');
@@ -454,7 +454,7 @@ function copyLevel() {
 
   j = height-1;
   cells.forEach((cell, i) => {
-    console.log(i);
+    // console.log(i);
     if ((i + 1) % width != 0 && (i + 1) % width != 1 && j != height-1 && j != 0){
       if (cell.textContent.search(/\@/)>-1){
         // console.log(cell.textContent);
@@ -533,8 +533,8 @@ const TOOLS = [
 let mouseTool = {tool: brush, char: '.'};
 
 function applyEdit(cell, char) {
-  console.log("applyEdit");
-  console.log(char);
+  // console.log("applyEdit");
+  // console.log(char);
 
   if(char.search(/E/)>-1){
     cell.textContent = char;
@@ -611,26 +611,26 @@ function brush(event) {
     let cell = event.target;
     updateHistory([cell], cell.textContent);
 
-    console.log(cell.textContent);
+    // console.log(cell.textContent);
     if (cell.className != 'cell darkzone' && cell.className != 'cell litzone'){
       cell = cell.parentNode;
     }
-    console.log(cell.textContent);
+    // console.log(cell.textContent);
     // remove all surrounding light tiles
-    console.log(mouseTool.char);
+    // console.log(mouseTool.char);
     // console.log(cell.parentNode.textContent);
     if ((mouseTool.char != 'L') && cell.textContent == 'L'){
-      console.log("inside if");
+      // console.log("inside if");
       // cell = cell.parentNode;
       let row = cell.parentNode;
       let table = row.parentNode;
       index = Array.prototype.indexOf.call(row.children,cell);
       row_index = Array.prototype.indexOf.call(table.children,row);
-      console.log(row);
-      console.log(index);
-      console.log(table);
-      console.log(row_index);
-      console.log(row.children[index]);
+      // console.log(row);
+      // console.log(index);
+      // console.log(table);
+      // console.log(row_index);
+      // console.log(row.children[index]);
       // row 0
       applyEdit(row.children[index-2], 'DZ');
       applyEdit(row.children[index-1], 'DZ');
@@ -664,11 +664,11 @@ function brush(event) {
       let table = row.parentNode;
       index = Array.prototype.indexOf.call(row.children,cell);
       row_index = Array.prototype.indexOf.call(table.children,row);
-      console.log(row);
-      console.log(index);
-      console.log(table);
-      console.log(row_index);
-      console.log(row.children[index]);
+      // console.log(row);
+      // console.log(index);
+      // console.log(table);
+      // console.log(row_index);
+      // console.log(row.children[index]);
       // row 0
       applyEdit(row.children[index-2], 'LZ');
       applyEdit(row.children[index-1], 'LZ');

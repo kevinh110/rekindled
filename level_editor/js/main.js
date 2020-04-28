@@ -905,14 +905,14 @@ let undoButton = createButton(
   undo, 'edit', 'undo (ctrl/cmd + z)'
 );
 undoButton.disabled = true;
-toolPanel.appendChild(undoButton);
+// toolPanel.appendChild(undoButton);
 
 let redoButton = createButton(
   {'innerHTML': '<i class="material-icons">redo</i>'},
   redo, 'edit', 'redo (ctrl/cmd + y)'
 );
 redoButton.disabled = true;
-toolPanel.appendChild(redoButton);
+// toolPanel.appendChild(redoButton);
 
 document.addEventListener('historyupdate', () => {
   if (past.length) undoButton.disabled = false;

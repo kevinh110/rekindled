@@ -326,8 +326,6 @@ public class GameplayController extends WorldController implements ContactListen
 		assets.add(PLAYER_RIGHT_IDLE);
 
 
-
-
 		manager.load(ENEMY_FILE, Texture.class);
 		assets.add(ENEMY_FILE);
 		manager.load(SEEN_FILE, Texture.class);
@@ -457,6 +455,18 @@ public class GameplayController extends WorldController implements ContactListen
 		takingLightLeft = createTexture(manager, TAKING_LIGHT_LEFT, false);
 		placingLightRight = createTexture(manager, PLACING_LIGHT_RIGHT, false);
 		takingLightRight = createTexture(manager, TAKING_LIGHT_RIGHT, false);
+		throwingLightFront = createTexture(manager, THROW_LIGHT_FRONT, false);
+		throwingLightBack = createTexture(manager, THROW_LIGHT_BACK, false);
+		throwingLightLeft = createTexture(manager, THROW_LIGHT_LEFT, false);
+		throwingLightRight = createTexture(manager, THROW_LIGHT_RIGHT, false);
+		playerFrontIdle = createTexture(manager, PLAYER_FRONT_IDLE, false);
+		playerBackIdle = createTexture(manager, PLAYER_BACK_IDLE, false);
+		playerLeftIdle = createTexture(manager, PLAYER_LEFT_IDLE, false);
+		playerRightIdle = createTexture(manager, PLAYER_RIGHT_IDLE, false);
+
+
+
+
 
 		enemyAngryAnimationFront = createTexture(manager, ENEMY_ANGRY_ANIMATION_FRONT, false);
 		enemyAngryAnimationBack = createTexture(manager, ENEMY_ANGRY_ANIMATION_BACK, false);
@@ -876,7 +886,8 @@ public class GameplayController extends WorldController implements ContactListen
 		player.setDrawScale(scale);
 		player.setAnimations(playerAnimationFront, playerAnimationBack, playerAnimationLeft, playerAnimationRight,
 				placingLightFront, takingLightFront, placingLightLeft, takingLightLeft, placingLightRight,
-				takingLightRight); //setting animation
+				takingLightRight, playerFrontIdle, playerBackIdle, playerLeftIdle, playerRightIdle, throwingLightFront,
+				throwingLightBack, throwingLightLeft, throwingLightRight); //setting animation
 		player.setTexture(playerTextureFront);
 
 		addObject(player);
@@ -1002,7 +1013,7 @@ public class GameplayController extends WorldController implements ContactListen
 				LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius
 				light.setPosition(player.getX(), player.getY());
 				thrownLights.add(new Pair<>(light, System.currentTimeMillis()));
-				player.placeLight();
+				player.throwLight();
 
 				//find enemies in range
 				for (Enemy e : enemies) {

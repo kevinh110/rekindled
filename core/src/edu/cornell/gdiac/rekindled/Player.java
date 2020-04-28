@@ -26,7 +26,7 @@ import edu.cornell.gdiac.rekindled.obstacle.*;
 
 /**
  * Player avatar for the rocket lander game.
- *
+ * <p>
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
@@ -34,53 +34,102 @@ public class Player extends FeetHitboxObstacle {
 
 
     // Default physics values
-    /** The density of this rocket */
-    private static final float DEFAULT_DENSITY  =  1.0f;
-    /** The friction of this rocket */
+    /**
+     * The density of this rocket
+     */
+    private static final float DEFAULT_DENSITY = 1.0f;
+    /**
+     * The friction of this rocket
+     */
     private static final float DEFAULT_FRICTION = 0.1f;
-    /** The restitution of this rocket */
+    /**
+     * The restitution of this rocket
+     */
     private static final float DEFAULT_RESTITUTION = 0.4f;
-    /** The thrust factor to convert player input into thrust */
+    /**
+     * The thrust factor to convert player input into thrust
+     */
     private static final float DEFAULT_THRUST = 30.0f;
 
-    /** the size of a tile of the sprite sheet*/
+    /**
+     * the size of a tile of the sprite sheet
+     */
     private static final int TILE_SIZE = 100;
 
-    /** the number of frames of the sprite sheet*/
+    /**
+     * the number of frames of the sprite sheet
+     */
     private static final int NUMBER_FRAMES = 10;
 
-    private static final float FRAME_RATE = 1/10f;
+    /**
+     * number of frames for the idle animation
+     **/
+    private static final int IDLE_FRAMES = 8;
+
+    /**
+     * number of frames for the throwing animation
+     **/
+    private static final int THROW_FRAMES = 17;
+
+    private static final float FRAME_RATE = 1 / 10f;
+    private static final float THROW_RATE = 1 / 20f;
 
 
-    /** The force to apply to this rocket */
+    /**
+     * The force to apply to this rocket
+     */
     private Vector2 force;
 
-    /** The texture filmstrip for the left animation node */
+    /**
+     * The texture filmstrip for the left animation node
+     */
     FilmStrip mainBurner;
-    /** The associated sound for the main afterburner */
+    /**
+     * The associated sound for the main afterburner
+     */
     String mainSound;
-    /** The animation phase for the main afterburner */
+    /**
+     * The animation phase for the main afterburner
+     */
     boolean mainCycle = true;
 
-    /** The texture filmstrip for the left animation node */
+    /**
+     * The texture filmstrip for the left animation node
+     */
     FilmStrip leftBurner;
-    /** The associated sound for the left side burner */
+    /**
+     * The associated sound for the left side burner
+     */
     String leftSound;
-    /** The animation phase for the left side burner */
+    /**
+     * The animation phase for the left side burner
+     */
     boolean leftCycle = true;
 
-    /** The texture filmstrip for the left animation node */
+    /**
+     * The texture filmstrip for the left animation node
+     */
     FilmStrip rghtBurner;
-    /** The associated sound for the right side burner */
+    /**
+     * The associated sound for the right side burner
+     */
     String rghtSound;
-    /** The associated sound for the right side burner */
-    boolean rghtCycle  = true;
+    /**
+     * The associated sound for the right side burner
+     */
+    boolean rghtCycle = true;
 
-    /** Cache object for transforming the force according the object angle */
+    /**
+     * Cache object for transforming the force according the object angle
+     */
     public Affine2 affineCache = new Affine2();
-    /** Cache object for left afterburner origin */
+    /**
+     * Cache object for left afterburner origin
+     */
     public Vector2 leftOrigin = new Vector2();
-    /** Cache object for right afterburner origin */
+    /**
+     * Cache object for right afterburner origin
+     */
     public Vector2 rghtOrigin = new Vector2();
 
     private Texture mainTexture;
@@ -95,9 +144,19 @@ public class Player extends FeetHitboxObstacle {
     private Animation leftTakingAnimation;
     private Animation rightPlacingAnimation;
     private Animation rightTakingAnimation;
+    private Animation frontThrowAnimation;
+    private Animation backThrowAnimation;
+    private Animation leftThrowAnimation;
+    private Animation rightThrowAnimation;
+    private Animation frontIdleAnimation;
+    private Animation backIdleAnimation;
+    private Animation leftIdleAnimation;
+    private Animation rightIdleAnimation;
 
 
-    /** The number of frames for the afterburner */
+    /**
+     * The number of frames for the afterburner
+     */
     public static final int SPEED = 4;
 
     public int lightCounter;
@@ -107,12 +166,13 @@ public class Player extends FeetHitboxObstacle {
 
     private boolean placingLight;
     private boolean takingLight;
+    private boolean throwingLight;
     private boolean touchingLight;
     private AuraLight aura;
 
     /**
      * Returns the force applied to this rocket.
-     *
+     * <p>
      * This method returns a reference to the force vector, allowing it to be modified.
      * Remember to modify the input values by the thrust amount before assigning
      * the value to force.
@@ -125,7 +185,7 @@ public class Player extends FeetHitboxObstacle {
 
     /**
      * Returns the x-component of the force applied to this rocket.
-     *
+     * <p>
      * Remember to modify the input values by the thrust amount before assigning
      * the value to force.
      *
@@ -137,7 +197,7 @@ public class Player extends FeetHitboxObstacle {
 
     /**
      * Sets the x-component of the force applied to this rocket.
-     *
+     * <p>
      * Remember to modify the input values by the thrust amount before assigning
      * the value to force.
      *
@@ -149,7 +209,7 @@ public class Player extends FeetHitboxObstacle {
 
     /**
      * Returns the y-component of the force applied to this rocket.
-     *
+     * <p>
      * Remember to modify the input values by the thrust amount before assigning
      * the value to force.
      *
@@ -161,7 +221,7 @@ public class Player extends FeetHitboxObstacle {
 
     /**
      * Sets the x-component of the force applied to this rocket.
-     *
+     * <p>
      * Remember to modify the input values by the thrust amount before assigning
      * the value to force.
      *
@@ -173,7 +233,7 @@ public class Player extends FeetHitboxObstacle {
 
     /**
      * Returns the amount of thrust that this rocket has.
-     *
+     * <p>
      * Multiply this value times the horizontal and vertical values in the
      * input controller to get the force.
      *
@@ -185,32 +245,32 @@ public class Player extends FeetHitboxObstacle {
 
     /**
      * Creates a new rocket at the origin.
-     *
+     * <p>
      * The size is expressed in physics units NOT pixels.  In order for
      * drawing to work properly, you MUST set the drawScale. The drawScale
      * converts the physics units to pixels.
      *
-     * @param width		The object width in physics units
-     * @param height	The object width in physics units
+     * @param width  The object width in physics units
+     * @param height The object width in physics units
      */
     public Player(float width, float height) {
-        this(0,0,width,height);
+        this(0, 0, width, height);
     }
 
     /**
      * Creates a new rocket at the given position.
-     *
+     * <p>
      * The size is expressed in physics units NOT pixels.  In order for
      * drawing to work properly, you MUST set the drawScale. The drawScale
      * converts the physics units to pixels.
      *
-     * @param x  		Initial x position of the box center
-     * @param y  		Initial y position of the box center
-     * @param width		The object width in physics units
-     * @param height	The object width in physics units
+     * @param x      Initial x position of the box center
+     * @param y      Initial y position of the box center
+     * @param width  The object width in physics units
+     * @param height The object width in physics units
      */
     public Player(float x, float y, float width, float height) {
-        super(x,y,width,height);
+        super(x, y, width, height);
         super.setDirection(Direction.FRONT);
 
         force = new Vector2();
@@ -229,17 +289,16 @@ public class Player extends FeetHitboxObstacle {
     }
 
     public Player(float x, float y, float width, float height, int lights) {
-        this(x,y,width,height);
+        this(x, y, width, height);
         lightCounter = lights;
     }
 
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
-     *
+     * <p>
      * This method overrides the base method to keep your ship from spinning.
      *
      * @param world Box2D world to store body
-     *
      * @return true if object allocation succeeded
      */
     public boolean activatePhysics(World world) {
@@ -256,24 +315,20 @@ public class Player extends FeetHitboxObstacle {
         return true;
     }
 
-    public void move(InputController.Move_Direction move){
+    public void move(InputController.Move_Direction move) {
         if (move == Entity_Controller.Move_Direction.MOVE_DOWN) {
             body.setLinearVelocity(0, -SPEED);
             super.setDirection(Direction.FRONT);
-        }
-        else if (move == Entity_Controller.Move_Direction.MOVE_UP) {
+        } else if (move == Entity_Controller.Move_Direction.MOVE_UP) {
             body.setLinearVelocity(0, SPEED);
             super.setDirection(Direction.BACK);
-        }
-        else if (move == Entity_Controller.Move_Direction.MOVE_RIGHT) {
+        } else if (move == Entity_Controller.Move_Direction.MOVE_RIGHT) {
             body.setLinearVelocity(SPEED, 0);
             super.setDirection(Direction.RIGHT);
-        }
-        else if (move == Entity_Controller.Move_Direction.MOVE_LEFT) {
+        } else if (move == Entity_Controller.Move_Direction.MOVE_LEFT) {
             body.setLinearVelocity(-SPEED, 0);
             super.setDirection(Direction.LEFT);
-        }
-        else {
+        } else {
             body.setLinearVelocity(0, 0);
         }
     }
@@ -284,7 +339,7 @@ public class Player extends FeetHitboxObstacle {
 
     /**
      * Applies the force to the body of this ship
-     *
+     * <p>
      * This method should be called after the force attribute is set.
      */
     public void applyForce() {
@@ -302,16 +357,16 @@ public class Player extends FeetHitboxObstacle {
         //#endregion
     }
 
-    public void updateCooldown(float dt){
+    public void updateCooldown(float dt) {
         if (cooldown) {
-            delayTimer+= dt;
+            delayTimer += dt;
             if (delayTimer >= TURN_ON_DELAY) {
                 cooldown = false;
             }
         }
     }
 
-    public void takeLight(){
+    public void takeLight() {
         delayTimer = 0;
         cooldown = true;
         lightCounter += 1;
@@ -323,14 +378,23 @@ public class Player extends FeetHitboxObstacle {
             this.aura.setActive(true);
     }
 
-    public void placeLight(){
+    public void placeLight() {
         delayTimer = 0;
         cooldown = true;
         lightCounter -= 1;
         takingLight = true;
         super.timeElapsed = 0;
 
+        if (lightCounter == 0)
+            this.aura.setActive(false);
+    }
 
+    public void throwLight() {
+        delayTimer = 0;
+        cooldown = true;
+        lightCounter -= 1;
+        throwingLight = true;
+        super.timeElapsed = 0;
         if (lightCounter == 0)
             this.aura.setActive(false);
     }
@@ -341,8 +405,11 @@ public class Player extends FeetHitboxObstacle {
 
     public void setAnimations(TextureRegion frontTexture, TextureRegion backTexture, TextureRegion leftTexture,
                               TextureRegion rightTexture, TextureRegion frontPlace, TextureRegion frontTake,
-                              TextureRegion leftPlace, TextureRegion leftTake, TextureRegion rightPlace, TextureRegion rightTake){
-        frontWalkingAnimation = getAnimation(frontTexture, TILE_SIZE,TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+                              TextureRegion leftPlace, TextureRegion leftTake, TextureRegion rightPlace,
+                              TextureRegion rightTake, TextureRegion frontIdle, TextureRegion backIdle,
+                              TextureRegion leftIdle, TextureRegion rightIdle, TextureRegion frontThrow,
+                              TextureRegion backThrow, TextureRegion rightThrow, TextureRegion leftThrow) {
+        frontWalkingAnimation = getAnimation(frontTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
         backWalkingAnimation = getAnimation(backTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
         rightWalkingAnimation = getAnimation(rightTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
         leftWalkingAnimation = getAnimation(leftTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
@@ -352,18 +419,23 @@ public class Player extends FeetHitboxObstacle {
         leftTakingAnimation = getAnimation(leftTake, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
         rightPlacingAnimation = getAnimation(rightPlace, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
         rightTakingAnimation = getAnimation(rightTake, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+        frontThrowAnimation = getAnimation(frontThrow, TILE_SIZE, TILE_SIZE, THROW_FRAMES, THROW_RATE);
+        backThrowAnimation = getAnimation(backThrow, TILE_SIZE, TILE_SIZE, THROW_FRAMES, THROW_RATE);
+        leftThrowAnimation = getAnimation(leftThrow, TILE_SIZE, TILE_SIZE, THROW_FRAMES, THROW_RATE);
+        rightThrowAnimation = getAnimation(rightThrow, TILE_SIZE, TILE_SIZE, THROW_FRAMES, THROW_RATE);
+
     }
 
 
-    public void setTouchingLight(boolean value){
+    public void setTouchingLight(boolean value) {
         touchingLight = value;
     }
 
-    public boolean getTouchingLight(){
+    public boolean getTouchingLight() {
         return touchingLight;
     }
 
-    public boolean getCooldown(){
+    public boolean getCooldown() {
         return cooldown;
     }
 
@@ -375,9 +447,9 @@ public class Player extends FeetHitboxObstacle {
     public void draw(GameCanvas canvas) {
         Color tint = (cooldown) ? Color.CYAN : Color.WHITE;
 
-        if(placingLight){
-                super.timeElapsed += Gdx.graphics.getDeltaTime();
-                switch (super.getDirection()){
+        if (placingLight) {
+            super.timeElapsed += Gdx.graphics.getDeltaTime();
+            switch (super.getDirection()) {
                 case FRONT:
                     currentAnimation = frontPlacingAnimation;
                     break;
@@ -391,14 +463,35 @@ public class Player extends FeetHitboxObstacle {
                     currentAnimation = backWalkingAnimation;
                     break;
             }
-            super.draw(canvas,currentAnimation, false,super.getTimeElapsed(), TILE_SIZE, tint);
-            if(frontPlacingAnimation.isAnimationFinished(super.timeElapsed)){
+            super.draw(canvas, currentAnimation, false, super.getTimeElapsed(), TILE_SIZE, tint);
+            if (frontPlacingAnimation.isAnimationFinished(super.timeElapsed)) {
                 placingLight = false;
                 super.timeElapsed = 0;
             }
-        } else if(takingLight){
+        } else if (throwingLight) {
             super.timeElapsed += Gdx.graphics.getDeltaTime();
-            switch (super.getDirection()){
+            switch (super.getDirection()) {
+                case FRONT:
+                    currentAnimation = frontThrowAnimation;
+                    break;
+                case LEFT:
+                    currentAnimation = backThrowAnimation;
+                    break;
+                case RIGHT:
+                    currentAnimation = rightThrowAnimation;
+                    break;
+                case BACK:
+                    currentAnimation = leftThrowAnimation;
+                    break;
+            }
+            super.draw(canvas, currentAnimation, false, super.getTimeElapsed(), TILE_SIZE, tint);
+            if (frontThrowAnimation.isAnimationFinished(super.timeElapsed)) {
+                throwingLight = false;
+                super.timeElapsed = 0;
+            }
+        } else if (takingLight) {
+            super.timeElapsed += Gdx.graphics.getDeltaTime();
+            switch (super.getDirection()) {
                 case FRONT:
                     currentAnimation = frontTakingAnimation;
                     break;
@@ -412,8 +505,8 @@ public class Player extends FeetHitboxObstacle {
                     currentAnimation = backWalkingAnimation;
                     break;
             }
-            super.draw(canvas,currentAnimation, false,super.getTimeElapsed(), TILE_SIZE, tint);
-            if(frontPlacingAnimation.isAnimationFinished(super.timeElapsed)){
+            super.draw(canvas, currentAnimation, false, super.getTimeElapsed(), TILE_SIZE, tint);
+            if (frontPlacingAnimation.isAnimationFinished(super.timeElapsed)) {
                 takingLight = false;
                 super.timeElapsed = 0;
             }
@@ -433,7 +526,7 @@ public class Player extends FeetHitboxObstacle {
                     currentAnimation = backWalkingAnimation;
                     break;
             }
-                super.draw(canvas, currentAnimation, true, super.getTimeElapsed(), TILE_SIZE, tint);
+            super.draw(canvas, currentAnimation, true, super.getTimeElapsed(), TILE_SIZE, tint);
 
 
         }

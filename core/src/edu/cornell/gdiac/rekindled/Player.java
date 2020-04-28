@@ -168,6 +168,7 @@ public class Player extends FeetHitboxObstacle {
     private boolean takingLight;
     private boolean throwingLight;
     private boolean touchingLight;
+    private boolean idle;
     private AuraLight aura;
 
     /**
@@ -284,6 +285,8 @@ public class Player extends FeetHitboxObstacle {
         touchingLight = false;
         placingLight = false;
         takingLight = false;
+        throwingLight = false;
+        idle = true;
 
         this.getFilterData().categoryBits = Constants.BIT_PLAYER;
     }
@@ -316,6 +319,7 @@ public class Player extends FeetHitboxObstacle {
     }
 
     public void move(InputController.Move_Direction move) {
+        idle = false;
         if (move == Entity_Controller.Move_Direction.MOVE_DOWN) {
             body.setLinearVelocity(0, -SPEED);
             super.setDirection(Direction.FRONT);
@@ -329,7 +333,10 @@ public class Player extends FeetHitboxObstacle {
             body.setLinearVelocity(-SPEED, 0);
             super.setDirection(Direction.LEFT);
         } else {
+            idle = true;
             body.setLinearVelocity(0, 0);
+            timeElapsed += Gdx.graphics.getDeltaTime();
+
         }
     }
 
@@ -423,6 +430,10 @@ public class Player extends FeetHitboxObstacle {
         backThrowAnimation = getAnimation(backThrow, TILE_SIZE, TILE_SIZE, THROW_FRAMES, THROW_RATE);
         leftThrowAnimation = getAnimation(leftThrow, TILE_SIZE, TILE_SIZE, THROW_FRAMES, THROW_RATE);
         rightThrowAnimation = getAnimation(rightThrow, TILE_SIZE, TILE_SIZE, THROW_FRAMES, THROW_RATE);
+        frontIdleAnimation = getAnimation(frontIdle, TILE_SIZE, TILE_SIZE, IDLE_FRAMES, FRAME_RATE);
+        backIdleAnimation = getAnimation(backIdle, TILE_SIZE, TILE_SIZE, IDLE_FRAMES, FRAME_RATE);
+        leftIdleAnimation = getAnimation(leftIdle, TILE_SIZE, TILE_SIZE, IDLE_FRAMES, FRAME_RATE);
+        rightIdleAnimation = getAnimation(rightIdle, TILE_SIZE, TILE_SIZE, IDLE_FRAMES, FRAME_RATE);
 
     }
 
@@ -510,23 +521,40 @@ public class Player extends FeetHitboxObstacle {
                 takingLight = false;
                 super.timeElapsed = 0;
             }
-        } else {
-
+        } else if (idle) {
             switch (super.getDirection()) {
                 case LEFT:
-                    currentAnimation = leftWalkingAnimation;
+                    currentAnimation = leftIdleAnimation;
                     break;
                 case RIGHT:
-                    currentAnimation = rightWalkingAnimation;
+                    currentAnimation = rightIdleAnimation;
                     break;
                 case FRONT:
-                    currentAnimation = frontWalkingAnimation;
+                    currentAnimation = frontIdleAnimation;
                     break;
                 case BACK:
-                    currentAnimation = backWalkingAnimation;
+                    currentAnimation = backIdleAnimation;
                     break;
             }
             super.draw(canvas, currentAnimation, true, super.getTimeElapsed(), TILE_SIZE, tint);
+        } else {
+            {
+                switch (super.getDirection()) {
+                    case LEFT:
+                        currentAnimation = leftWalkingAnimation;
+                        break;
+                    case RIGHT:
+                        currentAnimation = rightWalkingAnimation;
+                        break;
+                    case FRONT:
+                        currentAnimation = frontWalkingAnimation;
+                        break;
+                    case BACK:
+                        currentAnimation = backWalkingAnimation;
+                        break;
+                }
+                super.draw(canvas, currentAnimation, true, super.getTimeElapsed(), TILE_SIZE, tint);
+            }
 
 
         }

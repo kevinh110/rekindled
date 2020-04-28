@@ -32,7 +32,11 @@ import com.badlogic.gdx.physics.box2d.*;
  * that mode must be done in a separate begin/end pass.
  */
 public class GameCanvas {
-	/** Enumeration to track which pass we are in */
+    public void drawParticle(ParticleEffect pe) {
+    	pe.draw(spriteBatch);
+    }
+
+    /** Enumeration to track which pass we are in */
 	private enum DrawPass {
 		/** We are not drawing */
 		INACTIVE,

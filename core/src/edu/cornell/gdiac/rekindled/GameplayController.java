@@ -18,6 +18,7 @@ package edu.cornell.gdiac.rekindled;
 
 import box2dLight.RayHandler;
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
@@ -707,6 +708,12 @@ public class GameplayController extends WorldController implements ContactListen
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
+		if(controls != null) {
+			for (AIController controller : controls) {
+				controller.resetSound();
+			}
+		}
+
 		Vector2 gravity = new Vector2(world.getGravity());
 
 		for (Obstacle obj : objects) {
@@ -725,6 +732,8 @@ public class GameplayController extends WorldController implements ContactListen
 		parseJson();
 		populateLevel();
 		board.reset(walls, lights);
+
+
 	}
 
 
@@ -1061,6 +1070,11 @@ public class GameplayController extends WorldController implements ContactListen
 				numLit ++;
 		}
 		wonGame = (numLit == enemies.length);
+		if(wonGame){
+			for(AIController controller : controls){
+				controller.resetSound();
+			}
+		}
 
 
 	}
@@ -1134,6 +1148,7 @@ public class GameplayController extends WorldController implements ContactListen
 		// Draw Exclamation Points
 		for (AIController controller : controls){
 			if (controller.getState() == AIController.FSMState.PAUSED){
+				controller.playAlarm();
 				float x = board.boardToScreenCenter((int) controller.getEnemy().getPosition().x);
 				float y = board.boardToScreenCenter((int) controller.getEnemy().getPosition().y + 1);
 				canvas.draw(seenTexture, Color.WHITE, 0, 0, x, y, 0, 1 , 1 );
@@ -1223,6 +1238,9 @@ public class GameplayController extends WorldController implements ContactListen
 				if (((bd1 == player && bd2 == enemy) || (bd1 == enemy &&  bd2 == player))
 						&& !enemy.getIsLit()){
 					lostGame = true;
+					for(AIController controller : controls){
+						controller.resetSound();
+					}
 					System.out.println("enemy contact; you lost");
 				}
 			}

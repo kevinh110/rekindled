@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.rekindled;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -20,6 +21,8 @@ public class LightSourceObject extends BoxObstacle {
     TextureRegion litTexture;
     TextureRegion dimTexture;
     LightSourceLight light;
+    private Sound onSound;
+    private Sound offSound;
 
     public LightSourceObject(int x, int y, int w, int h, boolean isLit){
         super(x, y, w, h);
@@ -27,6 +30,8 @@ public class LightSourceObject extends BoxObstacle {
         this.isLit = isLit;
         this.touchingPlayer = false;
         this.getFilterData().categoryBits = Constants.BIT_SOURCE;
+        onSound = Gdx.audio.newSound(Gdx.files.internal("sounds/on.mp3"));
+        offSound = Gdx.audio.newSound(Gdx.files.internal("sounds/off.mp3"));
     }
 
     public void addLight(LightSourceLight light) {
@@ -65,10 +70,12 @@ public class LightSourceObject extends BoxObstacle {
             light.setActive(isLit);
             System.out.println("Light is on?:" + isLit);
             if (isLit) {
+                offSound.play(.75f);
                 this.timeElapsed = 0;
                 lightAnimation.setPlayMode(Animation.PlayMode.NORMAL);
                 isTransitioning = true;
             } else {
+                onSound.play(.75f);
                 this.timeElapsed = 0;
                 lightAnimation.setPlayMode(Animation.PlayMode.REVERSED);
                 isTransitioning = true;

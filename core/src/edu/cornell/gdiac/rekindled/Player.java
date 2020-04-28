@@ -369,6 +369,13 @@ public class Player extends FeetHitboxObstacle {
                 cooldown = false;
             }
         }
+
+        if (cooldown2) {
+            delayTimer2 += dt;
+            if (delayTimer2 >= TURN_ON_DELAY) {
+                cooldown2 = false;
+            }
+        }
     }
 
     public void takeLight() {

@@ -231,7 +231,7 @@ public class GameplayController extends WorldController implements ContactListen
 	/** The restitution for all of (external) objects */
 	private static final float BASIC_RESTITUTION = 0.1f;
 
-	private static final float THROWN_LIGHT_RADIUS = 5f;
+	private static final float THROWN_LIGHT_RADIUS = 3f;
 
 	private static final float CAMERA_SCALE = 1.0f;
 
@@ -832,7 +832,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 		// Create border pieces
 		Wall border;
-		for (int ii = 0; ii < BOARD_WIDTH - 1 ; ii++) {
+		for (int ii = 0; ii < BOARD_WIDTH  ; ii++) {
 			border = new Wall(ii, 0, 1, 1);
 			border.setBodyType(BodyDef.BodyType.KinematicBody);
 			border.setDensity(BASIC_DENSITY);
@@ -854,7 +854,7 @@ public class GameplayController extends WorldController implements ContactListen
 			addObject(border);
 
 		}
-		for (int jj = 0; jj < BOARD_HEIGHT - 1; jj++) {
+		for (int jj = 0; jj < BOARD_HEIGHT ; jj++) {
 			border = new Wall(0, jj, 1, 1);
 			border.setBodyType(BodyDef.BodyType.KinematicBody);
 			border.setDensity(BASIC_DENSITY);
@@ -994,10 +994,12 @@ public class GameplayController extends WorldController implements ContactListen
 		this.inLitTile = insideLightSource(player.getPosition());
 
 		//throw light
-		if(input.didShift() && player.lightCounter > 0){
-			if(thrownLights.isEmpty() || (System.currentTimeMillis() - thrownLights.get(0).getValue() > 500L)) {
+
+			if((input.didShift() && player.lightCounter > 0 && !player.getCooldown()) &&
+					(thrownLights.isEmpty() || (System.currentTimeMillis() - thrownLights.get(0).getValue() > 500L))) {
 
 				LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius
+				light.setColor(Color.GOLD);
 				light.setPosition(player.getX(), player.getY());
 				thrownLights.add(new Pair<>(light, System.currentTimeMillis()));
 				player.throwLight();
@@ -1017,7 +1019,7 @@ public class GameplayController extends WorldController implements ContactListen
 					}
 				}
 			}
-		}
+
 
 		for (Pair p: thrownLights) {
 			LightSourceLight l = (LightSourceLight) p.getKey();
@@ -1115,10 +1117,21 @@ public class GameplayController extends WorldController implements ContactListen
 		canvas.begin();
 
 		for(Obstacle obj : objects) {
-			if (obj instanceof BoxObstacle || obj instanceof PolygonObstacle || obj instanceof FeetHitboxObstacle)
+			if (obj instanceof Wall)
 				obj.draw(canvas);
 		}
+
+		for(Obstacle obj : objects) {
+			if ((obj instanceof BoxObstacle || obj instanceof PolygonObstacle || obj instanceof FeetHitboxObstacle)
+					&& !(obj instanceof Wall) && !(obj instanceof Enemy))
+				obj.draw(canvas);
+		}
+
+		// Draw enemies + player; this is redundant but needed for correct ordering of textures
 		player.draw(canvas);
+		for (Enemy e: enemies){
+			e.draw(canvas);
+		}
 		// Draw Exclamation Points
 		for (AIController controller : controls){
 			if (controller.getState() == AIController.FSMState.PAUSED){

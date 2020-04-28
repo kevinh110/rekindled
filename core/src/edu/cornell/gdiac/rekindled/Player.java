@@ -153,10 +153,6 @@ public class Player extends FeetHitboxObstacle {
     private Animation leftIdleAnimation;
     private Animation rightIdleAnimation;
 
-
-    /**
-     * The number of frames for the afterburner
-     */
     public static final int SPEED = 4;
 
     public int lightCounter;

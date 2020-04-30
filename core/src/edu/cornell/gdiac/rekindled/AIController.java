@@ -557,6 +557,7 @@ public class AIController extends Entity_Controller {
             changeStateIfApplicable(playerLit);
 //            System.out.println("State: " + state);
 //            System.out.println("Enemy Pos: " + pos);
+//            System.out.println("Goal: " + goal[0] + ", " + goal[1]);
 //            System.out.println("Player Pos: " + player.getPosition());
 //            System.out.println("-----------");
             switch (state) {
@@ -572,6 +573,9 @@ public class AIController extends Entity_Controller {
                 case CHASE:
                     enemy.setChaseSpeed();
                     goal = getChaseGoal();
+                    if (playerLit && goal[0] == pos.x && goal[1] == pos.y){ // If waiting for player in light, face player
+                        setFacingDirWaiting();
+                    }
                     break;
 
                 case GOTO:

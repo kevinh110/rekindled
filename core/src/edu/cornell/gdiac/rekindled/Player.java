@@ -406,7 +406,7 @@ public class Player extends FeetHitboxObstacle {
         delayTimer = 0;
         cooldown = true;
         lightCounter += 1;
-        placingLight = true;
+        takingLight = true;
         super.timeElapsed = 0;
 
 
@@ -418,7 +418,7 @@ public class Player extends FeetHitboxObstacle {
         delayTimer = 0;
         cooldown = true;
         lightCounter -= 1;
-        takingLight = true;
+        placingLight = true;
         super.timeElapsed = 0;
 
         if (lightCounter == 0)
@@ -452,16 +452,16 @@ public class Player extends FeetHitboxObstacle {
         backWalkingAnimation = getAnimation(backTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
         rightWalkingAnimation = getAnimation(rightTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
         leftWalkingAnimation = getAnimation(leftTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
-        frontPlacingAnimation = getAnimation(frontPlace, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+        frontPlacingAnimation = getAnimation(frontPlace, TILE_SIZE, TILE_SIZE, THROW_FRAMES, FRAME_RATE);
         frontTakingAnimation = getAnimation(frontTake, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
-        leftPlacingAnimation = getAnimation(leftPlace, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+        leftPlacingAnimation = getAnimation(leftPlace, TILE_SIZE, TILE_SIZE, THROW_FRAMES, FRAME_RATE);
         leftTakingAnimation = getAnimation(leftTake, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
-        rightPlacingAnimation = getAnimation(rightPlace, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
+        rightPlacingAnimation = getAnimation(rightPlace, TILE_SIZE, TILE_SIZE, THROW_FRAMES, FRAME_RATE);
         rightTakingAnimation = getAnimation(rightTake, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
-        frontThrowAnimation = getAnimation(frontThrow, TILE_SIZE, TILE_SIZE, THROW_FRAMES, THROW_RATE);
-        backThrowAnimation = getAnimation(backThrow, TILE_SIZE, TILE_SIZE, THROW_FRAMES, THROW_RATE);
-        leftThrowAnimation = getAnimation(leftThrow, TILE_SIZE, TILE_SIZE, THROW_FRAMES, THROW_RATE);
-        rightThrowAnimation = getAnimation(rightThrow, TILE_SIZE, TILE_SIZE, THROW_FRAMES, THROW_RATE);
+        frontThrowAnimation = getAnimation(frontThrow, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, THROW_RATE);
+        backThrowAnimation = getAnimation(backThrow, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, THROW_RATE);
+        leftThrowAnimation = getAnimation(leftThrow, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, THROW_RATE);
+        rightThrowAnimation = getAnimation(rightThrow, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, THROW_RATE);
         frontIdleAnimation = getAnimation(frontIdle, TILE_SIZE, TILE_SIZE, IDLE_FRAMES, FRAME_RATE);
         backIdleAnimation = getAnimation(backIdle, TILE_SIZE, TILE_SIZE, IDLE_FRAMES, FRAME_RATE);
         leftIdleAnimation = getAnimation(leftIdle, TILE_SIZE, TILE_SIZE, IDLE_FRAMES, FRAME_RATE);
@@ -491,6 +491,7 @@ public class Player extends FeetHitboxObstacle {
         Color tint = (cooldown) ? Color.CYAN : Color.WHITE;
 
         if (placingLight) {
+            System.out.println("placing light");
             super.timeElapsed += Gdx.graphics.getDeltaTime();
             switch (super.getDirection()) {
                 case FRONT:
@@ -518,13 +519,13 @@ public class Player extends FeetHitboxObstacle {
                     currentAnimation = frontThrowAnimation;
                     break;
                 case LEFT:
-                    currentAnimation = backThrowAnimation;
+                    currentAnimation = leftThrowAnimation;
                     break;
                 case RIGHT:
                     currentAnimation = rightThrowAnimation;
                     break;
                 case BACK:
-                    currentAnimation = leftThrowAnimation;
+                    currentAnimation = backThrowAnimation;
                     break;
             }
             super.draw(canvas, currentAnimation, false, super.getTimeElapsed(), TILE_SIZE, tint);

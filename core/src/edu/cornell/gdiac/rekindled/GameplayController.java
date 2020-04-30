@@ -70,21 +70,21 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String PLAYER_FILE_FRONT = "images/front.png";
 	private static final String PLAYER_FILE_BACK = "images/back.png";
 	private static final String PLAYER_FILE_LEFT = "images/left.png";
-	private static final String PLACING_LIGHT_FRONT = "spritesheets/spritesheet_front-place-light.png";
+	private static final String PLACING_LIGHT_BACK = "spritesheets/spritesheet_back_throw_light.png";
+	private static final String PLACING_LIGHT_FRONT = "spritesheets/spritesheet_front_throw_light.png";
 	private static final String TAKING_LIGHT_FRONT = "spritesheets/spritesheet_front-place-light.png";
-	private static final String PLACING_LIGHT_LEFT = "spritesheets/spritesheet_left-place-light.png";
+	private static final String PLACING_LIGHT_LEFT = "spritesheets/spritesheet_left_throw_light.png";
 	private static final String TAKING_LIGHT_LEFT = "spritesheets/spritesheet_left-take-light.png";
-	private static final String PLACING_LIGHT_RIGHT = "spritesheets/spritesheet_right-place-light.png";
+	private static final String PLACING_LIGHT_RIGHT = "spritesheets/spritesheet_right_throw_light.png";
 	private static final String TAKING_LIGHT_RIGHT = "spritesheets/spritesheet_right-take-light.png";
-	private static final String THROW_LIGHT_BACK = "spritesheets/spritesheet_back_throw_light.png";
-	private static final String THROW_LIGHT_FRONT = "spritesheets/spritesheet_front_throw_light.png";
-	private static final String THROW_LIGHT_LEFT =  "spritesheets/spritesheet_left_throw_light.png";
-	private static final String THROW_LIGHT_RIGHT = "spritesheets/spritesheet_right_throw_light.png";
+	private static final String THROW_LIGHT_BACK = "spritesheets/spritesheet_lux_back.png";
+	private static final String THROW_LIGHT_FRONT = "spritesheets/spritesheet_front-place-light.png";
+	private static final String THROW_LIGHT_LEFT =  "spritesheets/spritesheet_left-place-light.png";
+	private static final String THROW_LIGHT_RIGHT = 	"spritesheets/spritesheet_right-place-light.png";
 	private static final String PLAYER_FRONT_IDLE = "spritesheets/spritesheet_front_idle.png";
 	private static final String PLAYER_BACK_IDLE = "spritesheets/spritesheet_back_idle.png";
 	private static final String PLAYER_LEFT_IDLE = "spritesheets/spritesheet_left_idle.png";
 	private static final String PLAYER_RIGHT_IDLE = "spritesheets/spritesheet_right_idle.png";
-
 	/**
 	 * File storing the enemy
 	 */
@@ -177,6 +177,7 @@ public class GameplayController extends WorldController implements ContactListen
 	private TextureRegion playerAnimationBack;
 	private TextureRegion playerAnimationLeft;
 	private TextureRegion playerAnimationRight;
+	private TextureRegion placingLightBack;
 	private TextureRegion placingLightFront;
 	private TextureRegion takingLightFront;
 	private TextureRegion placingLightLeft;
@@ -896,7 +897,7 @@ public class GameplayController extends WorldController implements ContactListen
 		player.setAnimations(playerAnimationFront, playerAnimationBack, playerAnimationLeft, playerAnimationRight,
 				placingLightFront, takingLightFront, placingLightLeft, takingLightLeft, placingLightRight,
 				takingLightRight, playerFrontIdle, playerBackIdle, playerLeftIdle, playerRightIdle, throwingLightFront,
-				throwingLightBack, throwingLightLeft, throwingLightRight); //setting animation
+				throwingLightBack, throwingLightRight, throwingLightLeft); //setting animation
 		player.setTexture(playerTextureFront);
 
 		addObject(player);

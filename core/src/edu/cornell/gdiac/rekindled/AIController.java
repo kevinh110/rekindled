@@ -273,6 +273,7 @@ public class AIController extends Entity_Controller {
                     state = FSMState.PAUSED;
                 }
                 else if (pos.x == target[0] && pos.y == target[1]){
+                    enemy.setFacingDirectionToInitial();
                     state = FSMState.WANDER;
                 }
                 break;

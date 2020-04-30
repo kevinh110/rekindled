@@ -17,6 +17,8 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.*;
+import com.badlogic.gdx.graphics.Cursor;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.*;
 import com.badlogic.gdx.assets.loaders.*;
@@ -49,9 +51,14 @@ public class GDXRoot extends Game implements ScreenListener {
 	/** Player mode for the the game proper (CONTROLLER CLASS) */
 	private int current;
 	/** List of all WorldControllers */
-	private WorldController controllers[];
+	private WorldController[] controllers;
 
 	private Music music;
+
+	Cursor cursor;
+	Cursor transparentCursor;
+
+
 
 	/**
 	 * Creates a new game from the configuration settings.
@@ -68,7 +75,6 @@ public class GDXRoot extends Game implements ScreenListener {
 		manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
 		manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
 
-
 	}
 
 	/**
@@ -78,9 +84,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * the asynchronous loader for all other assets.
 	 */
 	public void create() {
-		canvas  = new GameCanvas();
-//		levelComplete = new LevelCompleteMode(canvas, manager, 1);
-		loading = new LoadingMode(canvas,manager,1);
+		canvas = new GameCanvas();
+		loading = new LoadingMode(canvas, manager,1);
 		levelComplete = new LevelCompleteMode(canvas, manager, 1);
 		levelComplete.setScreenListener(this);
 
@@ -107,6 +112,16 @@ public class GDXRoot extends Game implements ScreenListener {
 		current = 0;
 		loading.setScreenListener(this);
 		setScreen(loading);
+
+		Pixmap pixmap = new Pixmap(Gdx.files.internal("ui/cursor.png"));
+		int xHotspot = pixmap.getWidth() / 2;
+		int yHotspot = pixmap.getHeight() / 2;
+		Cursor cursor = Gdx.graphics.newCursor(pixmap, xHotspot, yHotspot);
+		this.cursor = cursor;
+		pixmap = new Pixmap(Gdx.files.internal("ui/transparent.png"));
+		this.transparentCursor = Gdx.graphics.newCursor(pixmap, 0, 0);
+		pixmap.dispose();
+		Gdx.graphics.setCursor(this.cursor);
 	}
 
 	/**
@@ -155,7 +170,6 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == loading) {
-			System.out.println("loading");
 			for(int ii = 0; ii < controllers.length; ii++) {
 				controllers[ii].loadContent(manager);
 				controllers[ii].setScreenListener(this);
@@ -164,15 +178,30 @@ public class GDXRoot extends Game implements ScreenListener {
 			controllers[current].reset();
 			setScreen(controllers[current]);
 
-			loading.dispose();
-			loading = null;
+//			loading.dispose();
+//			loading = null;
+			Gdx.graphics.setCursor(transparentCursor);
+
 		} else if (exitCode == WorldController.EXIT_COMPLETE){
 			setScreen(levelComplete);
+			Gdx.graphics.setCursor(cursor);
 			Gdx.input.setInputProcessor(levelComplete);
 		} else if (screen == levelComplete){
-			current = (current+1) % controllers.length;
-			controllers[current].reset();
-			setScreen(controllers[current]);
+			if (exitCode == LevelCompleteMode.EXIT_NEXT){
+				Gdx.graphics.setCursor(transparentCursor);
+				current = (current+1) % controllers.length;
+				controllers[current].reset();
+				setScreen(controllers[current]);
+			}
+			else if (exitCode == LevelCompleteMode.EXIT_REPLAY){
+				Gdx.graphics.setCursor(transparentCursor);
+				controllers[current].reset();
+				setScreen(controllers[current]);
+			}
+			else if (exitCode == LevelCompleteMode.EXIT_QUIT){
+				setScreen(loading);
+				Gdx.input.setInputProcessor(loading);
+			}
 		}
 		else if (exitCode == WorldController.EXIT_NEXT) {
 			current = (current+1) % controllers.length;

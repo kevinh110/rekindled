@@ -48,7 +48,6 @@ import edu.cornell.gdiac.util.*;
 public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	// Textures necessary to support the loading screen 
 	private static final String BACKGROUND_FILE = "images/start.png";
-//	private static final String PROGRESS_FILE = "images/progressbar.png";
 	private static final String PLAY_BTN_FILE = "images/play.png";
 
 	private static final String LEVEL_COMPLETE_FILE = "images/winScreen.png";
@@ -204,6 +203,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		pressState = 0;
 		active = false;
 
+
+
 		// Break up the status bar texture into regions
 //		statusBkgLeft   = new TextureRegion(statusBar,0,0,PROGRESS_CAP,PROGRESS_HEIGHT);
 //		statusBkgRight  = new TextureRegion(statusBar,statusBar.getWidth()-PROGRESS_CAP,0,PROGRESS_CAP,PROGRESS_HEIGHT);
@@ -347,6 +348,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 			// We are are ready, notify our listener
 			if (isReady() && listener != null) {
+				pressState = 0;
 				listener.exitScreen(this, 0);
 			}
 		}

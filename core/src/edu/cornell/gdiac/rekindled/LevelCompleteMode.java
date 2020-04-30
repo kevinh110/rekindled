@@ -55,6 +55,15 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
     /** Play button to display when done */
     private Texture playButton;
 
+    /** The exit code triggered */
+    private int exitCode;
+
+    public static final int EXIT_NEXT = 0;
+    public static final int EXIT_REPLAY = 1;
+    public static final int EXIT_QUIT = 2;
+
+
+
     /** Texture atlas to support a progress bar */
 //	private Texture statusBar;
 
@@ -329,7 +338,7 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
             // We are are ready, notify our listener
             if (isReady() && listener != null) {
                 pressState = 0;
-                listener.exitScreen(this, 0);
+                listener.exitScreen(this, exitCode);
             }
         }
     }
@@ -422,9 +431,18 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
         }
 //        // Flip to match graphics coordinates
         screenY = heightY-screenY;
-//        System.out.println(screenX + ", " + screenY);
-        if (screenX >= 335 && screenX <= 494 && screenY >= 102 && screenY <= 173){
+        System.out.println(screenX + ", " + screenY);
+        if (screenX >= 335 && screenX <= 494 && screenY >= 98 && screenY <= 173){ // Next
             pressState = 1;
+            exitCode = EXIT_NEXT;
+        }
+        else if (screenX >= 621 && screenX <= 804 && screenY >= 98 && screenY <= 173) {
+            pressState = 1;
+            exitCode = EXIT_REPLAY;
+        }
+        else if (screenX >= 904 && screenX <= 982 && screenY >= 98 && screenY <= 173) {
+            pressState = 1;
+            exitCode = EXIT_QUIT;
         }
         return false;
 
@@ -443,6 +461,7 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
      */
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if (pressState == 1) {
+            System.out.println("Lifted");
             pressState = 2;
             return false;
         }

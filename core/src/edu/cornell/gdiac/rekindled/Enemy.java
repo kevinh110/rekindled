@@ -59,6 +59,9 @@ public class Enemy extends FeetHitboxObstacle {
 
     public int facingDirection;
 
+    /** This is only relevant if enemy is stationary */
+    public int initialFacingDirection;
+
     /** If the enemy was just stunned */
     public boolean stunned = false;
 
@@ -142,8 +145,31 @@ public class Enemy extends FeetHitboxObstacle {
             coord = coord.next();
             idx++;
         }
+        // Set initial facing direction if needed
+        if (wander.length == 1){
+            int ex = Math.round(getPosition().x);
+            int ey = Math.round(getPosition().y);
+            int wx = wander[0][0];
+            int wy = wander[0][1];
+            if (ex == wx && wy > ey){
+                initialFacingDirection = Constants.BACK;
+            }
+            else if (ex == wx && wy < ey){
+                initialFacingDirection = Constants.FORWARD;
+            }
+            else if (ex < wx && wy == ey){
+                initialFacingDirection = Constants.RIGHT;
+            }
+            else {
+                initialFacingDirection = Constants.LEFT;
+            }
+        }
+    }
 
-
+    public void setFacingDirectionToInitial(){
+        if (initialFacingDirection != 0 && wander.length == 1){
+            facingDirection = initialFacingDirection;
+        }
     }
 
     public Enemy(float width, float height) {

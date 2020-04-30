@@ -23,6 +23,7 @@
 package edu.cornell.gdiac.rekindled;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.g3d.particles.emitters.Emitter;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.graphics.*;
@@ -47,11 +48,11 @@ import edu.cornell.gdiac.util.*;
 public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	// Textures necessary to support the loading screen 
 	private static final String BACKGROUND_FILE = "images/start.png";
-//	private static final String PROGRESS_FILE = "images/progressbar.png";
 	private static final String PLAY_BTN_FILE = "images/play.png";
 
 	private static final String LEVEL_COMPLETE_FILE = "images/winScreen.png";
-	
+	private final ParticleEffect pe;
+
 	/** Background texture for start-up */
 	private Texture background;
 	/** Play button to display when done */
@@ -202,6 +203,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		pressState = 0;
 		active = false;
 
+
+
 		// Break up the status bar texture into regions
 //		statusBkgLeft   = new TextureRegion(statusBar,0,0,PROGRESS_CAP,PROGRESS_HEIGHT);
 //		statusBkgRight  = new TextureRegion(statusBar,statusBar.getWidth()-PROGRESS_CAP,0,PROGRESS_CAP,PROGRESS_HEIGHT);
@@ -214,6 +217,13 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 		startButton = (System.getProperty("os.name").equals("Mac OS X") ? MAC_OS_X_START : WINDOWS_START);
 		Gdx.input.setInputProcessor(this);
+
+		pe = new ParticleEffect();
+		pe.load(Gdx.files.internal("particles/mouse.party"), Gdx.files.internal(""));
+		for (ParticleEmitter e : pe.getEmitters()) {
+			e.setPosition(Gdx.input.getX(), Gdx.input.getY());
+		}
+		pe.start();
 		// Let ANY connected controller start the game.
 		for(Controller controller : Controllers.getControllers()) {
 			controller.addListener(this);
@@ -241,6 +251,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			 playButton.dispose();
 			 playButton = null;
 		 }
+		 pe.dispose();
 	}
 	
 	/**
@@ -262,6 +273,13 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 				playButton.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 			}
 		}
+		pe.update(Gdx.graphics.getDeltaTime());
+		for (ParticleEmitter e : pe.getEmitters()) {
+			e.setPosition(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY());
+		}
+
+		if (pe.isComplete())
+			pe.reset();
 	}
 
 	/**
@@ -274,6 +292,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private void draw() {
 		canvas.begin();
 		canvas.draw(background, 0, 0);
+		canvas.drawParticle(pe);
 
 
 
@@ -329,6 +348,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 			// We are are ready, notify our listener
 			if (isReady() && listener != null) {
+				pressState = 0;
 				listener.exitScreen(this, 0);
 			}
 		}

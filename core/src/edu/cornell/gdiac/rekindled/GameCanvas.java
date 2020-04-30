@@ -32,7 +32,8 @@ import com.badlogic.gdx.physics.box2d.*;
  * that mode must be done in a separate begin/end pass.
  */
 public class GameCanvas {
-	/** Enumeration to track which pass we are in */
+
+    /** Enumeration to track which pass we are in */
 	private enum DrawPass {
 		/** We are not drawing */
 		INACTIVE,
@@ -101,6 +102,10 @@ public class GameCanvas {
 	private Vector2 vertex;
 	/** Cache object to handle raw textures */
 	private TextureRegion holder;
+
+	public void drawParticle(ParticleEffect pe) {
+		pe.draw(spriteBatch);
+	}
 
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
@@ -1288,6 +1293,5 @@ public class GameCanvas {
 		local.scale(sx,sy);
 		local.translate(-ox,-oy);
 	}
-
 
 }

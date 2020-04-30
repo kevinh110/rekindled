@@ -1150,8 +1150,8 @@ public class GameplayController extends WorldController implements ContactListen
 		for (AIController controller : controls){
 			if (controller.getState() == AIController.FSMState.PAUSED){
 				controller.playAlarm();
-				float x = board.boardToScreenCenter((int) controller.getEnemy().getPosition().x);
-				float y = board.boardToScreenCenter((int) controller.getEnemy().getPosition().y + 1);
+				float x = board.boardToScreenCenter(Math.round(controller.getEnemy().getPosition().x));
+				float y = board.boardToScreenCenter(Math.round(controller.getEnemy().getPosition().y) + 1);
 				canvas.draw(seenTexture, Color.WHITE, 0, 0, x, y, 0, 1 , 1 );
 			}
 		}

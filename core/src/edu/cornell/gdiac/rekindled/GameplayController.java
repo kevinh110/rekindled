@@ -725,6 +725,10 @@ public class GameplayController extends WorldController implements ContactListen
 		world.dispose();
 		world = new World(gravity, false);
 		world.setContactListener(this);
+
+		if (sourceRayHandler != null)
+			sourceRayHandler.dispose();
+
 		setComplete(false);
 		setFailure(false);
 
@@ -979,6 +983,7 @@ public class GameplayController extends WorldController implements ContactListen
 		player.updateAura();
 		player.updateCooldown(dt);
 
+
 		if (input.didSecondary() && player.getTouchingLight() && !player.getCooldown()) {
 			LightSourceObject goalLight = null;
 
@@ -999,7 +1004,7 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 
 		// update board
-		board.update(player.getPosition());
+		board.update(player.getPosition(), dt, player.getScaledPosition());
 
 		this.inLitTile = insideLightSource(player.getPosition());
 
@@ -1243,7 +1248,6 @@ public class GameplayController extends WorldController implements ContactListen
 					for(AIController controller : controls){
 						controller.resetSound();
 					}
-					System.out.println("enemy contact; you lost");
 				}
 			}
 
@@ -1252,7 +1256,6 @@ public class GameplayController extends WorldController implements ContactListen
 				if((bd1 == player && bd2 == light) || (bd1 == light && bd2 == player)){
 					player.setTouchingLight(true);
 					light.setTouchingPlayer(true);
-					System.out.println("touching light");
 				}
 			}
 
@@ -1285,7 +1288,6 @@ public class GameplayController extends WorldController implements ContactListen
 				if((bd1 == player && bd2 == light) || (bd1 == light && bd2 == player)){
 					player.setTouchingLight(false);
 					light.setTouchingPlayer(false);
-					System.out.println("no longer touching light");
 				}
 			}
 		} catch (Exception e) {
@@ -1332,4 +1334,26 @@ public class GameplayController extends WorldController implements ContactListen
 		speed = cache.dot(worldManifold.getNormal());
 
 	}
+
+	@Override
+	public void dispose() {
+		for(Obstacle obj : objects) {
+			obj.deactivatePhysics(world);
+		}
+		objects.clear();
+		addQueue.clear();
+		world.dispose();
+		objects = null;
+		addQueue = null;
+		bounds = null;
+		scale  = null;
+		world  = null;
+		canvas = null;
+		board.dispose();
+	}
+
+//	// gets the vectors position relative to the camera
+//	public Vector2 getCameraPos() {
+//		return player.getScaledPosition();
+//	}
 }

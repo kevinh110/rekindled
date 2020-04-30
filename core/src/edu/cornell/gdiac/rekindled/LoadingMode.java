@@ -273,10 +273,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 				playButton.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 			}
 		}
+
 		pe.update(Gdx.graphics.getDeltaTime());
-		for (ParticleEmitter e : pe.getEmitters()) {
-			e.setPosition(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY());
-		}
+		pe.setPosition(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY());
 
 		if (pe.isComplete())
 			pe.reset();

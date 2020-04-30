@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.*;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -32,6 +33,11 @@ import com.badlogic.gdx.physics.box2d.*;
  * that mode must be done in a separate begin/end pass.
  */
 public class GameCanvas {
+
+
+
+
+
 
     /** Enumeration to track which pass we are in */
 	private enum DrawPass {
@@ -370,6 +376,7 @@ public class GameCanvas {
 		setBlendState(BlendState.NO_PREMULT);
 		spriteBatch.begin();
     	active = DrawPass.STANDARD;
+
     }
 
 	/**

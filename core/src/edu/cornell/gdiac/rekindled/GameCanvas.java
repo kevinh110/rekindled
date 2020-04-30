@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.*;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -32,9 +33,27 @@ import com.badlogic.gdx.physics.box2d.*;
  * that mode must be done in a separate begin/end pass.
  */
 public class GameCanvas {
+
     public void drawParticle(ParticleEffect pe) {
     	pe.draw(spriteBatch);
     }
+
+    public void drawGameParticle(ParticleEffect pe) {
+    	Array<ParticleEmitter> emitters = pe.getEmitters();
+    	float x = emitters.first().getX();
+    	float y = emitters.first().getY();
+    	System.out.println("x: " + x);
+		System.out.println("y: " + y);
+
+    	float view_x = -(camera_coordinates.x - x) * (1 / scale) + (getWidth() / 2);
+		float view_y = -(camera_coordinates.y - y) * (1 / scale) + (getHeight() / 2);
+		System.out.println("viewx: " + view_x);
+		System.out.println("viewy: " + view_y);
+
+		pe.setPosition(x, y);
+		pe.draw(spriteBatch);
+	}
+
 
     /** Enumeration to track which pass we are in */
 	private enum DrawPass {
@@ -352,6 +371,8 @@ public class GameCanvas {
     	// Clear the screen
 		Gdx.gl.glClearColor(0f, 0f, 0f, 1.0f);  // Homage to the XNA years
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		System.out.println("Width: " + this.viewport_width);
+		System.out.println("Height: " + this.viewport_height);
 	}
 
 	/**
@@ -369,6 +390,7 @@ public class GameCanvas {
 		setBlendState(BlendState.NO_PREMULT);
 		spriteBatch.begin();
     	active = DrawPass.STANDARD;
+
     }
 
 	/**

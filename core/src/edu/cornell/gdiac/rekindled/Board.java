@@ -28,6 +28,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import edu.cornell.gdiac.rekindled.obstacle.BorderMarker;
 
 import java.util.LinkedList;
 
@@ -177,6 +178,9 @@ public class Board {
     private TextureRegion leftBorderRegion;
     private TextureRegion rightBorderRegion;
 
+    private BorderMarker border;
+    private Vector2 center;
+
     private static final Color sightTint = Color.SALMON;
 
     /**
@@ -219,6 +223,8 @@ public class Board {
         Vector2 temp = new Vector2();
         this.lightSources = new LinkedList<>();
 
+        center = new Vector2();
+
         // Init Tiles
         tiles = new TileState[width][height];
         for (int x = 0; x < width; x++){
@@ -235,6 +241,8 @@ public class Board {
             tiles[0][y].setWall();
             tiles[this.width - 1][y].setWall();
         }
+
+        border = new BorderMarker(25, TILE_WIDTH);
 
         // Resets visited/goal flags of tiles only. Used for pathfinding.
         // I don't know if this needs to be here
@@ -370,7 +378,8 @@ public class Board {
      *
      * All we do is animate falling tiles.
      */
-    public void update(Vector2 pos) {
+    public void update(Vector2 pos, float delta, Vector2 center) {
+        this.center = center;
         int xx = Math.round(pos.x);
         int yy = Math.round(pos.y);
 
@@ -382,10 +391,12 @@ public class Board {
                 tile.isTinted = false;
             }
         }
+        border.clear();
 
-        if (tiles[xx][yy].isLightSource && !tiles[xx][yy].isLitLightSource)
+        if (tiles[xx][yy].isLightSource && !tiles[xx][yy].isLitLightSource) {
             updateLitTiles(pos, true);
-
+            border.update(delta, center);
+        }
         for(int ii = 0; ii < lightSources.size() -1; ii += 2){
             TileState source = tiles[lightSources.get(ii)][lightSources.get(ii+1)];
             //URGENT: Change so new vector is not created
@@ -395,6 +406,8 @@ public class Board {
                 updateLitTiles(temp, false);
             }
         }
+
+
     }
 
     /**
@@ -418,6 +431,8 @@ public class Board {
             }
         }
 
+        border.draw(canvas);
+
     }
 
     /**
@@ -436,6 +451,7 @@ public class Board {
 
 
         Color tint = (tile.isTinted) ? Color.CYAN : Color.WHITE;
+        tint = Color.WHITE;
 
         if (tile.isLitTile && tile.isWater){
             canvas.draw(waterLightRegion, tint, 0, 0, sx, sy, 0, 1 , 1 );
@@ -697,7 +713,6 @@ public class Board {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 TileState state = tiles[x][y];
-               // state.isLitTile = false;
                 state.isDimTile = false;
             }
         }
@@ -758,7 +773,7 @@ public class Board {
         int x = Math.round(source.x);
         int y = Math.round(source.y);
         if (tint)
-            tiles[x][y].isTinted = true;
+            setTinted(x, y);
         else
             tiles[x][y].setLit();
 
@@ -800,7 +815,7 @@ public class Board {
             int yy = y+1;
             TileState tile = tiles[xx][yy];
             if (tint)
-                tile.isTinted = true;
+                setTinted(xx, yy);
             else
                 tile.setLit();
 
@@ -837,7 +852,7 @@ public class Board {
             int yy = y-1;
             TileState tile = tiles[xx][yy];
             if (tint)
-                tile.isTinted = true;
+                setTinted(xx, yy);
             else
                 tile.setLit();
 
@@ -873,7 +888,7 @@ public class Board {
             int yy = y;
             TileState tile = tiles[xx][yy];
             if (tint)
-                tile.isTinted = true;
+                setTinted(xx, yy);
             else
                 tile.setLit();
 
@@ -909,7 +924,7 @@ public class Board {
             int yy = y;
             TileState tile = tiles[xx][yy];
             if (tint)
-                tile.isTinted = true;
+                setTinted(xx, yy);
             else
                 tile.setLit();
 
@@ -941,23 +956,14 @@ public class Board {
             spreadLight(depth-1, xx, yy, top1, bottom1, left1, right1, tint);
         }
     }
-    public void dimTiles(Vector2 pos) {
-        int x = screenToBoard(pos.x);
-        int y = screenToBoard(pos.y);
 
-        tiles[x][y].setDim();
-
-        //top tile
-        if (inBounds(x, y + 1))
-            tiles[x][y+1].setDim();
-        //bottom tile
-        if (inBounds(x, y - 1))
-            tiles[x][y-1].setDim();
-        //left tile
-        if (inBounds(x - 1, y))
-            tiles[x-1][y].setDim();
-        //right tile
-        if (inBounds(x + 1, y))
-            tiles[x+1][y].setDim();
+    private void setTinted(int x, int y) {
+        TileState t = tiles[x][y];
+        if (t.isTinted)
+            return;
+        else {
+            t.isTinted = true;
+            border.add(boardToScreenCenter(x) + TILE_WIDTH/2, boardToScreenCenter(y) + TILE_WIDTH/2);
+        }
     }
 }

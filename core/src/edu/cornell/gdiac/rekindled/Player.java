@@ -400,6 +400,9 @@ public class Player extends FeetHitboxObstacle {
                 cooldown2 = false;
             }
         }
+
+        System.out.println("Pos: " + this.getPosition());
+        System.out.println("Scaled pos: " + this.getScaledPosition());
     }
 
     public void takeLight() {

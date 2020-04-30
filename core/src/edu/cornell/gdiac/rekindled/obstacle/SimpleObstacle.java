@@ -89,7 +89,9 @@ public abstract class SimpleObstacle extends Obstacle {
 
 	public Vector2 getScaledPosition() {
 		Vector2 pos = getPosition();
-		return (new Vector2(pos.x * getDrawScale().x, pos.y * getDrawScale().y));
+		Vector2 scaledPos = new Vector2(pos.x * getDrawScale().x, pos.y * getDrawScale().y);
+		return scaledPos;
+
 	}
 	
 	/**

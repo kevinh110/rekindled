@@ -1334,6 +1334,23 @@ public class GameplayController extends WorldController implements ContactListen
 
 	}
 
+	@Override
+	public void dispose() {
+		for(Obstacle obj : objects) {
+			obj.deactivatePhysics(world);
+		}
+		objects.clear();
+		addQueue.clear();
+		world.dispose();
+		objects = null;
+		addQueue = null;
+		bounds = null;
+		scale  = null;
+		world  = null;
+		canvas = null;
+		board.dispose();
+	}
+
 //	// gets the vectors position relative to the camera
 //	public Vector2 getCameraPos() {
 //		return player.getScaledPosition();

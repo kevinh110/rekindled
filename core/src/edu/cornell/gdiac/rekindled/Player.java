@@ -401,8 +401,6 @@ public class Player extends FeetHitboxObstacle {
             }
         }
 
-        System.out.println("Pos: " + this.getPosition());
-        System.out.println("Scaled pos: " + this.getScaledPosition());
     }
 
     public void takeLight() {

@@ -61,10 +61,7 @@ public class BorderMarker {
         for (int i = 0; i < counter; i++) {
             float x = markers[i].getEmitters().first().getX();
             float y = markers[i].getEmitters().first().getY();
-//            markers[i].setPosition(x - (cameraPos.x - 1280), cameraPos.y - y);
             markers[i].setPosition((1280 / 2f) - (cameraPos.x - x), (720 / 2f) - (cameraPos.y - y));
-            System.out.println("diff pos: " + (cameraPos.x - x));
-//            System.out.println("Other pos: " + new Vector2(x, y));
             markers[i].update(delta);
 
             if (reset)

@@ -966,4 +966,8 @@ public class Board {
             border.add(boardToScreenCenter(x) + TILE_WIDTH/2, boardToScreenCenter(y) + TILE_WIDTH/2);
         }
     }
+
+    public void dispose() {
+        border.dispose();
+    }
 }

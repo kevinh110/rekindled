@@ -371,8 +371,6 @@ public class GameCanvas {
     	// Clear the screen
 		Gdx.gl.glClearColor(0f, 0f, 0f, 1.0f);  // Homage to the XNA years
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		System.out.println("Width: " + this.viewport_width);
-		System.out.println("Height: " + this.viewport_height);
 	}
 
 	/**

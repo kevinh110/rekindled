@@ -170,6 +170,9 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == loading) {
+			if (exitCode == LoadingMode.CODE_LEVEL_SELECT){
+				current = loading.getCurrentLevel();
+			}
 			for(int ii = 0; ii < controllers.length; ii++) {
 				controllers[ii].loadContent(manager);
 				controllers[ii].setScreenListener(this);
@@ -181,6 +184,7 @@ public class GDXRoot extends Game implements ScreenListener {
 //			loading.dispose();
 //			loading = null;
 			Gdx.graphics.setCursor(transparentCursor);
+			Gdx.input.setInputProcessor(null);
 
 		} else if (exitCode == WorldController.EXIT_COMPLETE){
 			setScreen(levelComplete);
@@ -189,16 +193,19 @@ public class GDXRoot extends Game implements ScreenListener {
 		} else if (screen == levelComplete){
 			if (exitCode == LevelCompleteMode.EXIT_NEXT){
 				Gdx.graphics.setCursor(transparentCursor);
+				Gdx.input.setInputProcessor(null);
 				current = (current+1) % controllers.length;
 				controllers[current].reset();
 				setScreen(controllers[current]);
 			}
 			else if (exitCode == LevelCompleteMode.EXIT_REPLAY){
 				Gdx.graphics.setCursor(transparentCursor);
+				Gdx.input.setInputProcessor(null);
 				controllers[current].reset();
 				setScreen(controllers[current]);
 			}
 			else if (exitCode == LevelCompleteMode.EXIT_QUIT){
+				current = (current+1) % controllers.length;
 				setScreen(loading);
 				Gdx.input.setInputProcessor(loading);
 			}

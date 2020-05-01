@@ -49,7 +49,7 @@ public class Enemy extends FeetHitboxObstacle {
     private SightConeLight sight;
 
     // DEFAULT - 6
-    public int speed = 6;
+    public int speed = 5;
 
     public static final int WANDER_SPEED = 3;
 

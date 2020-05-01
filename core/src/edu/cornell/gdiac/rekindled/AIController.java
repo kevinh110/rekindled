@@ -301,7 +301,7 @@ public class AIController extends Entity_Controller {
                 if (timer % STUN_TIME == 0){
                     enemy.stunned = false;
                     timer = 0;
-                    state = FSMState.WANDER;
+                    state = FSMState.RETURN;
                 }
                 break;
 

@@ -68,7 +68,6 @@ public class LightSourceObject extends BoxObstacle {
         if (touchingPlayer) {
             isLit = !isLit;
             light.setActive(isLit);
-            System.out.println("Light is on?:" + isLit);
             if (isLit) {
                 offSound.play(.75f);
                 this.timeElapsed = 0;

@@ -24,7 +24,7 @@ public class BorderMarker {
             pe = new ParticleEffect();
             pe.load(Gdx.files.internal("particles/light_marker4.party"), Gdx.files.internal(""));
             pe.scaleEffect(scale);
-            //pe.start();
+            pe.start();
             markers[i] = pe;
         }
 

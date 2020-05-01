@@ -33,7 +33,6 @@ public class AuraLight extends PointLight {
      */
     public AuraLight(RayHandler rayHandler) {
         super(rayHandler, 512, Color.WHITE, DEFAULT_DISTANCE, 0, 0);
-        System.out.println(this.softShadowLength);
         this.setSoftnessLength(0f);
 
         //this.setColor(1f, 1f, 0, 1f);

@@ -492,7 +492,6 @@ public class Player extends FeetHitboxObstacle {
         Color tint = (cooldown) ? Color.CYAN : Color.WHITE;
 
         if (placingLight) {
-            System.out.println("placing light");
             super.timeElapsed += Gdx.graphics.getDeltaTime();
             switch (super.getDirection()) {
                 case FRONT:

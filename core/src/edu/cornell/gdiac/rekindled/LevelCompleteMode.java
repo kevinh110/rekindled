@@ -426,12 +426,10 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 //        System.out.println("Level Complete Touchdown");
         if (playButton == null || pressState == 2) {
-            System.out.println("next level pressed");
             return true;
         }
 //        // Flip to match graphics coordinates
         screenY = heightY-screenY;
-        System.out.println(screenX + ", " + screenY);
         if (screenX >= 335 && screenX <= 494 && screenY >= 98 && screenY <= 173){ // Next
             pressState = 1;
             exitCode = EXIT_NEXT;
@@ -461,7 +459,6 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
      */
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if (pressState == 1) {
-            System.out.println("Lifted");
             pressState = 2;
             return false;
         }

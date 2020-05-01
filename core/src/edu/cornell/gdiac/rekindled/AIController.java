@@ -420,7 +420,7 @@ public class AIController extends Entity_Controller {
         for (Enemy e : enemies){
             if (e != enemy){
                 Vector2 pos = e.getPosition();
-                if (pos.x == x && pos.y == y){
+                if (e.goal[0] == x && e.goal[1] == y){
                     return false;
                 }
             }
@@ -611,6 +611,7 @@ public class AIController extends Entity_Controller {
                     break;
             }
         }
+        enemy.goal = this.goal;
         enemy.moveOnTile(goal[0], goal[1], delta);
     }
 

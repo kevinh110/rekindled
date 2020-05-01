@@ -549,7 +549,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			pressState = 1;
 			exitCode = CODE_LEVEL_SELECT;
 		}else if (screenX >= 1030 && screenX <= 1135 && screenY >= 152 && screenY <= 254){
-			currentLevel = 6; // temp no level 7
+			currentLevel = 7; // temp no level 7
 			pressState = 1;
 			exitCode = CODE_LEVEL_SELECT;
 		}

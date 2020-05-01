@@ -48,13 +48,15 @@ import edu.cornell.gdiac.util.*;
 public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	// Textures necessary to support the loading screen 
 	private static final String BACKGROUND_FILE = "ui/start.png";
-	private static final  String SETTINGS_FILE = "ui/settings.png";
-	private static final  String LEVEL_SELECT_FILE = "ui/select.png";
+	private static final String SETTINGS_FILE = "ui/settings.png";
+	private static final String LEVEL_SELECT_FILE = "ui/select.png";
 
 	private static final String BACK_TO_MAIN_FILE = "ui/back_to_main.png";
 
 	private static final String ARROW_UNSELECTED_FILE = "ui/arrow_unselected.png";
+	private static final String ARROW_SELECTED_FILE = "ui/arrow_selected.png";
 	private static final String WASD_SELECTED_FILE = "ui/wasd_selected.png";
+	private static final String WASD_UNSELECTED_FILE = "ui/wasd_unselected.png";
 
 	private static final String SAVE_CHANGES_FILE = "ui/save_changes.png";
 
@@ -78,7 +80,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private Texture backToMainTexture;
 
 	private Texture wasdSelectedTexture;
+	private Texture wasdUnselectedTexture;
 	private Texture arrowUnselectedTexture;
+	private Texture arrowSelectedTexture;
 
 	private Texture saveChangesTexture;
 
@@ -165,6 +169,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** The exit code */
 	private int exitCode;
 
+	/** true if user if on arrow; false if on wasd */
+	private boolean arrow;
+
 	public int getCurrentLevel(){
 		return currentLevel;
 	}
@@ -241,6 +248,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		levelSelectBackground = new Texture(LEVEL_SELECT_FILE);
 		backToMainTexture = new Texture(BACK_TO_MAIN_FILE);
 		wasdSelectedTexture = new Texture(WASD_SELECTED_FILE);
+		wasdUnselectedTexture = new Texture(WASD_UNSELECTED_FILE);
+		arrowSelectedTexture = new Texture(ARROW_SELECTED_FILE);
 		arrowUnselectedTexture = new Texture(ARROW_UNSELECTED_FILE);
 		saveChangesTexture = new Texture(SAVE_CHANGES_FILE);
 		levelsTexture = new Texture(LEVELS);
@@ -344,8 +353,13 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			canvas.draw(settingsBackground, 0, 0);
 			canvas.draw(backToMainTexture, 50, heightY - 75);
 			canvas.draw(saveChangesTexture, (1280 - saveChangesTexture.getWidth()) / 2f, 50);
-			canvas.draw(wasdSelectedTexture, 256 , (heightY - wasdSelectedTexture.getHeight()) / 2f); // Temp code: Add select/unselect logic later
-			canvas.draw(arrowUnselectedTexture, 768, (heightY - wasdSelectedTexture.getHeight())/ 2f); // Temp code: Add select/unselect logic later
+			if (arrow){
+				canvas.draw(wasdUnselectedTexture, 256 , (heightY - wasdUnselectedTexture.getHeight()) / 2f); // Temp code: Add select/unselect logic later
+				canvas.draw(arrowSelectedTexture, 768, (heightY - arrowSelectedTexture.getHeight())/ 2f); // Temp code: Add select/unselect logic later
+			} else {
+				canvas.draw(wasdSelectedTexture, 256 , (heightY - wasdSelectedTexture.getHeight()) / 2f); // Temp code: Add select/unselect logic later
+				canvas.draw(arrowUnselectedTexture, 768, (heightY - arrowSelectedTexture.getHeight())/ 2f); // Temp code: Add select/unselect logic later
+			}
 
 		} else if (mode == CODE_LEVEL_SELECT){
 			canvas.draw(levelSelectBackground, 0, 0);
@@ -503,7 +517,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		}
 		// Flip to match graphics coordinates
 		screenY = heightY-screenY;
-//		System.out.println(screenX + ", " + screenY);
+		System.out.println(screenX + ", " + screenY);
 		switch (mode) {
 			case CODE_START:
 				handleStartButtons(screenX, screenY);
@@ -557,11 +571,18 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		}
 	}
 
-	private void handleSettingsButtons(int screenX, int screenY){
-		if (screenX >= 41 && screenX <= 328 && screenY >= 628 && screenY <= 689){
+	private void handleSettingsButtons(int screenX, int screenY) {
+		if (screenX >= 41 && screenX <= 328 && screenY >= 628 && screenY <= 689) {
+			mode = CODE_START;
+		} else if (screenX >= 264 && screenX <= 525 && screenY >= 270 && screenY <= 437) {
+			arrow = false;
+		} else if (screenX >= 767 && screenX <= 1040 && screenY >= 270 && screenY <= 437) {
+			arrow = true;
+		} else if (screenX >= 562 && screenX <= 722 && screenY >= 43 && screenY <= 88) {
 			mode = CODE_START;
 		}
-	}
+
+		}
 
 
 	private void handleStartButtons(int screenX, int screenY){

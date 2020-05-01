@@ -8,7 +8,7 @@
 {"position": [2,1],"lit": true}
 ], 
 "enemies": [
-{"position": [7,7],"type": 0,"wander": [[7,6]]}, 
+{"position": [6,7],"type": 0,"wander": [[6,6]]}, 
 {"position": [14,5],"type": 0,"wander": [[13,5],[15,5]]}
 ], 
 "walls": [

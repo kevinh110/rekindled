@@ -70,21 +70,21 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String PLAYER_FILE_FRONT = "images/front.png";
 	private static final String PLAYER_FILE_BACK = "images/back.png";
 	private static final String PLAYER_FILE_LEFT = "images/left.png";
-	private static final String PLACING_LIGHT_FRONT = "spritesheets/spritesheet_front-place-light.png";
+	private static final String PLACING_LIGHT_BACK = "spritesheets/spritesheet_back_throw_light.png";
+	private static final String PLACING_LIGHT_FRONT = "spritesheets/spritesheet_front_throw_light.png";
 	private static final String TAKING_LIGHT_FRONT = "spritesheets/spritesheet_front-place-light.png";
-	private static final String PLACING_LIGHT_LEFT = "spritesheets/spritesheet_left-place-light.png";
+	private static final String PLACING_LIGHT_LEFT = "spritesheets/spritesheet_left_throw_light.png";
 	private static final String TAKING_LIGHT_LEFT = "spritesheets/spritesheet_left-take-light.png";
-	private static final String PLACING_LIGHT_RIGHT = "spritesheets/spritesheet_right-place-light.png";
+	private static final String PLACING_LIGHT_RIGHT = "spritesheets/spritesheet_right_throw_light.png";
 	private static final String TAKING_LIGHT_RIGHT = "spritesheets/spritesheet_right-take-light.png";
-	private static final String THROW_LIGHT_BACK = "spritesheets/spritesheet_back_throw_light.png";
-	private static final String THROW_LIGHT_FRONT = "spritesheets/spritesheet_front_throw_light.png";
-	private static final String THROW_LIGHT_LEFT =  "spritesheets/spritesheet_left_throw_light.png";
-	private static final String THROW_LIGHT_RIGHT = "spritesheets/spritesheet_right_throw_light.png";
+	private static final String THROW_LIGHT_BACK = "spritesheets/spritesheet_lux_back.png";
+	private static final String THROW_LIGHT_FRONT = "spritesheets/spritesheet_front-place-light.png";
+	private static final String THROW_LIGHT_LEFT =  "spritesheets/spritesheet_left-place-light.png";
+	private static final String THROW_LIGHT_RIGHT = 	"spritesheets/spritesheet_right-place-light.png";
 	private static final String PLAYER_FRONT_IDLE = "spritesheets/spritesheet_front_idle.png";
 	private static final String PLAYER_BACK_IDLE = "spritesheets/spritesheet_back_idle.png";
 	private static final String PLAYER_LEFT_IDLE = "spritesheets/spritesheet_left_idle.png";
 	private static final String PLAYER_RIGHT_IDLE = "spritesheets/spritesheet_right_idle.png";
-
 	/**
 	 * File storing the enemy
 	 */
@@ -177,6 +177,7 @@ public class GameplayController extends WorldController implements ContactListen
 	private TextureRegion playerAnimationBack;
 	private TextureRegion playerAnimationLeft;
 	private TextureRegion playerAnimationRight;
+	private TextureRegion placingLightBack;
 	private TextureRegion placingLightFront;
 	private TextureRegion takingLightFront;
 	private TextureRegion placingLightLeft;
@@ -724,6 +725,10 @@ public class GameplayController extends WorldController implements ContactListen
 		world.dispose();
 		world = new World(gravity, false);
 		world.setContactListener(this);
+
+		if (sourceRayHandler != null)
+			sourceRayHandler.dispose();
+
 		setComplete(false);
 		setFailure(false);
 
@@ -896,7 +901,7 @@ public class GameplayController extends WorldController implements ContactListen
 		player.setAnimations(playerAnimationFront, playerAnimationBack, playerAnimationLeft, playerAnimationRight,
 				placingLightFront, takingLightFront, placingLightLeft, takingLightLeft, placingLightRight,
 				takingLightRight, playerFrontIdle, playerBackIdle, playerLeftIdle, playerRightIdle, throwingLightFront,
-				throwingLightBack, throwingLightLeft, throwingLightRight); //setting animation
+				throwingLightBack, throwingLightRight, throwingLightLeft); //setting animation
 		player.setTexture(playerTextureFront);
 
 		addObject(player);
@@ -978,6 +983,7 @@ public class GameplayController extends WorldController implements ContactListen
 		player.updateAura();
 		player.updateCooldown(dt);
 
+
 		if (input.didSecondary() && player.getTouchingLight() && !player.getCooldown()) {
 			LightSourceObject goalLight = null;
 
@@ -998,7 +1004,7 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 
 		// update board
-		board.update(player.getPosition());
+		board.update(player.getPosition(), dt, player.getScaledPosition());
 
 		this.inLitTile = insideLightSource(player.getPosition());
 
@@ -1242,7 +1248,6 @@ public class GameplayController extends WorldController implements ContactListen
 					for(AIController controller : controls){
 						controller.resetSound();
 					}
-					System.out.println("enemy contact; you lost");
 				}
 			}
 
@@ -1251,7 +1256,6 @@ public class GameplayController extends WorldController implements ContactListen
 				if((bd1 == player && bd2 == light) || (bd1 == light && bd2 == player)){
 					player.setTouchingLight(true);
 					light.setTouchingPlayer(true);
-					System.out.println("touching light");
 				}
 			}
 
@@ -1284,7 +1288,6 @@ public class GameplayController extends WorldController implements ContactListen
 				if((bd1 == player && bd2 == light) || (bd1 == light && bd2 == player)){
 					player.setTouchingLight(false);
 					light.setTouchingPlayer(false);
-					System.out.println("no longer touching light");
 				}
 			}
 		} catch (Exception e) {
@@ -1331,4 +1334,26 @@ public class GameplayController extends WorldController implements ContactListen
 		speed = cache.dot(worldManifold.getNormal());
 
 	}
+
+	@Override
+	public void dispose() {
+		for(Obstacle obj : objects) {
+			obj.deactivatePhysics(world);
+		}
+		objects.clear();
+		addQueue.clear();
+		world.dispose();
+		objects = null;
+		addQueue = null;
+		bounds = null;
+		scale  = null;
+		world  = null;
+		canvas = null;
+		board.dispose();
+	}
+
+//	// gets the vectors position relative to the camera
+//	public Vector2 getCameraPos() {
+//		return player.getScaledPosition();
+//	}
 }

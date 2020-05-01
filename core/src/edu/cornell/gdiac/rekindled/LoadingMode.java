@@ -497,13 +497,13 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return whether to hand the event to other listeners. 
 	 */
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		System.out.println("Loading Mode Touchdown");
+//		System.out.println("Loading Mode Touchdown");
 		if (playButton == null || pressState == 2) {
 			return true;
 		}
 		// Flip to match graphics coordinates
 		screenY = heightY-screenY;
-		System.out.println(screenX + ", " + screenY);
+//		System.out.println(screenX + ", " + screenY);
 		switch (mode) {
 			case CODE_START:
 				handleStartButtons(screenX, screenY);
@@ -551,7 +551,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			pressState = 1;
 			exitCode = CODE_LEVEL_SELECT;
 		}else if (screenX >= 1030 && screenX <= 1135 && screenY >= 152 && screenY <= 254){
-			currentLevel = 6; // temp no level 7
+			currentLevel = 7; // temp no level 7
 			pressState = 1;
 			exitCode = CODE_LEVEL_SELECT;
 		}

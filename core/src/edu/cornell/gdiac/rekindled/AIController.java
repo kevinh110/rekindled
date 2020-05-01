@@ -72,7 +72,7 @@ public class AIController extends Entity_Controller {
     /** How many ticks to wait before returning to wander */
     private final int WAIT_TIME = 300;
     /** How many ticks the enemy is stunned for */
-    private final int STUN_TIME = 100;
+    private final int STUN_TIME = 70;
     /** How many times the enemy changes direction while waiting */
     private final int SPIN_NUM = 8;
     /** How long to pause before changing */
@@ -301,7 +301,7 @@ public class AIController extends Entity_Controller {
                 if (timer % STUN_TIME == 0){
                     enemy.stunned = false;
                     timer = 0;
-                    state = FSMState.WAIT;
+                    state = FSMState.WANDER;
                 }
                 break;
 

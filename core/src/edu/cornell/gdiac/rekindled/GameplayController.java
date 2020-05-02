@@ -1216,7 +1216,6 @@ public class GameplayController extends WorldController implements ContactListen
 	}
 
 
-
 	/// CONTACT LISTENER METHODS
 
 	/**

@@ -68,6 +68,8 @@ public class Enemy extends FeetHitboxObstacle {
 
     private int type;
 
+    public int[] spawn;
+
     public int[][] wander;
     private int pointer = 0; // Points to the current goal in wander
     private boolean forward = true; //Indicates if we are going forward in wander or backward
@@ -125,7 +127,7 @@ public class Enemy extends FeetHitboxObstacle {
     }
 
     public void updateWanderGoal(){
-        if (wander.length == 1){ // Handle Edge case with Stationary Enemy
+        if (wander.length == 1 || wander.length == 0){ // Handle Edge case with Stationary Enemy
             return;
         }
         if (pointer == wander.length - 1){
@@ -173,10 +175,6 @@ public class Enemy extends FeetHitboxObstacle {
         }
     }
 
-    public Enemy(float width, float height) {
-        this(0,0,width,height);
-    }
-
     /**
      * Creates a new rocket at the given position.
      *
@@ -191,6 +189,7 @@ public class Enemy extends FeetHitboxObstacle {
      */
     public Enemy(float x, float y, float width, float height) {
         super(x,y,width,height);
+        spawn = new int[]{(int) x, (int) y};
         force = new Vector2();
         setDensity(DEFAULT_DENSITY);
         setDensity(DEFAULT_DENSITY);

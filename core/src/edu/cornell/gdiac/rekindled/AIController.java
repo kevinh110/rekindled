@@ -77,6 +77,8 @@ public class AIController extends Entity_Controller {
     private final int SPIN_NUM = 8;
     /** How long to pause before changing */
     private final int PAUSE_TIME = 65;
+    /** the number of ticks between spins for stationary enemies */
+    private final int SPIN_TIME = 38;
 
     private Enemy[] enemies;
 
@@ -184,6 +186,7 @@ public class AIController extends Entity_Controller {
                 soundPlaying = false;
                 soundTimer = 0;
                 if (hasLoS(playerLit)) {// has target
+                    timer = 0;
                     state = FSMState.PAUSED;
                 }
                 break;
@@ -326,6 +329,7 @@ public class AIController extends Entity_Controller {
         goal = bfs();
         enemy.setWanderGoal(target);
         return goal;
+
     }
 
     /**
@@ -531,8 +535,12 @@ public class AIController extends Entity_Controller {
 
     public void setReturnGoalTiles(){
         int[][] wander_path = enemy.getWanderPath();
-        for (int[] pos : wander_path){
-            board.setGoal(pos[0], pos[1]);
+        if (wander_path.length == 0){
+            board.setGoal(enemy.spawn[0], enemy.spawn[1]);
+        } else {
+            for (int[] pos : wander_path){
+                board.setGoal(pos[0], pos[1]);
+            }
         }
     }
 
@@ -563,10 +571,20 @@ public class AIController extends Entity_Controller {
             switch (state) {
                 case WANDER:
                     enemy.setWanderSpeed();
-                    if (pos.x == goal[0] && pos.y == goal[1]){
-                        enemy.updateWanderGoal();
+                    if (enemy.getWanderPath().length == 0){
+                        timer++;
+                        if (timer % SPIN_TIME == 0){
+                            spinEnemy(enemy.facingDirection);
+                        }
+                        goal[0] = (int) pos.x;
+                        goal[1] = (int) pos.y;
+                    } else {
+                        if (pos.x == goal[0] && pos.y == goal[1]){
+                            enemy.updateWanderGoal();
+                        }
+                        goal = enemy.getWanderGoal();
                     }
-                    goal = enemy.getWanderGoal();
+
 
                     break;
 

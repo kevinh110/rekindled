@@ -54,6 +54,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private static final String LEVEL_HOVER_FILE = "ui/level_hover.png";
 	private static final String START_HOVER_FILE = "ui/start_hover.png";
 	private static final String SETTINGS_HOVER_FILE = "ui/settings_hover.png";
+	private static final String BACK_TO_MAIN_HOVER_FILE = "ui/back_to_main_hover.png";
+	private static final String SAVE_CHANGES_HOVER_FILE = "ui/save_changes_hover.png";
+
+
 
 	private static final String BACK_TO_MAIN_FILE = "ui/back_to_main.png";
 
@@ -76,6 +80,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private Texture levelHover;
 	private Texture startHover;
 	private Texture settingsHover;
+	private Texture backToMainHover;
+	private Texture saveChangesHover;
+
 
 
 	/** Play button to display when done */
@@ -185,7 +192,13 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private final int HOVER_START = 4;
 	private final int HOVER_LEVELS = 5;
 	private final int HOVER_SETTINGS = 6;
+	private final int HOVER_BACK_TO_MAIN = 7;
+	private final int HOVER_SAVE_CHANGES = 8;
 	private int hover;
+
+	public boolean isArrow(){
+		return arrow;
+	}
 
 	public int getCurrentLevel(){
 		return currentLevel;
@@ -271,6 +284,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		levelHover = new Texture(LEVEL_HOVER_FILE);
 		startHover = new Texture(START_HOVER_FILE);
 		settingsHover = new Texture(SETTINGS_HOVER_FILE);
+		backToMainHover = new Texture(BACK_TO_MAIN_HOVER_FILE);
+		saveChangesHover = new Texture(SAVE_CHANGES_HOVER_FILE);
 
 
 //		statusBar  = new Texture(PROGRESS_FILE);
@@ -370,8 +385,16 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		canvas.begin();
 		if (mode == CODE_SETTINGS){
 			canvas.draw(settingsBackground, 0, 0);
-			canvas.draw(backToMainTexture, 50, heightY - 75);
-			canvas.draw(saveChangesTexture, (1280 - saveChangesTexture.getWidth()) / 2f, 50);
+			if (hover == HOVER_SAVE_CHANGES){
+				canvas.draw(saveChangesHover, (1280 - saveChangesHover.getWidth()) / 2f, 50);
+			} else {
+				canvas.draw(saveChangesTexture, (1280 - saveChangesTexture.getWidth()) / 2f, 50);
+			}
+			if (hover == HOVER_BACK_TO_MAIN){
+				canvas.draw(backToMainHover, 50, heightY - 75);
+			} else {
+				canvas.draw(backToMainTexture, 50, heightY - 75);
+			}
 			if (arrow){
 				canvas.draw(wasdUnselectedTexture, 256 , (heightY - wasdUnselectedTexture.getHeight()) / 2f); // Temp code: Add select/unselect logic later
 				canvas.draw(arrowSelectedTexture, 768, (heightY - arrowSelectedTexture.getHeight())/ 2f); // Temp code: Add select/unselect logic later
@@ -379,11 +402,14 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 				canvas.draw(wasdSelectedTexture, 256 , (heightY - wasdSelectedTexture.getHeight()) / 2f); // Temp code: Add select/unselect logic later
 				canvas.draw(arrowUnselectedTexture, 768, (heightY - arrowSelectedTexture.getHeight())/ 2f); // Temp code: Add select/unselect logic later
 			}
-
 		} else if (mode == CODE_LEVEL_SELECT){
 			canvas.draw(levelSelectBackground, 0, 0);
 			canvas.draw(levelsTexture, 125, 50);
-			canvas.draw(backToMainTexture, 50, heightY - 75);
+			if (hover == HOVER_BACK_TO_MAIN){
+				canvas.draw(backToMainHover, 50, heightY - 75);
+			} else {
+				canvas.draw(backToMainTexture, 50, heightY - 75);
+			}
 		} else {
 			canvas.draw(startBackground, 0, 0);
 			if (hover == HOVER_LEVELS){
@@ -731,11 +757,31 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 				handleStartHover(screenX, screenY);
 				break;
 			case CODE_SETTINGS:
+				handleSettingsHover(screenX, screenY);
 				break;
 			case CODE_LEVEL_SELECT:
+				handleLevelSelectHover(screenX, screenY);
 				break;
 		}
 		return false;
+	}
+
+	private void handleLevelSelectHover(int screenX, int screenY){
+		if (screenX >= 41 && screenX <= 328 && screenY >= 628 && screenY <= 689) {
+			hover = HOVER_BACK_TO_MAIN;
+		} else {
+			hover = 0;
+		}
+	}
+
+	private void handleSettingsHover(int screenX, int screenY){
+		if (screenX >= 41 && screenX <= 328 && screenY >= 628 && screenY <= 689) {
+			hover = HOVER_BACK_TO_MAIN;
+		} else if (screenX >= 562 && screenX <= 722 && screenY >= 43 && screenY <= 88) {
+			hover = HOVER_SAVE_CHANGES;
+		} else {
+			hover = 0;
+		}
 	}
 
 	private void handleStartHover(int screenX, int screenY){

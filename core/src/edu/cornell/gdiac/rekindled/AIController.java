@@ -249,7 +249,12 @@ public class AIController extends Entity_Controller {
                     enemySoundPlaying = false;
                 }
                 if (hasLoS(playerLit)){
-                    state = FSMState.CHASE;
+                    if (timer < WAIT_TIME / SPIN_NUM){
+                        System.out.println("Chasing - Timer: " + timer);
+                        state = FSMState.CHASE;
+                    } else {
+                        state = FSMState.PAUSED;
+                    }
                     if(!enemySoundPlaying) {
                         enemySound.loop(.3f);
                         enemySoundPlaying = true;
@@ -303,8 +308,8 @@ public class AIController extends Entity_Controller {
                 timer++;
                 if (timer % STUN_TIME == 0){
                     enemy.stunned = false;
-                    timer = 0;
-                    state = FSMState.RETURN;
+                    timer = SPIN_TIME + 1; // Edge Case
+                    state = FSMState.WAIT;
                 }
                 break;
 
@@ -366,7 +371,7 @@ public class AIController extends Entity_Controller {
             }
             //add each neighbor of s to queue if not visited yet
             if(!board.isEnemyMovable(xIdx+1,yIdx) && !board.isVisited(xIdx+1,yIdx)
-            && board.isSafeAt(xIdx + 1, yIdx) && noEnemyAt(xIdx +1, yIdx)){ //right
+                    && board.isSafeAt(xIdx + 1, yIdx) && noEnemyAt(xIdx +1, yIdx)){ //right
                 board.setVisited(xIdx+1,yIdx);
                 ArrayList<Integer> r = new ArrayList<Integer>();
                 r.add(xIdx+1); r.add(yIdx);

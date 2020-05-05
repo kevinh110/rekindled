@@ -584,8 +584,6 @@ public class AIController extends Entity_Controller {
                         }
                         goal = enemy.getWanderGoal();
                     }
-
-
                     break;
 
                 case CHASE:

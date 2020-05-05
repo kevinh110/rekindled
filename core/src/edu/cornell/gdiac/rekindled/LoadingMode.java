@@ -51,6 +51,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private static final String SETTINGS_FILE = "ui/settings.png";
 	private static final String LEVEL_SELECT_FILE = "ui/select.png";
 
+	private static final String LEVEL_HOVER_FILE = "ui/level_hover.png";
+	private static final String START_HOVER_FILE = "ui/start_hover.png";
+	private static final String SETTINGS_HOVER_FILE = "ui/settings_hover.png";
+
 	private static final String BACK_TO_MAIN_FILE = "ui/back_to_main.png";
 
 	private static final String ARROW_UNSELECTED_FILE = "ui/arrow_unselected.png";
@@ -68,6 +72,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 	/** Background texture for start-up */
 	private Texture startBackground;
+
+	private Texture levelHover;
+	private Texture startHover;
+	private Texture settingsHover;
+
+
 	/** Play button to display when done */
 	private Texture playButton;
 	/** Background texture for settings page */
@@ -165,12 +175,17 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 	/** Current mode the screen is on */
 	private int mode;
-
 	/** The exit code */
 	private int exitCode;
 
 	/** true if user if on arrow; false if on wasd */
 	private boolean arrow;
+
+	/** Codes for hovering */
+	private final int HOVER_START = 4;
+	private final int HOVER_LEVELS = 5;
+	private final int HOVER_SETTINGS = 6;
+	private int hover;
 
 	public int getCurrentLevel(){
 		return currentLevel;
@@ -253,6 +268,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		arrowUnselectedTexture = new Texture(ARROW_UNSELECTED_FILE);
 		saveChangesTexture = new Texture(SAVE_CHANGES_FILE);
 		levelsTexture = new Texture(LEVELS);
+		levelHover = new Texture(LEVEL_HOVER_FILE);
+		startHover = new Texture(START_HOVER_FILE);
+		settingsHover = new Texture(SETTINGS_HOVER_FILE);
+
 
 //		statusBar  = new Texture(PROGRESS_FILE);
 		
@@ -367,6 +386,13 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			canvas.draw(backToMainTexture, 50, heightY - 75);
 		} else {
 			canvas.draw(startBackground, 0, 0);
+			if (hover == HOVER_LEVELS){
+				canvas.draw(levelHover, 835, 69);
+			} else if (hover == HOVER_SETTINGS){
+				canvas.draw(settingsHover, 1018, 68);
+			} else if (hover == HOVER_START){
+				canvas.draw(startHover, 656, 67);
+			}
 		}
 		canvas.drawParticle(pe);
 
@@ -585,7 +611,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 	private void handleStartButtons(int screenX, int screenY){
 		if (screenY >= 56 && screenY <= 135){
-			if (screenX >= 704 && screenX <= 810){
+			if (screenX >= 704 && screenX <= 810){ // Start
 				pressState = 1;
 				exitCode = 0;
 			} else if (screenX >= 872 && screenX <= 1003){
@@ -698,8 +724,34 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @param screenY the y-coordinate of the mouse on the screen
 	 * @return whether to hand the event to other listeners. 
 	 */	
-	public boolean mouseMoved(int screenX, int screenY) { 
-		return true; 
+	public boolean mouseMoved(int screenX, int screenY) {
+		screenY = heightY-screenY;
+		switch (mode) {
+			case CODE_START:
+				handleStartHover(screenX, screenY);
+				break;
+			case CODE_SETTINGS:
+				break;
+			case CODE_LEVEL_SELECT:
+				break;
+		}
+		return false;
+	}
+
+	private void handleStartHover(int screenX, int screenY){
+		if (screenY >= 56 && screenY <= 135){
+			if (screenX >= 704 && screenX <= 810){ // Start
+				hover = HOVER_START;
+			} else if (screenX >= 872 && screenX <= 1003){
+				hover = HOVER_LEVELS;
+			} else if (screenX >= 1058 && screenX <= 1237){
+				hover = HOVER_SETTINGS;
+			} else {
+				hover = 0;
+			}
+			return;
+		}
+		hover = 0;
 	}
 
 	/** 

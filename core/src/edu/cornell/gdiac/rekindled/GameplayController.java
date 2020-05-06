@@ -131,9 +131,6 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String UR_WALL = "wall/ur.png";
 	private static final String UR_SINGLE_WALL = "wall/ur-single.png";
 
-
-
-
 	/** file locations of the light sources*/
 	private static final String LIT_SOURCE_FILE = "images/litLightSource.png";
 	private static final String DIM_SOURCE_FILE = "images/dimLightSource.png";
@@ -327,7 +324,6 @@ public class GameplayController extends WorldController implements ContactListen
 		manager.load(PLAYER_RIGHT_IDLE, Texture.class);
 		assets.add(PLAYER_RIGHT_IDLE);
 
-
 		manager.load(ENEMY_FILE, Texture.class);
 		assets.add(ENEMY_FILE);
 		manager.load(SEEN_FILE, Texture.class);
@@ -384,7 +380,6 @@ public class GameplayController extends WorldController implements ContactListen
 		manager.load(UR_SINGLE_WALL, Texture.class);
 		assets.add(UR_SINGLE_WALL);
 
-
 		manager.load(LIT_SOURCE_FILE, Texture.class);
 		assets.add(LIT_SOURCE_FILE);
 		manager.load(DIM_SOURCE_FILE, Texture.class);
@@ -409,7 +404,7 @@ public class GameplayController extends WorldController implements ContactListen
 		super.preLoadContent(manager);
 	}
 
-	public void setWallTectures(AssetManager manager){
+	public void setWallTextures(AssetManager manager){
 		wallTextures = new TextureRegion[20];
 		wallTextures[0] = createTexture(manager, D_WALL, false);
 		wallTextures[1] = createTexture(manager, DL_WALL, false);
@@ -506,7 +501,7 @@ public class GameplayController extends WorldController implements ContactListen
 		waterDarkTexture = createTexture(manager, WATER_DARK_FILE, false);
 		waterLightTexture = createTexture(manager, WATER_LIGHT_FILE, false);
 
-		setWallTectures(manager);
+		setWallTextures(manager);
 
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
@@ -589,6 +584,7 @@ public class GameplayController extends WorldController implements ContactListen
 	private int initLights;
 	private int[] walls;
 	private int[] water;
+	private int[] pickup;
 	private LinkedList<Pair<LightSourceLight, Long>> thrownLights;
 	CollisionController collisions;
 
@@ -681,6 +677,18 @@ public class GameplayController extends WorldController implements ContactListen
 			int[] pos = coord.asIntArray();
 			water[idx] = pos[0];
 			water[idx + 1] = pos[1];
+			idx+=2;
+			coord = coord.next();
+		}
+		// Parse Pickups
+		JsonValue pickup_json = levelFormat.get("pickup");
+		pickup = new int[pickup_json.size * 2];
+		coord = pickup_json.child();
+		idx = 0;
+		while (coord != null){
+			int[] pos = coord.asIntArray();
+			pickup[idx] = pos[0];
+			pickup[idx + 1] = pos[1];
 			idx+=2;
 			coord = coord.next();
 		}
@@ -812,7 +820,7 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 
 		// Make Board
-		board = new Board((int) BOARD_WIDTH, (int) BOARD_HEIGHT, walls, lights, water);
+		board = new Board((int) BOARD_WIDTH, (int) BOARD_HEIGHT, walls, lights, water, pickup);
 
 		// Add Walls
 		Wall wall;
@@ -1070,6 +1078,9 @@ public class GameplayController extends WorldController implements ContactListen
 			}
 		}
 
+		// Pick up Light
+		pickupLightIfNeeded();
+
 		// Check win Condition
 		int numLit = 0;
 		for (Enemy e : enemies){
@@ -1082,9 +1093,17 @@ public class GameplayController extends WorldController implements ContactListen
 				controller.resetSound();
 			}
 		}
-
-
 	}
+
+	public void pickupLightIfNeeded(){
+		int x = Math.round(player.getPosition().x);
+		int y = Math.round(player.getPosition().y);
+		if (board.isPickup(x, y)){
+			board.removePickup(x, y);
+			player.lightCounter++;
+		}
+	}
+
 
 	public Vector2 getThrownPosition(Vector2 playerPosition,Vector2 enemyPosition, Vector2 direction){
 		float distance = playerPosition.dst(enemyPosition);
@@ -1109,7 +1128,6 @@ public class GameplayController extends WorldController implements ContactListen
 				postUpdate(delta);
 			}
 			draw(delta, board);
-
 
 		}
 	}
@@ -1257,6 +1275,7 @@ public class GameplayController extends WorldController implements ContactListen
 					light.setTouchingPlayer(true);
 				}
 			}
+
 
 		} catch (Exception e) {
 			e.printStackTrace();

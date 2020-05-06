@@ -1,0 +1,48 @@
+{
+"dimension": [21,11], 
+"spawn": [19,5], 
+"init_lights": 1, 
+"lights": [
+{"position": [3,8],"lit": true}, 
+{"position": [11,5],"lit": false}, 
+{"position": [2,1],"lit": true}
+], 
+"enemies": [
+{"position": [6,7],"type": 0,"wander": [[6,6]]}, 
+{"position": [14,5],"type": 0,"wander": [[13,5],[15,5]]}
+], 
+"walls": [
+{"position": [8,9],"movable": false}, 
+{"position": [14,9],"movable": false}, 
+{"position": [8,8],"movable": false}, 
+{"position": [9,8],"movable": false}, 
+{"position": [10,8],"movable": false}, 
+{"position": [11,8],"movable": false}, 
+{"position": [12,8],"movable": false}, 
+{"position": [13,8],"movable": false}, 
+{"position": [14,8],"movable": false}, 
+{"position": [8,7],"movable": false}, 
+{"position": [14,7],"movable": false}, 
+{"position": [8,6],"movable": false}, 
+{"position": [14,6],"movable": false}, 
+{"position": [17,6],"movable": false}, 
+{"position": [17,5],"movable": false}, 
+{"position": [8,4],"movable": false}, 
+{"position": [14,4],"movable": false}, 
+{"position": [17,4],"movable": false}, 
+{"position": [8,3],"movable": false}, 
+{"position": [14,3],"movable": false}, 
+{"position": [8,2],"movable": false}, 
+{"position": [9,2],"movable": false}, 
+{"position": [10,2],"movable": false}, 
+{"position": [11,2],"movable": false}, 
+{"position": [12,2],"movable": false}, 
+{"position": [13,2],"movable": false}, 
+{"position": [14,2],"movable": false}, 
+{"position": [8,1],"movable": false}, 
+{"position": [14,1],"movable": false}
+], 
+"grass": [[3,9], [9,9], [13,9], [1,8], [6,8], [2,7], [3,7], [4,7], [16,7], [17,7], [18,7], [5,6], [16,6], [18,6], [10,5], [16,5], [18,5], [3,4], [4,4], [5,4], [11,4], [12,4], [16,4], [18,4], [4,3], [5,3], [16,3], [17,3], [18,3], [1,2], [1,1], [9,1], [13,1]], 
+"mushrooms": [[4,9], [10,9], [11,9], [12,9], [15,9], [16,9], [2,8], [7,8], [18,8], [6,7], [9,7], [11,6], [1,5], [4,5], [12,5], [6,3], [2,2], [3,2], [6,2], [16,2], [10,1], [11,1], [12,1], [19,1]], 
+"water": []
+}

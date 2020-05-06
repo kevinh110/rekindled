@@ -31,6 +31,7 @@ public class InputController extends Entity_Controller{
 	/** The singleton instance of the input controller */
 	private static InputController theController = null;
 
+
 	/** 
 	 * Return the singleton instance of the input controller
 	 *
@@ -85,6 +86,10 @@ public class InputController extends Entity_Controller{
 
 	/** Whether the shift key was pressed . */
 	private boolean shiftPressed;
+
+	/** Whether the zoom key (Z) was bressed */
+	private boolean zoomPressed;
+	private boolean zoomPrevious;
 
 	/** whether the shift key was previously pressed */
 	private boolean shiftPrevious;
@@ -338,6 +343,8 @@ public class InputController extends Entity_Controller{
 		prevPrevious = prevPressed;
 		shiftPrevious = shiftPressed;
 		pausePrevious = pausePressed;
+		zoomPrevious = zoomPressed;
+
 		
 		// Check to see if a GamePad is connected
 		if (xbox.isConnected()) {
@@ -404,6 +411,7 @@ public class InputController extends Entity_Controller{
 				|| (Gdx.input.isKeyPressed(Input.Keys.D));
 		shiftPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
 		pausePressed = (secondary && pausePressed) || (Gdx.input.isKeyPressed(Input.Keys.L));
+		zoomPressed = (Gdx.input.isKeyPressed(Input.Keys.Z));
 
 
 		// Directional controls
@@ -424,4 +432,7 @@ public class InputController extends Entity_Controller{
 		}
 	}
 
+    public boolean didZoom() {
+		return zoomPressed;
+    }
 }

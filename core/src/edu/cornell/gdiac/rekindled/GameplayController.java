@@ -18,12 +18,10 @@ package edu.cornell.gdiac.rekindled;
 
 import box2dLight.RayHandler;
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.graphics.*;
@@ -37,7 +35,6 @@ import edu.cornell.gdiac.rekindled.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.*;
 import javafx.util.Pair;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 
 
@@ -235,7 +232,13 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private static final float THROWN_LIGHT_RADIUS = 3f;
 
-	private static final float CAMERA_SCALE = 1.0f;
+	private float currentScale;
+
+	private static final float ZOOM_OUT_SCALE = 2.5f;
+	private static final float ZOOM_IN_SCALE = 1.0f;
+
+	private boolean zoom_in;
+	private boolean zoom_out;
 
 	private int spawnx;
 	private int spawny;
@@ -700,6 +703,7 @@ public class GameplayController extends WorldController implements ContactListen
 		setComplete(false);
 		setFailure(false);
 		world.setContactListener(this);
+		currentScale = ZOOM_IN_SCALE;
 	}
 
 
@@ -772,7 +776,7 @@ public class GameplayController extends WorldController implements ContactListen
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
-		canvas.setScale(CAMERA_SCALE);
+		canvas.setScale(currentScale);
 		initLighting();
 
 		for (int i = 0; i < lights.length; i++){
@@ -926,7 +930,7 @@ public class GameplayController extends WorldController implements ContactListen
 	public void initLighting() {
 		rayCamera = new OrthographicCamera(Gdx.graphics.getWidth() /  (64f), Gdx.graphics.getHeight() / (64f));
 		rayCamera.position.set(spawnx, spawny, 0);
-		rayCamera.zoom = CAMERA_SCALE;
+		rayCamera.zoom = currentScale;
 		rayCamera.update();
 
 		RayHandler.setGammaCorrection(true);
@@ -971,6 +975,38 @@ public class GameplayController extends WorldController implements ContactListen
 		InputController input = InputController.getInstance();
 		input.readInput(bounds, scale);
 		InputController.Move_Direction next_move = input.get_Next_Direction();
+
+		// Handle camera zoom
+		if (zoom_in) {
+			currentScale -= 0.01f;
+			if (currentScale <= ZOOM_IN_SCALE) {
+				currentScale = ZOOM_IN_SCALE;
+				zoom_in = false;
+			}
+		} else if (zoom_out) {
+			currentScale += 0.01f;
+			if (currentScale  >= ZOOM_OUT_SCALE) {
+				currentScale = ZOOM_OUT_SCALE;
+				zoom_out = false;
+			}
+		}
+		canvas.setScale(currentScale);
+		rayCamera.zoom = currentScale;
+
+		if (input.didZoom()) {
+			System.out.println("Zoom Zoom");
+			if (zoom_in) {
+				zoom_in = false;
+				zoom_out = true;
+			} else if (zoom_out) {
+				zoom_in = true;
+				zoom_out = false;
+			} else if (currentScale == ZOOM_IN_SCALE) {
+				zoom_out = true;
+			} else if (currentScale == ZOOM_OUT_SCALE) {
+				zoom_in = true;
+			}
+		}
 
 		//remove old thrown light
 		if(!thrownLights.isEmpty() && System.currentTimeMillis() - thrownLights.get(0).getValue() > 2000L){

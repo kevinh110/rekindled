@@ -294,7 +294,11 @@ public class AIController extends Entity_Controller {
                 soundPlaying = false;
                 soundTimer = 0;
                 if(!board.isLitTileBoard((int) pos.x,(int) pos.y)){
-                    state = FSMState.WAIT;
+                    timer++;
+                    if (timer % PAUSE_TIME == 0){
+                        state = FSMState.WAIT;
+                        timer = 0;
+                    }
                 }
                 break;
 

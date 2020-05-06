@@ -186,11 +186,9 @@ public class GDXRoot extends Game implements ScreenListener {
 			Gdx.graphics.setCursor(transparentCursor);
 			Gdx.input.setInputProcessor(null);
 
-		} else if (exitCode == WorldController.EXIT_COMPLETE){
-			setScreen(levelComplete);
-			Gdx.graphics.setCursor(cursor);
-			Gdx.input.setInputProcessor(levelComplete);
-		} else if (screen == levelComplete){
+		}
+
+		else if (screen == levelComplete){
 			if (exitCode == LevelCompleteMode.EXIT_NEXT){
 				Gdx.graphics.setCursor(transparentCursor);
 				Gdx.input.setInputProcessor(null);
@@ -205,10 +203,29 @@ public class GDXRoot extends Game implements ScreenListener {
 				setScreen(controllers[current]);
 			}
 			else if (exitCode == LevelCompleteMode.EXIT_QUIT){
-				current = (current+1) % controllers.length;
+				if (levelComplete.mode == LevelCompleteMode.MODE_COMPLETE){
+					current = (current+1) % controllers.length;
+				}
 				setScreen(loading);
 				Gdx.input.setInputProcessor(loading);
 			}
+			else if (exitCode == LevelCompleteMode.EXIT_CONTINUE){
+				Gdx.graphics.setCursor(transparentCursor);
+				Gdx.input.setInputProcessor(null);
+				setScreen(controllers[current]);
+			}
+		}
+
+		else if (exitCode == WorldController.EXIT_COMPLETE){
+			levelComplete.setModeComplete();
+			setScreen(levelComplete);
+			Gdx.graphics.setCursor(cursor);
+			Gdx.input.setInputProcessor(levelComplete);
+		} else if (exitCode == WorldController.EXIT_PAUSED){
+			levelComplete.setModePaused();
+			setScreen(levelComplete);
+			Gdx.graphics.setCursor(cursor);
+			Gdx.input.setInputProcessor(levelComplete);
 		}
 		else if (exitCode == WorldController.EXIT_NEXT) {
 			current = (current+1) % controllers.length;

@@ -170,6 +170,8 @@ public abstract class WorldController implements Screen {
     public static final int EXIT_PREV = 2;
     /** Exit code for going to level complete */
     public static final int EXIT_COMPLETE = 3;
+    /*8 exit code for going to Level Paused */
+    public static final int EXIT_PAUSED = 4;
     /** How many frames after winning/losing do we continue? */
     public static final int EXIT_COUNT = 120;
 
@@ -491,6 +493,8 @@ public abstract class WorldController implements Screen {
         } else if (input.didRetreat()) {
             listener.exitScreen(this, EXIT_PREV);
             return false;
+        } else if (input.didPause()){
+            listener.exitScreen(this, EXIT_PAUSED);
         } else if (countdown > 0) {
             countdown--;
         } else if (countdown == 0) {

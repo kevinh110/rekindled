@@ -79,6 +79,9 @@ public class InputController extends Entity_Controller{
 	/** Whether the right button was pressed. */
 	private boolean rightPressed;
 	private boolean rightPrevious;
+	/** Whether the paused button was pressed */
+	private boolean pausePressed;
+	private boolean pausePrevious;
 
 	/** Whether the shift key was pressed . */
 	private boolean shiftPressed;
@@ -196,6 +199,10 @@ public class InputController extends Entity_Controller{
 	 */
 	public boolean didAdvance() {
 		return nextPressed && !nextPrevious;
+	}
+
+	public boolean didPause() {
+		return pausePressed && !pausePrevious;
 	}
 
 	/**
@@ -330,6 +337,7 @@ public class InputController extends Entity_Controller{
 		nextPrevious = nextPressed;
 		prevPrevious = prevPressed;
 		shiftPrevious = shiftPressed;
+		pausePrevious = pausePressed;
 		
 		// Check to see if a GamePad is connected
 		if (xbox.isConnected()) {
@@ -395,6 +403,8 @@ public class InputController extends Entity_Controller{
 		rightPressed  = (secondary && rightPressed) || (Gdx.input.isKeyPressed(Input.Keys.RIGHT))
 				|| (Gdx.input.isKeyPressed(Input.Keys.D));
 		shiftPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
+		pausePressed = (secondary && pausePressed) || (Gdx.input.isKeyPressed(Input.Keys.L));
+
 
 		// Directional controls
 		horizontal = (secondary ? horizontal : 0.0f);

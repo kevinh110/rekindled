@@ -46,23 +46,37 @@ import edu.cornell.gdiac.util.*;
  */
 public class LevelCompleteMode implements Screen, InputProcessor, ControllerListener {
     // Textures necessary to support the loading screen
-    private static final String BACKGROUND_FILE = "images/winScreen.png";
+    private static final String BACKGROUND_COMPLETE_FILE = "images/winScreen.png";
+    private static final String BACKGROUND_PAUSE_FILE = "ui/paused.png";
     //	private static final String PROGRESS_FILE = "images/progressbar.png";
     private static final String PLAY_BTN_FILE = "images/play.png";
 
     /** Background texture for start-up */
-    private Texture background;
+    private Texture completeBackground;
+    private Texture pauseBackground;
     /** Play button to display when done */
     private Texture playButton;
 
     /** The exit code triggered */
     private int exitCode;
 
-    public static final int EXIT_NEXT = 0;
-    public static final int EXIT_REPLAY = 1;
-    public static final int EXIT_QUIT = 2;
+    public static final int EXIT_NEXT = 15;
+    public static final int EXIT_REPLAY = 16;
+    public static final int EXIT_QUIT = 17;
+    public static final int EXIT_CONTINUE = 18;
 
+    /** Code for different screen modes */
+    public static final int MODE_COMPLETE = 4;
+    public static final int MODE_PAUSED = 5;
+    public int mode;
 
+    public void setModeComplete(){
+        mode = MODE_COMPLETE;
+    }
+
+    public void setModePaused(){
+        mode = MODE_PAUSED;
+    }
 
     /** Texture atlas to support a progress bar */
 //	private Texture statusBar;
@@ -201,7 +215,8 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
 
         // Load the next two images immediately.
         playButton = null;
-        background = new Texture(BACKGROUND_FILE);
+        completeBackground = new Texture(BACKGROUND_COMPLETE_FILE);
+        pauseBackground = new Texture(BACKGROUND_PAUSE_FILE);
 //		statusBar  = new Texture(PROGRESS_FILE);
 
         // No progress so far.
@@ -240,9 +255,9 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
 //		 statusFrgRight = null;
 //		 statusFrgMiddle = null;
 
-        background.dispose();
+        completeBackground.dispose();
 //		 statusBar.dispose();
-        background = null;
+        completeBackground = null;
 //		 statusBar  = null;
         if (playButton != null) {
             playButton.dispose();
@@ -280,7 +295,11 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
      */
     private void draw() {
         canvas.begin();
-        canvas.draw(background, 0, 0);
+        if (mode == MODE_COMPLETE){
+            canvas.draw(completeBackground, 0, 0);
+        } else if (mode == MODE_PAUSED){
+            canvas.draw(pauseBackground, 0, 0);
+        }
 
 
 
@@ -338,6 +357,7 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
             // We are are ready, notify our listener
             if (isReady() && listener != null) {
                 pressState = 0;
+                System.out.println("Exit Code: " + exitCode);
                 listener.exitScreen(this, exitCode);
             }
         }
@@ -430,17 +450,33 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
         }
 //        // Flip to match graphics coordinates
         screenY = heightY-screenY;
-        if (screenX >= 335 && screenX <= 494 && screenY >= 98 && screenY <= 173){ // Next
-            pressState = 1;
-            exitCode = EXIT_NEXT;
-        }
-        else if (screenX >= 621 && screenX <= 804 && screenY >= 98 && screenY <= 173) {
-            pressState = 1;
-            exitCode = EXIT_REPLAY;
-        }
-        else if (screenX >= 904 && screenX <= 982 && screenY >= 98 && screenY <= 173) {
-            pressState = 1;
-            exitCode = EXIT_QUIT;
+        switch (mode) {
+            case MODE_COMPLETE:
+                if (screenY >= 98 && screenY <= 173){
+                    if (screenX >= 335 && screenX <= 494){ // Next
+                        pressState = 1;
+                        exitCode = EXIT_NEXT;
+                    } else if (screenX >= 621 && screenX <= 804) {
+                        pressState = 1;
+                        exitCode = EXIT_REPLAY;
+                    } else if (screenX >= 904 && screenX <= 982) {
+                        pressState = 1;
+                        exitCode = EXIT_QUIT;
+                    }
+                }
+                break;
+            case MODE_PAUSED:
+                System.out.println("mode paused");
+                if (screenY >= 102 && screenY <= 159) {
+                    if (screenX >= 492 && screenX <= 652){ // Continue
+                        pressState = 1;
+                        exitCode = EXIT_CONTINUE;
+                    } else if (screenX >= 756 && screenX <= 838){ // Exit
+                        pressState = 1;
+                        exitCode = EXIT_QUIT;
+                    }
+                }
+                break;
         }
         return false;
 

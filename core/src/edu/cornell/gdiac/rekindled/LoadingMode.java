@@ -769,7 +769,23 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private void handleLevelSelectHover(int screenX, int screenY){
 		if (screenX >= 41 && screenX <= 328 && screenY >= 628 && screenY <= 689) {
 			hover = HOVER_BACK_TO_MAIN;
-		} else {
+		} else if (screenX >= 143 && screenX <= 266 && screenY >= 394 && screenY <= 512) {// Level 0
+
+		} else if (screenX >= 377 && screenX <= 490 && screenY >= 510 && screenY <= 621){ // level 1
+
+		}else if (screenX >= 364 && screenX <= 472 && screenY >= 278 && screenY <= 380){ // level 2
+
+		}else if (screenX >= 660 && screenX <= 762 && screenY >= 505 && screenY <= 606){ // level 3
+
+		}else if (screenX >= 552 && screenX <= 657 && screenY >= 175 && screenY <= 275){ // level 4
+
+		}else if (screenX >= 760 && screenX <= 860  && screenY >= 330 && screenY <= 440){ // level 5
+
+		}else if (screenX >= 763 && screenX <= 870 && screenY >= 68 && screenY <= 175){ // level 6
+
+		}else if (screenX >= 1030 && screenX <= 1135 && screenY >= 152 && screenY <= 254){ // level 7
+
+		}else {
 			hover = 0;
 		}
 	}

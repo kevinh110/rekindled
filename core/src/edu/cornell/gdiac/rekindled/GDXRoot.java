@@ -93,7 +93,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		music.play();
 
 		// Initialize all the game worlds
-		controllers = new GameplayController[10];
+		controllers = new GameplayController[11];
 		controllers[0] = new GameplayController("jsons/Megan_0.json");
 		controllers[1] = new GameplayController("jsons/level10.json");
 		controllers[2] = new GameplayController("jsons/throwlight.json");
@@ -104,6 +104,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers[7] = new GameplayController("jsons/levelhard2.json");
 		controllers[8] = new GameplayController("jsons/intermediate2.json");
 		controllers[9] = new GameplayController("jsons/spineasy.json");
+		controllers[10] = new GameplayController("jsons/watertest.json");
 		
 		for(int ii = 0; ii < controllers.length; ii++) {
 			controllers[ii].preLoadContent(manager);
@@ -222,6 +223,11 @@ public class GDXRoot extends Game implements ScreenListener {
 			Gdx.input.setInputProcessor(levelComplete);
 		} else if (exitCode == WorldController.EXIT_PAUSED){
 			levelComplete.setModePaused();
+			setScreen(levelComplete);
+			Gdx.graphics.setCursor(cursor);
+			Gdx.input.setInputProcessor(levelComplete);
+		} else if (exitCode == WorldController.EXIT_LOST){
+			levelComplete.setModeLost();
 			setScreen(levelComplete);
 			Gdx.graphics.setCursor(cursor);
 			Gdx.input.setInputProcessor(levelComplete);

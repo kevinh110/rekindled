@@ -591,8 +591,6 @@ public class GameplayController extends WorldController implements ContactListen
 	private LinkedList<Pair<LightSourceLight, Long>> thrownLights;
 	CollisionController collisions;
 
-	boolean lostGame;
-
 	/** The reader to process JSON files */
 	private JsonReader jsonReader;
 	/** The JSON defining the level model */
@@ -743,6 +741,8 @@ public class GameplayController extends WorldController implements ContactListen
 
 		setComplete(false);
 		setFailure(false);
+		wonGame = false;
+		lostGame = false;
 
 		// Reload the level json
 		levelFormat = jsonReader.parse(Gdx.files.internal(LEVEL_PATH));
@@ -967,10 +967,11 @@ public class GameplayController extends WorldController implements ContactListen
 
 		insideThrownLight = false;
 		inLitTile = false;
-		// Temp Code to reset game if lost
+
 		if (lostGame){
-			lostGame = false;
-			reset();
+			// Play Lost Animation Here
+			player.move(InputController.Move_Direction.NO_MOVE);
+			return;
 		}
 
 		if (sourceRayHandler != null) {

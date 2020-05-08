@@ -240,6 +240,10 @@ public class GameplayController extends WorldController implements ContactListen
 	private int spawnx;
 	private int spawny;
 
+	private boolean start_pause;
+	private float start_time;
+	private static final float START_TIME = 3f;
+
 
 	/**
 	 * Preloads the assets for this controller.
@@ -711,7 +715,6 @@ public class GameplayController extends WorldController implements ContactListen
 		setComplete(false);
 		setFailure(false);
 		world.setContactListener(this);
-		currentScale = ZOOM_IN_SCALE;
 	}
 
 
@@ -784,6 +787,11 @@ public class GameplayController extends WorldController implements ContactListen
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
+		currentScale = ZOOM_OUT_SCALE;
+		start_pause = true;
+		start_time = 0f;
+		zoom_out = false;
+		zoom_in = false;
 		canvas.setScale(currentScale);
 		initLighting();
 
@@ -964,6 +972,14 @@ public class GameplayController extends WorldController implements ContactListen
 	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
+
+		if (start_pause) {
+			start_time+=dt;
+			if (start_time >= START_TIME) {
+				start_pause = true;
+				zoom_in = true;
+			}
+		}
 
 		insideThrownLight = false;
 		inLitTile = false;

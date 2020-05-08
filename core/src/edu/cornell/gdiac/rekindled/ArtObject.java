@@ -16,10 +16,12 @@ public class ArtObject extends FeetHitboxObstacle {
     private boolean isLit;
     private boolean isTransition;
     public ASSET_TYPE type;
+    public boolean isTaken; // Only used for pickup to fix multiple pickups
 
     enum ASSET_TYPE {
         MUSHROOM,
-        GRASS;
+        GRASS,
+        PICKUP
     }
 
     public ArtObject(float x, float y, int width, int height, int tile_size, int num_frames, ASSET_TYPE type){
@@ -52,12 +54,16 @@ public class ArtObject extends FeetHitboxObstacle {
     }
 
     public void draw(GameCanvas canvas){
-        if(isTransition) {
+        if(isTransition || type == ASSET_TYPE.PICKUP) {
             timeElapsed += Gdx.graphics.getDeltaTime();
         }
 
         if(animation != null){
-            super.draw(canvas, animation, false, timeElapsed, tile_size, Color.WHITE);
+            if (type == ASSET_TYPE.PICKUP){
+                super.draw(canvas, animation, true, timeElapsed, tile_size, Color.WHITE);
+            } else {
+                super.draw(canvas, animation, false, timeElapsed, tile_size, Color.WHITE);
+            }
         }
     }
 }

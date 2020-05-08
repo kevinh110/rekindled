@@ -47,6 +47,8 @@ import edu.cornell.gdiac.util.*;
 public class LevelCompleteMode implements Screen, InputProcessor, ControllerListener {
     // Textures necessary to support the loading screen
     private static final String BACKGROUND_COMPLETE_FILE = "images/winScreen.png";
+    private static final String BACKGROUND_LOST_FILE = "images/lossScreen.png";
+
     private static final String BACKGROUND_PAUSE_FILE = "ui/paused.png";
     //	private static final String PROGRESS_FILE = "images/progressbar.png";
     private static final String PLAY_BTN_FILE = "images/play.png";
@@ -54,6 +56,7 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
     /** Background texture for start-up */
     private Texture completeBackground;
     private Texture pauseBackground;
+    private Texture lostBackground;
     /** Play button to display when done */
     private Texture playButton;
 
@@ -68,6 +71,7 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
     /** Code for different screen modes */
     public static final int MODE_COMPLETE = 4;
     public static final int MODE_PAUSED = 5;
+    public static final int MODE_LOST = 6;
     public int mode;
 
     public void setModeComplete(){
@@ -77,6 +81,8 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
     public void setModePaused(){
         mode = MODE_PAUSED;
     }
+
+    public void setModeLost() { mode = MODE_LOST;}
 
     /** Texture atlas to support a progress bar */
 //	private Texture statusBar;
@@ -217,6 +223,7 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
         playButton = null;
         completeBackground = new Texture(BACKGROUND_COMPLETE_FILE);
         pauseBackground = new Texture(BACKGROUND_PAUSE_FILE);
+        lostBackground = new Texture(BACKGROUND_LOST_FILE);
 //		statusBar  = new Texture(PROGRESS_FILE);
 
         // No progress so far.
@@ -299,6 +306,8 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
             canvas.draw(completeBackground, 0, 0);
         } else if (mode == MODE_PAUSED){
             canvas.draw(pauseBackground, 0, 0);
+        } else if (mode == MODE_LOST){
+            canvas.draw(lostBackground, 0, 0);
         }
 
 
@@ -450,6 +459,7 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
         }
 //        // Flip to match graphics coordinates
         screenY = heightY-screenY;
+        System.out.println(screenX + ", " + screenY);
         switch (mode) {
             case MODE_COMPLETE:
                 if (screenY >= 98 && screenY <= 173){
@@ -466,12 +476,22 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
                 }
                 break;
             case MODE_PAUSED:
-                System.out.println("mode paused");
                 if (screenY >= 102 && screenY <= 159) {
                     if (screenX >= 492 && screenX <= 652){ // Continue
                         pressState = 1;
                         exitCode = EXIT_CONTINUE;
                     } else if (screenX >= 756 && screenX <= 838){ // Exit
+                        pressState = 1;
+                        exitCode = EXIT_QUIT;
+                    }
+                }
+                break;
+            case MODE_LOST:
+                if (screenY >= 102 && screenY <= 159) {
+                    if (screenX >= 460 && screenX <= 647){
+                        pressState = 1;
+                        exitCode = EXIT_REPLAY;
+                    } else if (screenX >= 744 && screenX <= 826){
                         pressState = 1;
                         exitCode = EXIT_QUIT;
                     }

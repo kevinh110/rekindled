@@ -57,20 +57,27 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private static final String BACK_TO_MAIN_HOVER_FILE = "ui/back_to_main_hover.png";
 	private static final String SAVE_CHANGES_HOVER_FILE = "ui/save_changes_hover.png";
 
-
-
 	private static final String BACK_TO_MAIN_FILE = "ui/back_to_main.png";
 
 	private static final String ARROW_UNSELECTED_FILE = "ui/arrow_unselected.png";
 	private static final String ARROW_SELECTED_FILE = "ui/arrow_selected.png";
 	private static final String WASD_SELECTED_FILE = "ui/wasd_selected.png";
 	private static final String WASD_UNSELECTED_FILE = "ui/wasd_unselected.png";
+	private static final String VOLUME_SELECTED_FILE = "ui/volume_selected.png";
+	private static final String VOLUME_UNSELECTED_FILE = "ui/volume_unselected.png";
+
+
 
 	private static final String SAVE_CHANGES_FILE = "ui/save_changes.png";
 
 	private static final String PLAY_BTN_FILE = "images/play.png";
 
 	private static final String LEVELS = "ui/levels.png";
+	private static final String LEVELS2 = "ui/levels2.png";
+	private static final String NEXT_FILE = "ui/next.png";
+	private static final String PREV_FILE = "ui/prev.png";
+
+
 
 	private final ParticleEffect pe;
 
@@ -93,6 +100,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private Texture levelSelectBackground;
 
 	private Texture levelsTexture;
+	private Texture levels2Texture;
+	private Texture prevArrowTexture;
+	private Texture nextArrowTexture;
 
 	private Texture backToMainTexture;
 
@@ -100,6 +110,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private Texture wasdUnselectedTexture;
 	private Texture arrowUnselectedTexture;
 	private Texture arrowSelectedTexture;
+	private Texture volumeUnselectedTexture;
+	private Texture volumeSelectedTexture;
 
 	private Texture saveChangesTexture;
 
@@ -174,6 +186,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private boolean active;
 
 	private int currentLevel;
+	private int currentPage;
 
 	/** Codes for the different screens */
 	public static final int CODE_START = 1;
@@ -187,6 +200,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 	/** true if user if on arrow; false if on wasd */
 	private boolean arrow;
+
+	/** true iff sound is on */
+	private boolean soundOff;
 
 	/** Codes for hovering */
 	private final int HOVER_START = 4;
@@ -281,11 +297,16 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		arrowUnselectedTexture = new Texture(ARROW_UNSELECTED_FILE);
 		saveChangesTexture = new Texture(SAVE_CHANGES_FILE);
 		levelsTexture = new Texture(LEVELS);
+		levels2Texture = new Texture(LEVELS2);
+		nextArrowTexture = new Texture(NEXT_FILE);
+		prevArrowTexture = new Texture(PREV_FILE);
 		levelHover = new Texture(LEVEL_HOVER_FILE);
 		startHover = new Texture(START_HOVER_FILE);
 		settingsHover = new Texture(SETTINGS_HOVER_FILE);
 		backToMainHover = new Texture(BACK_TO_MAIN_HOVER_FILE);
 		saveChangesHover = new Texture(SAVE_CHANGES_HOVER_FILE);
+		volumeSelectedTexture = new Texture(VOLUME_SELECTED_FILE);
+		volumeUnselectedTexture = new Texture(VOLUME_UNSELECTED_FILE);
 
 
 //		statusBar  = new Texture(PROGRESS_FILE);
@@ -402,15 +423,27 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 				canvas.draw(wasdSelectedTexture, 256 , (heightY - wasdSelectedTexture.getHeight()) / 2f); // Temp code: Add select/unselect logic later
 				canvas.draw(arrowUnselectedTexture, 768, (heightY - arrowSelectedTexture.getHeight())/ 2f); // Temp code: Add select/unselect logic later
 			}
+			if (soundOff){
+				canvas.draw(volumeSelectedTexture, 598, 140);
+			} else { // Sound off
+				canvas.draw(volumeUnselectedTexture, 598, 140);
+
+			}
 		} else if (mode == CODE_LEVEL_SELECT){
 			canvas.draw(levelSelectBackground, 0, 0);
-			canvas.draw(levelsTexture, 125, 50);
+			if (currentPage == 0){
+				canvas.draw(levelsTexture, 125, 50);
+				canvas.draw(nextArrowTexture, 1230 - nextArrowTexture.getWidth(), 50);
+			} else if (currentPage == 1){
+				canvas.draw(levels2Texture, 125, 50);
+				canvas.draw(prevArrowTexture, 50, 50);
+			}
 			if (hover == HOVER_BACK_TO_MAIN){
 				canvas.draw(backToMainHover, 50, heightY - 75);
 			} else {
 				canvas.draw(backToMainTexture, 50, heightY - 75);
 			}
-		} else {
+		} else { // Mode start
 			canvas.draw(startBackground, 0, 0);
 			if (hover == HOVER_LEVELS){
 				canvas.draw(levelHover, 835, 69);
@@ -587,37 +620,41 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		if (screenX >= 41 && screenX <= 328 && screenY >= 628 && screenY <= 689) {
 			mode = CODE_START;
 		} else if (screenX >= 143 && screenX <= 266 && screenY >= 394 && screenY <= 512){
-			currentLevel = 0;
+			currentLevel = 0 + currentPage*8;
 			pressState = 1;
 			exitCode = CODE_LEVEL_SELECT;
 		} else if (screenX >= 377 && screenX <= 490 && screenY >= 510 && screenY <= 621){
-			currentLevel = 1;
+			currentLevel = 1 + currentPage*8;
 			pressState = 1;
 			exitCode = CODE_LEVEL_SELECT;
 		}else if (screenX >= 364 && screenX <= 472 && screenY >= 278 && screenY <= 380){
-			currentLevel = 2;
+			currentLevel = 2 + currentPage*8;
 			pressState = 1;
 			exitCode = CODE_LEVEL_SELECT;
 		}else if (screenX >= 660 && screenX <= 762 && screenY >= 505 && screenY <= 606){
-			currentLevel = 3;
+			currentLevel = 3 + currentPage*8;
 			pressState = 1;
 			exitCode = CODE_LEVEL_SELECT;
 		}else if (screenX >= 552 && screenX <= 657 && screenY >= 175 && screenY <= 275){
-			currentLevel = 4;
+			currentLevel = 4 + currentPage * 8;
 			pressState = 1;
 			exitCode = CODE_LEVEL_SELECT;
 		}else if (screenX >= 760 && screenX <= 860  && screenY >= 330 && screenY <= 440){
-			currentLevel = 5;
+			currentLevel = 5 + currentPage*8;
 			pressState = 1;
 			exitCode = CODE_LEVEL_SELECT;
 		}else if (screenX >= 763 && screenX <= 870 && screenY >= 68 && screenY <= 175){
-			currentLevel = 6;
+			currentLevel = 6 + currentPage*8;
 			pressState = 1;
 			exitCode = CODE_LEVEL_SELECT;
 		}else if (screenX >= 1030 && screenX <= 1135 && screenY >= 152 && screenY <= 254){
-			currentLevel = 7; // temp no level 7
+			currentLevel = 7 + currentPage * 8;
 			pressState = 1;
 			exitCode = CODE_LEVEL_SELECT;
+		} else if (screenX >= 1190 && screenX <= 1245 && screenY >= 39 && screenY <= 127){
+			currentPage = 1;
+		} else if (screenX >= 43 && screenX <= 105 && screenY >= 39 && screenY <= 127){
+			currentPage = 0;
 		}
 	}
 
@@ -630,9 +667,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			arrow = true;
 		} else if (screenX >= 562 && screenX <= 722 && screenY >= 43 && screenY <= 88) {
 			mode = CODE_START;
+		} else if (screenX >= 587 && screenX <= 694 && screenY >= 128 && screenY <= 232){
+			soundOff = !soundOff;
 		}
-
-		}
+	}
 
 
 	private void handleStartButtons(int screenX, int screenY){

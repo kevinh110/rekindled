@@ -95,7 +95,8 @@ function confirmOpen() {
   let dimLights = [];
   let grass = [];
   let mushrooms = [];
-  let water = [];
+  let holes = [];
+  let pickup = [];
 
   let level = document.querySelector('textarea').value.trim().split('\n');
   for (let i = 0; i < level.length; i++) {
@@ -212,14 +213,24 @@ function confirmOpen() {
       // console.log(mushrooms);
     } 
 
-    // Parse water
+    // Parse holes
     if (level[i].search(/water/) > -1){
       let matches = level[i].matchAll(/([0-9]+),([0-9]+)/g);
       for(const match of matches){
-        water.push([Number(match[1]),Number(match[2])]);
+        holes.push([Number(match[1]),Number(match[2])]);
         // console.log(match);
       }
-      // console.log(water);
+      // console.log(holes);
+    } 
+
+    // Parse light pickups
+    if (level[i].search(/pickup/) > -1){
+      let matches = level[i].matchAll(/([0-9]+),([0-9]+)/g);
+      for(const match of matches){
+        pickup.push([Number(match[1]),Number(match[2])]);
+        // console.log(match);
+      }
+      // console.log(pickup);
     } 
   }
 
@@ -285,10 +296,16 @@ function confirmOpen() {
     content[height-1-mushrooms[i][1]][mushrooms[i][0]] = 'M';
   }
 
-  // add water
-  for(let i=0;i<water.length;i++){
-    // console.log(water[i]);
-    content[height-1-water[i][1]][water[i][0]] = 'T';
+  // add holes
+  for(let i=0;i<holes.length;i++){
+    // console.log(holes[i]);
+    content[height-1-holes[i][1]][holes[i][0]] = 'H';
+  }
+
+  // add pickup
+  for(let i=0;i<pickup.length;i++){
+    // console.log(pickup[i]);
+    content[height-1-pickup[i][1]][pickup[i][0]] = 'F';
   }
 
   // add enemies
@@ -379,7 +396,7 @@ function confirmOpen() {
       }
     });
 
-    // add border wall
+    // connect border walls
     cells.forEach((cell,i)=>{
       let row = cell.parentNode;
       let table = row.parentNode;
@@ -427,7 +444,8 @@ function copyLevel() {
   let walls = '[\n';
   let grass = '[';
   let mushrooms = '[';
-  let water = '[';
+  let holes = '[';
+  let pickup = '[';
   let cells = Array.from(document.querySelectorAll('.cell'));
   let height = document.querySelectorAll('#view > div').length;
   let width = document.querySelector('#view > div').childNodes.length;
@@ -466,9 +484,13 @@ function copyLevel() {
         if (grass != '[') grass += ', ';
         grass += '['+((i%width))+','+j+']';
       }
-      if (cell.textContent == 'T'){
-        if (water != '[') water += ', ';
-        water += '['+((i%width))+','+j+']';
+      if (cell.textContent == 'H'){
+        if (holes != '[') holes += ', ';
+        holes += '['+((i%width))+','+j+']';
+      }
+      if (cell.textContent == 'F'){
+        if (pickup != '[') pickup += ', ';
+        pickup += '['+((i%width))+','+j+']';
       }
     }
     if ((i + 1) % width == 0) {
@@ -518,7 +540,8 @@ function copyLevel() {
   lights += '\n]';
   walls += '\n]';
   grass += ']';
-  water += ']';
+  holes += ']';
+  pickup += ']';
   mushrooms += ']';
   let initLights = document.querySelector('#initLightsCurrent').textContent;
   initLights = initLights.match(/[0-9]+/)[0];
@@ -530,7 +553,8 @@ function copyLevel() {
   level += '"walls": '+walls+', \n';
   level += '"grass": '+grass+', \n';
   level += '"mushrooms": '+mushrooms+', \n';
-  level += '"water": '+water+'\n';
+  level += '"water": '+holes+', \n';
+  level += '"pickup": '+pickup+'\n';
   level += '}';
   info.textContent = level;
   info.select();
@@ -546,12 +570,36 @@ const PALETTE = {
   'W': {color: 'rgb(139,69,19)', help: 'wall', class: 'wallsprite', img: '/wall/singular.png'},
   'U': {color: 'rgb(169,169,169)', help: 'unlit light source', class: 'lampsprite', img: 'lamp_unlit.png'},
   'L': {color: 'rgb(241, 229, 89)', help: 'lit light source', class: 'lampsprite', img: 'lamp_lit.png'},
+  'F': {color: 'rgb(241, 229, 89)', help: 'light pickup', class: 'pickupsprite', img: 'pickup.png'},
   'P': {color: 'rgb(153,102,204)', help: 'player', class: 'playersprite', img: 'player.png'},
-  'T': {color: 'rgb(52, 166, 251)', help: 'water', class: 'watersprite', img: 'water_dark.png'},
+  'H': {color: 'rgb(52, 166, 251)', help: 'hole', class: 'holesprite', img: '/hole/single.png'},
   'G': {color: 'rgb(50,205,50)', help: 'grass', class: 'sprite', img: 'grass_lit.png'},
   'M': {color: 'rgb(127,255,212)', help: 'mushrooms', class: 'sprite', img: 'mushrooms_lit.png'},
   'E': {color: 'rgb(255, 100, 100)', help: 'enemy', class: 'enemysprite', img: 'enemy.png'},
   '@': {color: 'rgb(255, 100, 100)', help: 'enemy wander path', class: 'wanderpointsprite', img: 'wander_point_marker.png'}
+};
+const WALLS = {
+  's': {src:'singular.png', type:'single', help:'singular'},
+  'std': {src:'d.png', type:'single', help:'top deadend'},
+  'sbd': {src:'u.png', type:'single', help:'bottom deadend'},
+  'srd': {src:'l.png', type:'single', help:'right deadend'},
+  'sld': {src:'r.png', type:'single', help:'left deadend'},
+  'surc': {src:'dl-single.png', type:'single', help:'upper right corner'},
+  'sulc': {src:'dr-single.png', type:'single', help:'upper left corner'},
+  'sbrc': {src:'lr-single.png', type:'single', help:'bottom right corner'},
+  'sblc': {src:'ur-single.png', type:'single', help:'bottom left corner'},
+  'sh': {src:'lr.png', type:'single', help:'horizontal'},
+  'sv': {src:'ud.png', type:'single', help:'vertical'},
+
+  'm': {src:'udlr.png', type:'multiple', help:'no edges'},
+  'murc': {src:'dl.png', type:'multiple', help:'upper right corner'},
+  'mulc': {src:'dr.png', type:'multiple', help:'upper left corner'},
+  'mbrc': {src:'ul.png', type:'multiple', help:'bottom right corner'},
+  'mblc': {src:'ur.png', type:'multiple', help:'bottom left corner'},
+  'mteh': {src:'dlr.png', type:'multiple', help:'top edge horizontal'},
+  'mbeh': {src:'ulr.png', type:'multiple', help:'bottom edge horizontal'},
+  'mrev': {src:'udl.png', type:'multiple', help:'right edge vertical'},
+  'mlev': {src:'udr.png', type:'multiple', help:'left edge vertical'} 
 };
 const TOOLS = [
   {tool: brush, icon: 'brush'},
@@ -580,13 +628,13 @@ function applyEdit(cell, char) {
     img.className = PALETTE['@'].class;
     cell.appendChild(img);
     
-  } else if(char == 'T' && cell.className == 'cell litzone'){
-    cell.textContent = char;
-    let img = document.createElement('img');
-    img.src = "./assets/water_lit.png";
-    img.className = PALETTE[char].class;
-    cell.appendChild(img);
-  } else if(char == 'T' || char =='P' || char == 'W' || char == 'U' || char == 'L' || char == 'M' || char == 'G'){
+  // } else if(char == 'H' && cell.className == 'cell litzone'){
+  //   cell.textContent = char;
+  //   let img = document.createElement('img');
+  //   img.src = "./assets/water_lit.png";
+  //   img.className = PALETTE[char].class;
+  //   cell.appendChild(img);
+  } else if(char == 'F' || char == 'H' || char =='P' || char == 'U' || char == 'L' || char == 'M' || char == 'G'){
     cell.textContent = char;
     let img = document.createElement('img');
     img.src = "./assets/"+PALETTE[char].img;
@@ -595,6 +643,38 @@ function applyEdit(cell, char) {
   // } else if(char == 'L'){
   //   cell.textContent = char;
   //   cell.className = "cell lit";
+  } else if(char =='W'){
+    cell.textContent = char;
+
+    // TODO: CONNECT WALLS
+    // check if exist surrounding walls
+    // let row = cell.parentNode;
+    // let table = row.parentNode;
+    // index = Array.prototype.indexOf.call(row.children,cell);
+    // row_index = Array.prototype.indexOf.call(table.children,row);
+    // // console.log(row_index+","+index);
+    // let box = [
+    //   [false, false, false],
+    //   [false, true, false],
+    //   [false, false, false]
+    // ];
+    // for(let i=-1;i<=1;i++){
+    //   let row_i = table.childNodes[row_index+i];
+    //   console.log(row_i);
+    //   for(let j=-1;j<=1;j++){
+    //     let cell_j = row_i.childNodes[index+j];
+    //     if(cell_j.textContent == 'W'){
+    //       box[i+1][j+1] = true;
+    //     }
+    //   }
+    // }
+    
+    // console.log(box);
+
+    let img = document.createElement('img');
+    img.src = "./assets/"+PALETTE[char].img;
+    img.className = PALETTE[char].class;
+    cell.appendChild(img);
   } else if(char == 'LZ'){
     // change tiles to light tiles
     cell.className = "cell litzone";
@@ -602,8 +682,8 @@ function applyEdit(cell, char) {
     if(cell.textContent.search(/E/)>-1){
       cell.childNodes[1].src = './assets/saved_soul.png';
       cell.childNodes[1].className = 'soulsprite';
-    } else if(cell.textContent == 'T'){
-      cell.childNodes[1].src = './assets/water_lit.png';
+    // } else if(cell.textContent == 'H'){
+    //   cell.childNodes[1].src = './assets/water_lit.png';
     }
   } else if(char == 'DZ') {
     // change tiles to dark tiles
@@ -612,8 +692,8 @@ function applyEdit(cell, char) {
     if(cell.textContent.search(/E/)>-1){
       cell.childNodes[1].src = "./assets/"+PALETTE['E'].img;
       cell.childNodes[1].className = PALETTE['E'].class;
-    } else if(cell.textContent == 'T'){
-      cell.childNodes[1].src = './assets/water_dark.png';
+    // } else if(cell.textContent == 'H'){
+    //   cell.childNodes[1].src = './assets/water_dark.png';
     }
   } else if(char == '.'){
     if(cell.textContent == 'L'){
@@ -623,7 +703,7 @@ function applyEdit(cell, char) {
       // console.log(cell.parentNode.childNodes[1]);
       // cell.parentNode.remove(cell);
       cell.textContent = '.';
-    } else if(cell.textContent == 'W' || cell.textContent == 'U' || cell.textContent == 'P' || cell.textContent == 'G' || cell.textContent == 'M' || cell.textContent == 'T' || cell.textContent.search(/E/)>-1 || cell.textContent.search(/@/)>-1) {
+    } else if(cell.textContent == 'W' || cell.textContent == 'U' || cell.textContent == 'P' || cell.textContent == 'G' || cell.textContent == 'M' || cell.textContent == 'H' || cell.textContent.search(/E/)>-1 || cell.textContent.search(/@/)>-1) {
       cell.removeChild(cell.childNodes[1]);
       cell.textContent = '.';
     }
@@ -720,9 +800,7 @@ function brush(event) {
       let next_next_row = table.children[row_index+2];
       applyEdit(next_next_row.children[index], 'LZ');
       
-    }
-
-    
+    }    
   }
 }
 
@@ -1036,7 +1114,6 @@ function renderView(width, height) {
   for (let y = 0; y < height; y++) {
     if (y == 0 || y == height-1){
       let row = document.createElement('div');
-
       for (let x = 0; x < width; x++) {
           let cell = document.createElement('div');
           cell.className = 'cell darkzone';
@@ -1076,6 +1153,34 @@ function renderView(width, height) {
       view.appendChild(row);
     }
   }
+  // connect border walls
+  let cells = Array.from(document.querySelectorAll('.cell'));
+  cells.forEach((cell,i)=>{
+    let row = cell.parentNode;
+    let table = row.parentNode;
+    index = Array.prototype.indexOf.call(row.children,cell);
+    row_index = Array.prototype.indexOf.call(table.children,row);
+
+    if(row_index == 0){
+      if(index == 0){
+        cell.childNodes[1].src = "./assets/wall/dr-single.png";
+      } else if(index == width-1){
+        cell.childNodes[1].src = "./assets/wall/dl-single.png";
+      } else{
+        cell.childNodes[1].src = "./assets/wall/lr.png";
+      }
+    } else if(row_index == height-1){
+      if(index == 0){
+        cell.childNodes[1].src = "./assets/wall/ur-single.png";
+      } else if(index == width-1){
+      cell.childNodes[1].src = "./assets/wall/lr-single.png";
+      } else{
+        cell.childNodes[1].src = "./assets/wall/lr.png";
+      }
+    } else if(index == 0 || index == width-1){
+        cell.childNodes[1].src = "./assets/wall/ud.png";
+    }
+  });
 }
 function edit(event) {
   mouseTool.tool(event);
@@ -1085,7 +1190,7 @@ function edit(event) {
 -                                INITIAL SETUP                                 -
 //////////////////////////////////////////////////////////////////////////////*/
 openButton.dispatchEvent(new MouseEvent('click'));
-document.querySelector('.field').value = '{\n"dimension": [32,18], \n"spawn": [10,10], \n"init_lights": 0, \n"lights": [\n{"position": [6,14],"lit": true}, \n{"position": [16,9],"lit": false}, \n{"position": [5,5],"lit": true}\n], \n"enemies": [\n{"position": [5,15],"type": 0,"wander": [[4,15],[10,15],[10,5]]}, \n{"position": [27,5],"type": 0,"wander": [[30,5],[20,5]]}\n], \n"walls": [\n{"position": [6,5],"movable": false}, \n{"position": [6,4],"movable": false}\n],\n"grass": [[8,12], [9,12], [10,12]],\n"mushrooms": [[7,7], [8,7], [8,6]],\n"water": [[13,11], [13,10], [13,9]]\n"}';
+document.querySelector('.field').value = '{\n"dimension": [32,18], \n"spawn": [10,10], \n"init_lights": 0, \n"lights": [\n{"position": [6,14],"lit": true}, \n{"position": [16,9],"lit": false}, \n{"position": [5,5],"lit": true}\n], \n"enemies": [\n{"position": [5,15],"type": 0,"wander": [[4,15],[10,15],[10,5]]}, \n{"position": [27,5],"type": 0,"wander": [[30,5],[20,5]]}\n], \n"walls": [\n{"position": [6,5],"movable": false}, \n{"position": [6,4],"movable": false}\n],\n"grass": [[8,12], [9,12], [10,12]],\n"mushrooms": [[7,7], [8,7], [8,6]],\n"water": [[13,11], [13,10], [13,9]],\n"pickup": [[1,1],[2,2]]\n"}';
 
 confirmOpen();
 toolButtons[0].dispatchEvent(new MouseEvent('click'));

@@ -18,6 +18,7 @@ package edu.cornell.gdiac.rekindled;
 
 import box2dLight.RayHandler;
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
@@ -145,6 +146,12 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String WATER_DARK_FILE = "images/water_tile_dark.png";
 	private static final String WATER_LIGHT_FILE = "images/water_tile_light.png";
 
+	private static final String PICKUP_SOURCE_FILE = "spritesheets/spritesheet_pickup.png";
+
+
+	/** texture for pickup */
+	private TextureRegion pickupTexture;
+
 	/** texture for water */
 	private TextureRegion waterDarkTexture;
 	private TextureRegion waterLightTexture;
@@ -240,9 +247,13 @@ public class GameplayController extends WorldController implements ContactListen
 	private int spawnx;
 	private int spawny;
 
+
 	private boolean start_pause;
 	private float start_time;
 	private static final float START_TIME = 3f;
+
+	private boolean muted;
+
 
 
 	/**
@@ -408,6 +419,9 @@ public class GameplayController extends WorldController implements ContactListen
 		manager.load(WATER_LIGHT_FILE, Texture.class);
 		assets.add(WATER_LIGHT_FILE);
 
+		manager.load(PICKUP_SOURCE_FILE, Texture.class);
+		assets.add(PICKUP_SOURCE_FILE);
+
 		super.preLoadContent(manager);
 	}
 
@@ -468,10 +482,6 @@ public class GameplayController extends WorldController implements ContactListen
 		playerLeftIdle = createTexture(manager, PLAYER_LEFT_IDLE, false);
 		playerRightIdle = createTexture(manager, PLAYER_RIGHT_IDLE, false);
 
-
-
-
-
 		enemyAngryAnimationFront = createTexture(manager, ENEMY_ANGRY_ANIMATION_FRONT, false);
 		enemyAngryAnimationBack = createTexture(manager, ENEMY_ANGRY_ANIMATION_BACK, false);
 		enemyAngryAnimationLeft = createTexture(manager, ENEMY_ANGRY_ANIMATION_LEFT, false);
@@ -494,7 +504,6 @@ public class GameplayController extends WorldController implements ContactListen
 		winScreenTexture = createTexture(manager, WIN_SCREEN_FILE, false);
 		lossScreenTexture = createTexture(manager, LOSS_SCREEN_FILE, false);
 
-
 		dimSourceTexture = createTexture(manager, DIM_SOURCE_FILE, false);
 		litSourceTexture = createTexture(manager, LIT_SOURCE_FILE, false);
 		lightAnimation = createTexture(manager, LIGHT_ANIMATION_FILE, false);
@@ -507,6 +516,8 @@ public class GameplayController extends WorldController implements ContactListen
 
 		waterDarkTexture = createTexture(manager, WATER_DARK_FILE, false);
 		waterLightTexture = createTexture(manager, WATER_LIGHT_FILE, false);
+
+		pickupTexture = createTexture(manager, PICKUP_SOURCE_FILE, false);
 
 		setWallTextures(manager);
 
@@ -576,6 +587,11 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private ArtObject[] artObjects;
 
+	private float muteCooldown;
+	private boolean canMute;
+	private Music music;
+	private float volume;
+
 
 
 	/**
@@ -591,11 +607,11 @@ public class GameplayController extends WorldController implements ContactListen
 	private int initLights;
 	private int[] walls;
 	private int[] water;
-	private int[] pickup;
 	private LinkedList<Pair<LightSourceLight, Long>> thrownLights;
 	CollisionController collisions;
 
-	boolean lostGame;
+	private ArtObject[] pickups;
+
 
 	/** The reader to process JSON files */
 	private JsonReader jsonReader;
@@ -689,14 +705,13 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 		// Parse Pickups
 		JsonValue pickup_json = levelFormat.get("pickup");
-		pickup = new int[pickup_json.size * 2];
+		pickups = new ArtObject[pickup_json.size];
 		coord = pickup_json.child();
 		idx = 0;
 		while (coord != null){
 			int[] pos = coord.asIntArray();
-			pickup[idx] = pos[0];
-			pickup[idx + 1] = pos[1];
-			idx+=2;
+			pickups[idx] = new ArtObject(pos[0], pos[1], 1, 1, 40, 8, ArtObject.ASSET_TYPE.PICKUP);
+			idx++;
 			coord = coord.next();
 		}
 	}
@@ -715,6 +730,11 @@ public class GameplayController extends WorldController implements ContactListen
 		setComplete(false);
 		setFailure(false);
 		world.setContactListener(this);
+
+		canMute = true;
+		volume = 1.0f;
+		muted = false;
+
 	}
 
 
@@ -746,6 +766,8 @@ public class GameplayController extends WorldController implements ContactListen
 
 		setComplete(false);
 		setFailure(false);
+		wonGame = false;
+		lostGame = false;
 
 		// Reload the level json
 		levelFormat = jsonReader.parse(Gdx.files.internal(LEVEL_PATH));
@@ -811,7 +833,10 @@ public class GameplayController extends WorldController implements ContactListen
 			}
 			lights[i].setTextureCache(litSourceTexture, dimSourceTexture);
 			addObject(lights[i]);
-
+			music = Gdx.audio.newMusic(Gdx.files.internal("sounds/bgm.mp3"));
+			music.setLooping(true);
+			music.setVolume(volume);
+			music.play();
 		}
 		//initialize thrown lights
 		thrownLights = new LinkedList<>();
@@ -832,7 +857,7 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 
 		// Make Board
-		board = new Board((int) BOARD_WIDTH, (int) BOARD_HEIGHT, walls, lights, water, pickup);
+		board = new Board((int) BOARD_WIDTH, (int) BOARD_HEIGHT, walls, lights, water);
 
 		// Add Walls
 		Wall wall;
@@ -940,7 +965,14 @@ public class GameplayController extends WorldController implements ContactListen
 			addObject(artObject);
 		}
 
-
+		// Add pickups
+		for (ArtObject pickup : pickups){
+			pickup.setAnimation(pickupTexture);
+			pickup.setDrawScale(scale);
+			pickup.setBodyType(BodyDef.BodyType.StaticBody);
+			pickup.setSensor(true);
+			addObject(pickup);
+		}
 	}
 
 	public void initLighting() {
@@ -983,10 +1015,11 @@ public class GameplayController extends WorldController implements ContactListen
 
 		insideThrownLight = false;
 		inLitTile = false;
-		// Temp Code to reset game if lost
+
 		if (lostGame){
-			lostGame = false;
-			reset();
+			// Play Lost Animation Here
+			player.move(InputController.Move_Direction.NO_MOVE);
+			return;
 		}
 
 		if (sourceRayHandler != null) {
@@ -1030,6 +1063,40 @@ public class GameplayController extends WorldController implements ContactListen
 			} else if (currentScale == ZOOM_OUT_SCALE) {
 				zoom_in = true;
 			}
+		}
+
+		if (input.didMute()){
+			if(muted && canMute){
+				player.unmute();
+				for (LightSourceObject l : lights){
+					l.unmute();
+				}
+				for (AIController a : controls){
+					a.unmute();
+				}
+				music.setVolume(1.0f);
+				muteCooldown = 0;
+				canMute = false;
+				muted = !muted;
+			}
+			else if (!muted && canMute){
+				player.mute();
+				for (LightSourceObject l : lights){
+					l.mute();
+				}
+				for (AIController a : controls) {
+					a.mute();
+				}
+				music.setVolume(0.0f);
+				muteCooldown = 0;
+				canMute = false;
+				muted = !muted;
+			}
+		}
+		muteCooldown += Gdx.graphics.getDeltaTime();
+		System.out.println(muteCooldown);
+		if(muteCooldown >= .5){
+			canMute = true;
 		}
 
 		//remove old thrown light
@@ -1130,8 +1197,6 @@ public class GameplayController extends WorldController implements ContactListen
 			}
 		}
 
-		// Pick up Light
-		pickupLightIfNeeded();
 
 		// Check win Condition
 		int numLit = 0;
@@ -1144,18 +1209,9 @@ public class GameplayController extends WorldController implements ContactListen
 			for(AIController controller : controls){
 				controller.resetSound();
 			}
+			music.stop();
 		}
 	}
-
-	public void pickupLightIfNeeded(){
-		int x = Math.round(player.getPosition().x);
-		int y = Math.round(player.getPosition().y);
-		if (board.isPickup(x, y)){
-			board.removePickup(x, y);
-			player.lightCounter++;
-		}
-	}
-
 
 	public Vector2 getThrownPosition(Vector2 playerPosition,Vector2 enemyPosition, Vector2 direction){
 		float distance = playerPosition.dst(enemyPosition);
@@ -1325,6 +1381,18 @@ public class GameplayController extends WorldController implements ContactListen
 				if((bd1 == player && bd2 == light) || (bd1 == light && bd2 == player)){
 					player.setTouchingLight(true);
 					light.setTouchingPlayer(true);
+				}
+			}
+
+			// Check pickup
+			// Very dumb way to do it
+			for (ArtObject pickup : pickups){
+				if((bd1 == player && bd2 == pickup) || (bd1 == pickup && bd2 == player)){
+					pickup.markRemoved(true);
+					if (!pickup.isTaken){
+						player.lightCounter++;
+						pickup.isTaken = true;
+					}
 				}
 			}
 

@@ -23,6 +23,7 @@ public class LightSourceObject extends BoxObstacle {
     LightSourceLight light;
     private Sound onSound;
     private Sound offSound;
+    private float volume;
 
     public LightSourceObject(int x, int y, int w, int h, boolean isLit){
         super(x, y, w, h);
@@ -32,6 +33,7 @@ public class LightSourceObject extends BoxObstacle {
         this.getFilterData().categoryBits = Constants.BIT_SOURCE;
         onSound = Gdx.audio.newSound(Gdx.files.internal("sounds/on.mp3"));
         offSound = Gdx.audio.newSound(Gdx.files.internal("sounds/off.mp3"));
+        volume = .75f;
     }
 
     public void addLight(LightSourceLight light) {
@@ -69,12 +71,12 @@ public class LightSourceObject extends BoxObstacle {
             isLit = !isLit;
             light.setActive(isLit);
             if (isLit) {
-                offSound.play(.75f);
+                offSound.play(volume);
                 this.timeElapsed = 0;
                 lightAnimation.setPlayMode(Animation.PlayMode.NORMAL);
                 isTransitioning = true;
             } else {
-                onSound.play(.75f);
+                onSound.play(volume);
                 this.timeElapsed = 0;
                 lightAnimation.setPlayMode(Animation.PlayMode.REVERSED);
                 isTransitioning = true;
@@ -82,6 +84,13 @@ public class LightSourceObject extends BoxObstacle {
             return true;
         }
         return false;
+    }
+
+    public void mute(){
+        volume = 0.0f;
+    }
+    public void unmute(){
+        volume = .75f;
     }
 
     public boolean getTouchingPlayer() {

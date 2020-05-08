@@ -18,6 +18,7 @@ package edu.cornell.gdiac.rekindled;
 
 import box2dLight.RayHandler;
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
@@ -245,6 +246,8 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private int spawnx;
 	private int spawny;
+
+	private boolean muted;
 
 
 	/**
@@ -578,6 +581,11 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private ArtObject[] artObjects;
 
+	private float muteCooldown;
+	private boolean canMute;
+	private Music music;
+	private float volume;
+
 
 
 	/**
@@ -717,6 +725,9 @@ public class GameplayController extends WorldController implements ContactListen
 		setFailure(false);
 		world.setContactListener(this);
 		currentScale = ZOOM_IN_SCALE;
+		canMute = true;
+		volume = 1.0f;
+		muted = false;
 	}
 
 
@@ -810,7 +821,10 @@ public class GameplayController extends WorldController implements ContactListen
 			}
 			lights[i].setTextureCache(litSourceTexture, dimSourceTexture);
 			addObject(lights[i]);
-
+			music = Gdx.audio.newMusic(Gdx.files.internal("sounds/bgm.mp3"));
+			music.setLooping(true);
+			music.setVolume(volume);
+			music.play();
 		}
 		//initialize thrown lights
 		thrownLights = new LinkedList<>();
@@ -947,8 +961,6 @@ public class GameplayController extends WorldController implements ContactListen
 			pickup.setSensor(true);
 			addObject(pickup);
 		}
-
-
 	}
 
 	public void initLighting() {
@@ -980,7 +992,6 @@ public class GameplayController extends WorldController implements ContactListen
 	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
-
 		insideThrownLight = false;
 		inLitTile = false;
 
@@ -1031,6 +1042,40 @@ public class GameplayController extends WorldController implements ContactListen
 			} else if (currentScale == ZOOM_OUT_SCALE) {
 				zoom_in = true;
 			}
+		}
+
+		if (input.didMute()){
+			if(muted && canMute){
+				player.unmute();
+				for (LightSourceObject l : lights){
+					l.unmute();
+				}
+				for (AIController a : controls){
+					a.unmute();
+				}
+				music.setVolume(1.0f);
+				muteCooldown = 0;
+				canMute = false;
+				muted = !muted;
+			}
+			else if (!muted && canMute){
+				player.mute();
+				for (LightSourceObject l : lights){
+					l.mute();
+				}
+				for (AIController a : controls) {
+					a.mute();
+				}
+				music.setVolume(0.0f);
+				muteCooldown = 0;
+				canMute = false;
+				muted = !muted;
+			}
+		}
+		muteCooldown += Gdx.graphics.getDeltaTime();
+		System.out.println(muteCooldown);
+		if(muteCooldown >= .5){
+			canMute = true;
 		}
 
 		//remove old thrown light
@@ -1143,6 +1188,7 @@ public class GameplayController extends WorldController implements ContactListen
 			for(AIController controller : controls){
 				controller.resetSound();
 			}
+			music.stop();
 		}
 	}
 

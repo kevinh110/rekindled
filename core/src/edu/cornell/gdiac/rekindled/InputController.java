@@ -91,6 +91,10 @@ public class InputController extends Entity_Controller{
 	private boolean zoomPressed;
 	private boolean zoomPrevious;
 
+	/** Whether the mute key (M) was pressed */
+	private boolean mutePressed;
+	private boolean mutePrevious;
+
 	/** whether the shift key was previously pressed */
 	private boolean shiftPrevious;
 
@@ -288,7 +292,7 @@ public class InputController extends Entity_Controller{
 		return NO_MOVE;
 	}
 
-
+	public boolean didMute() { return mutePressed; }
 
 	/**
 	 * Returns true if the player wants to go toggle the debug mode.
@@ -344,6 +348,7 @@ public class InputController extends Entity_Controller{
 		shiftPrevious = shiftPressed;
 		pausePrevious = pausePressed;
 		zoomPrevious = zoomPressed;
+		mutePrevious = mutePressed;
 
 		
 		// Check to see if a GamePad is connected
@@ -412,6 +417,7 @@ public class InputController extends Entity_Controller{
 		shiftPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
 		pausePressed = (secondary && pausePressed) || (Gdx.input.isKeyPressed(Input.Keys.L));
 		zoomPressed = (Gdx.input.isKeyPressed(Input.Keys.Z));
+		mutePressed = (Gdx.input.isKeyPressed(Input.Keys.M));
 
 
 		// Directional controls

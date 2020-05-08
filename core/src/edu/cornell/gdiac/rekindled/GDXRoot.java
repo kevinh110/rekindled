@@ -88,9 +88,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		levelComplete = new LevelCompleteMode(canvas, manager, 1);
 		levelComplete.setScreenListener(this);
 
-		music = Gdx.audio.newMusic(Gdx.files.internal("sounds/bgm.mp3"));
-		music.setLooping(true);
-		music.play();
+
 
 		// Initialize all the game worlds
 		controllers = new GameplayController[11];

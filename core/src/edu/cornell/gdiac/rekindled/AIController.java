@@ -92,6 +92,7 @@ public class AIController extends Entity_Controller {
 
     private Sound enemySound;
     private boolean enemySoundPlaying;
+    private float volume;
 
     /**
      * Creates an AIController for an enemy.
@@ -116,6 +117,7 @@ public class AIController extends Entity_Controller {
 
         alarmSound = Gdx.audio.newSound(Gdx.files.internal("sounds/alarm.mp3"));
         enemySound = Gdx.audio.newSound(Gdx.files.internal("sounds/enemy.mp3"));
+        volume = .5f;
     }
 
     public AIController(Enemy enemy, Board board, Player player, Enemy[] enemies, float del){
@@ -205,7 +207,7 @@ public class AIController extends Entity_Controller {
                 if (timer % PAUSE_TIME == 0){
                     state = FSMState.CHASE;
                     if(!enemySoundPlaying) {
-                        enemySound.loop(.3f);
+                        enemySound.loop(volume);
                         enemySoundPlaying = true;
                     }
                     timer = 0;
@@ -220,7 +222,7 @@ public class AIController extends Entity_Controller {
                     // has no target
                     state = FSMState.GOTO;
                     if(!enemySoundPlaying) {
-                        enemySound.loop(.3f);
+                        enemySound.loop(volume);
                         enemySoundPlaying = true;
                     }
                 }   // else: has target, keep chasing
@@ -233,7 +235,7 @@ public class AIController extends Entity_Controller {
                 if (hasLoS(playerLit)){
                     state = FSMState.CHASE;
                     if(!enemySoundPlaying) {
-                        enemySound.loop(.3f);
+                        enemySound.loop(volume);
                         enemySoundPlaying = true;
                     }
                 }
@@ -256,7 +258,7 @@ public class AIController extends Entity_Controller {
                         state = FSMState.PAUSED;
                     }
                     if(!enemySoundPlaying) {
-                        enemySound.loop(.3f);
+                        enemySound.loop(volume);
                         enemySoundPlaying = true;
                     }
                     timer = 0;
@@ -675,9 +677,16 @@ public class AIController extends Entity_Controller {
             }
         }
         else {
-            alarmSound.play(.5f);
+            alarmSound.play(volume);
             soundPlaying = true;
         }
+    }
+
+    public void mute(){
+        volume = 0.0f;
+    }
+    public void unmute(){
+        volume = .5f;
     }
 
     public void resetSound(){

@@ -77,6 +77,7 @@ public class Player extends FeetHitboxObstacle {
 
 
     private Sound grassStep;
+    private float volume;
 
 
     /**
@@ -299,6 +300,7 @@ public class Player extends FeetHitboxObstacle {
         grassStep = Gdx.audio.newSound(Gdx.files.internal("sounds/grassStep.mp3"));
 
         this.getFilterData().categoryBits = Constants.BIT_PLAYER;
+        volume = 1.0f;
     }
 
     public Player(float x, float y, float width, float height, int lights) {
@@ -357,7 +359,7 @@ public class Player extends FeetHitboxObstacle {
             }
         }
         else if (idle == false){
-            grassStep.play();
+            grassStep.play(volume);
             soundPlaying = true;
         }
     }
@@ -427,7 +429,7 @@ public class Player extends FeetHitboxObstacle {
     }
 
     public void throwLight() {
-        throwSound.play();
+        throwSound.play(volume);
         delayTimer = 0;
         cooldown = true;
         delayTimer2 = 0;
@@ -470,6 +472,12 @@ public class Player extends FeetHitboxObstacle {
 
     }
 
+    public void mute(){
+        volume = 0.0f;
+    }
+    public void unmute(){
+        volume = 1.0f;
+    }
 
     public void setTouchingLight(boolean value) {
         touchingLight = value;

@@ -61,7 +61,6 @@ public class Board {
         public boolean isDimTile;
         public boolean isTinted;
         public boolean isWater;
-        public boolean isPickup;
 
         /** Is this a goal tiles */
         public boolean goal = false;
@@ -253,7 +252,7 @@ public class Board {
 
     }
 
-    public Board(int width, int height, int[] walls, LightSourceObject[] lights, int[] water, int[] pickup) {
+    public Board(int width, int height, int[] walls, LightSourceObject[] lights, int[] water) {
         this(width, height);
         Vector2 temp;
         this.lightSources = new LinkedList<>();
@@ -268,12 +267,6 @@ public class Board {
         for (int ii = 0; ii < water.length -1 ; ii+= 2){
             tiles[water[ii]][water[ii+1]].isWater = true;
         }
-
-        // Set Pickup
-        for (int ii = 0; ii < pickup.length - 1; ii+= 2){
-            tiles[pickup[ii]][pickup[ii+1]].isPickup = true;
-        }
-
 
         // Set light sources
         for (LightSourceObject light : lights) {
@@ -464,8 +457,6 @@ public class Board {
             canvas.draw(waterLightRegion, tint, 0, 0, sx, sy, 0, 1 , 1 );
         } else if (tile.isWater){
             canvas.draw(waterDarkRegion, tint, 0, 0, sx, sy, 0, 1 , 1 );
-        } else if (tile.isPickup){
-            canvas.draw(waterLightRegion, tint, 0, 0, sx, sy, 0, 1, 1); // Temp texture
         } else {
             canvas.draw(darkRegion, tint, 0, 0, sx, sy, 0, 1 , 1 );
         }
@@ -685,14 +676,6 @@ public class Board {
             return;
         }
         tiles[x][y].goal = true;
-    }
-
-    public void removePickup(int x, int y){
-        tiles[x][y].isPickup = false;
-    }
-
-    public boolean isPickup(int x, int y){
-        return tiles[x][y].isPickup;
     }
 
     public boolean isGoal(int x, int y){

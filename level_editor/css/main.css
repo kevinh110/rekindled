@@ -138,11 +138,18 @@
   margin-left: -25px;
   position: absolute;
 }
-.watersprite{
+.pickupsprite{
+  width: 25px;
+  height: 25px;
+  margin-top: 2px;
+  margin-left: -17px;
+  position: absolute;
+}
+.holesprite{
   width: 36px;
   height: 36px;
   margin-top: -3px;
-  margin-left: -23px;
+  margin-left: -24px;
   position: absolute;
 }
 .lampsprite{

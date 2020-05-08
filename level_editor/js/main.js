@@ -214,7 +214,7 @@ function confirmOpen() {
     } 
 
     // Parse holes
-    if (level[i].search(/holes/) > -1){
+    if (level[i].search(/water/) > -1){
       let matches = level[i].matchAll(/([0-9]+),([0-9]+)/g);
       for(const match of matches){
         holes.push([Number(match[1]),Number(match[2])]);
@@ -553,7 +553,7 @@ function copyLevel() {
   level += '"walls": '+walls+', \n';
   level += '"grass": '+grass+', \n';
   level += '"mushrooms": '+mushrooms+', \n';
-  level += '"holes": '+holes+', \n';
+  level += '"water": '+holes+', \n';
   level += '"pickup": '+pickup+'\n';
   level += '}';
   info.textContent = level;
@@ -1190,7 +1190,7 @@ function edit(event) {
 -                                INITIAL SETUP                                 -
 //////////////////////////////////////////////////////////////////////////////*/
 openButton.dispatchEvent(new MouseEvent('click'));
-document.querySelector('.field').value = '{\n"dimension": [32,18], \n"spawn": [10,10], \n"init_lights": 0, \n"lights": [\n{"position": [6,14],"lit": true}, \n{"position": [16,9],"lit": false}, \n{"position": [5,5],"lit": true}\n], \n"enemies": [\n{"position": [5,15],"type": 0,"wander": [[4,15],[10,15],[10,5]]}, \n{"position": [27,5],"type": 0,"wander": [[30,5],[20,5]]}\n], \n"walls": [\n{"position": [6,5],"movable": false}, \n{"position": [6,4],"movable": false}\n],\n"grass": [[8,12], [9,12], [10,12]],\n"mushrooms": [[7,7], [8,7], [8,6]],\n"holes": [[13,11], [13,10], [13,9]],\n"pickup": [[1,1],[2,2]]\n"}';
+document.querySelector('.field').value = '{\n"dimension": [32,18], \n"spawn": [10,10], \n"init_lights": 0, \n"lights": [\n{"position": [6,14],"lit": true}, \n{"position": [16,9],"lit": false}, \n{"position": [5,5],"lit": true}\n], \n"enemies": [\n{"position": [5,15],"type": 0,"wander": [[4,15],[10,15],[10,5]]}, \n{"position": [27,5],"type": 0,"wander": [[30,5],[20,5]]}\n], \n"walls": [\n{"position": [6,5],"movable": false}, \n{"position": [6,4],"movable": false}\n],\n"grass": [[8,12], [9,12], [10,12]],\n"mushrooms": [[7,7], [8,7], [8,6]],\n"water": [[13,11], [13,10], [13,9]],\n"pickup": [[1,1],[2,2]]\n"}';
 
 confirmOpen();
 toolButtons[0].dispatchEvent(new MouseEvent('click'));

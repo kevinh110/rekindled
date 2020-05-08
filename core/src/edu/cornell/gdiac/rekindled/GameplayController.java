@@ -250,7 +250,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private boolean start_pause;
 	private float start_time;
-	private static final float START_TIME = 3f;
+	private static final float START_TIME = 1.5f;
 
 	private boolean muted;
 
@@ -1035,13 +1035,13 @@ public class GameplayController extends WorldController implements ContactListen
 
 		// Handle camera zoom
 		if (zoom_in) {
-			currentScale -= 0.01f;
+			currentScale -= 0.03f;
 			if (currentScale <= ZOOM_IN_SCALE) {
 				currentScale = ZOOM_IN_SCALE;
 				zoom_in = false;
 			}
 		} else if (zoom_out) {
-			currentScale += 0.01f;
+			currentScale += 0.03f;
 			if (currentScale  >= ZOOM_OUT_SCALE) {
 				currentScale = ZOOM_OUT_SCALE;
 				zoom_out = false;

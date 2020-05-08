@@ -416,7 +416,7 @@ public class InputController extends Entity_Controller{
 				|| (Gdx.input.isKeyPressed(Input.Keys.D));
 		shiftPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
 		pausePressed = (secondary && pausePressed) || (Gdx.input.isKeyPressed(Input.Keys.L));
-		zoomPressed = (Gdx.input.isKeyPressed(Input.Keys.Z));
+		zoomPressed = (secondary && zoomPressed) || (Gdx.input.isKeyPressed(Input.Keys.Z));
 		mutePressed = (Gdx.input.isKeyPressed(Input.Keys.M));
 
 
@@ -439,6 +439,6 @@ public class InputController extends Entity_Controller{
 	}
 
     public boolean didZoom() {
-		return zoomPressed;
+		return zoomPressed && !zoomPrevious;
     }
 }

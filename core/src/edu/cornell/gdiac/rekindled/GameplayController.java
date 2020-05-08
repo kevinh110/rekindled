@@ -19,6 +19,7 @@ package edu.cornell.gdiac.rekindled;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
@@ -590,6 +591,7 @@ public class GameplayController extends WorldController implements ContactListen
 	private float muteCooldown;
 	private boolean canMute;
 	private Music music;
+	private Sound deathSound;
 	private float volume;
 
 
@@ -768,6 +770,7 @@ public class GameplayController extends WorldController implements ContactListen
 		setFailure(false);
 		wonGame = false;
 		lostGame = false;
+		music.stop();
 
 		// Reload the level json
 		levelFormat = jsonReader.parse(Gdx.files.internal(LEVEL_PATH));
@@ -833,11 +836,12 @@ public class GameplayController extends WorldController implements ContactListen
 			}
 			lights[i].setTextureCache(litSourceTexture, dimSourceTexture);
 			addObject(lights[i]);
-			music = Gdx.audio.newMusic(Gdx.files.internal("sounds/bgm.mp3"));
-			music.setLooping(true);
-			music.setVolume(volume);
-			music.play();
 		}
+		music = Gdx.audio.newMusic(Gdx.files.internal("sounds/bgm.mp3"));
+		music.setLooping(true);
+		music.setVolume(volume);
+		music.play();
+		deathSound = Gdx.audio.newSound(Gdx.files.internal("sounds/death.mp3"));
 		//initialize thrown lights
 		thrownLights = new LinkedList<>();
 
@@ -1067,6 +1071,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 		if (input.didMute()){
 			if(muted && canMute){
+				volume = 1.0f;
 				player.unmute();
 				for (LightSourceObject l : lights){
 					l.unmute();
@@ -1080,6 +1085,7 @@ public class GameplayController extends WorldController implements ContactListen
 				muted = !muted;
 			}
 			else if (!muted && canMute){
+				volume = 0.0f;
 				player.mute();
 				for (LightSourceObject l : lights){
 					l.mute();
@@ -1370,6 +1376,7 @@ public class GameplayController extends WorldController implements ContactListen
 				if (((bd1 == player && bd2 == enemy) || (bd1 == enemy &&  bd2 == player))
 						&& !enemy.getIsLit()){
 					lostGame = true;
+					deathSound.play(volume);
 					for(AIController controller : controls){
 						controller.resetSound();
 					}

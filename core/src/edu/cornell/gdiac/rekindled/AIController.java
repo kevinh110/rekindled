@@ -252,7 +252,6 @@ public class AIController extends Entity_Controller {
                 }
                 if (hasLoS(playerLit)){
                     if (timer < WAIT_TIME / SPIN_NUM){
-                        System.out.println("Chasing - Timer: " + timer);
                         state = FSMState.CHASE;
                     } else {
                         state = FSMState.PAUSED;

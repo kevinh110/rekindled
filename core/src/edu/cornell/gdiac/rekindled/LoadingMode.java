@@ -220,6 +220,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		return currentLevel;
 	}
 
+	public boolean isMuted(){
+		return soundOff;
+	}
+
 	/**
 	 * Returns the budget for the asset loader.
 	 *

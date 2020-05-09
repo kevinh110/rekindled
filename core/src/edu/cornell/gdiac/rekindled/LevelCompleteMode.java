@@ -360,13 +360,12 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
         if (active) {
             update(delta);
             draw();
-
 //            System.out.println("Ready: " + isReady());
 //            System.out.println("listener: " + listener);
             // We are are ready, notify our listener
             if (isReady() && listener != null) {
                 pressState = 0;
-                System.out.println("Exit Code: " + exitCode);
+//                System.out.println("Exit Code: " + exitCode);
                 listener.exitScreen(this, exitCode);
             }
         }
@@ -459,7 +458,7 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
         }
 //        // Flip to match graphics coordinates
         screenY = heightY-screenY;
-        System.out.println(screenX + ", " + screenY);
+//        System.out.println(screenX + ", " + screenY);
         switch (mode) {
             case MODE_COMPLETE:
                 if (screenY >= 98 && screenY <= 173){

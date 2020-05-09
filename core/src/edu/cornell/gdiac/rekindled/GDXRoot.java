@@ -88,8 +88,6 @@ public class GDXRoot extends Game implements ScreenListener {
 		levelComplete = new LevelCompleteMode(canvas, manager, 1);
 		levelComplete.setScreenListener(this);
 
-
-
 		// Initialize all the game worlds
 		controllers = new GameplayController[11];
 		controllers[0] = new GameplayController("jsons/Megan_0.json");
@@ -103,7 +101,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers[8] = new GameplayController("jsons/intermediate2.json");
 		controllers[9] = new GameplayController("jsons/spineasy.json");
 		controllers[10] = new GameplayController("jsons/watertest.json");
-		
+
 		for(int ii = 0; ii < controllers.length; ii++) {
 			controllers[ii].preLoadContent(manager);
 		}

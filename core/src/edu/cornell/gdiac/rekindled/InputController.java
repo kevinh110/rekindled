@@ -414,11 +414,10 @@ public class InputController extends Entity_Controller{
 				|| (Gdx.input.isKeyPressed(Input.Keys.A));
 		rightPressed  = (secondary && rightPressed) || (Gdx.input.isKeyPressed(Input.Keys.RIGHT))
 				|| (Gdx.input.isKeyPressed(Input.Keys.D));
-		shiftPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
+		shiftPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);
 		pausePressed = (secondary && pausePressed) || (Gdx.input.isKeyPressed(Input.Keys.L));
 		zoomPressed = (secondary && zoomPressed) || (Gdx.input.isKeyPressed(Input.Keys.Z));
 		mutePressed = (Gdx.input.isKeyPressed(Input.Keys.M));
-
 
 		// Directional controls
 		horizontal = (secondary ? horizontal : 0.0f);

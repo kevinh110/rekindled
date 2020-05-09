@@ -255,7 +255,8 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private boolean muted;
 
-
+	// Number of frames after collision where player doesn't lose
+	private static final int GRACE_PERIOD = 10;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -665,7 +666,7 @@ public class GameplayController extends WorldController implements ContactListen
 		while (enemy != null){
 			int[] pos = enemy.get("position").asIntArray();
 			JsonValue wander = enemy.get("wander");
-			enemies[idx] = new Enemy(pos[0], pos[1], 1, 1, enemy.getInt("type"));
+			enemies[idx] = new Enemy(pos[0], pos[1], 0.5f, 0.5f, enemy.getInt("type"));
 			enemies[idx].setWander(wander);
 			idx++;
 			enemy = enemy.next();
@@ -712,7 +713,7 @@ public class GameplayController extends WorldController implements ContactListen
 		idx = 0;
 		while (coord != null){
 			int[] pos = coord.asIntArray();
-			pickups[idx] = new ArtObject(pos[0], pos[1], 1, 1, 40, 8, ArtObject.ASSET_TYPE.PICKUP);
+			pickups[idx] = new ArtObject(pos[0], pos[1], 1, 1, 50, 8, ArtObject.ASSET_TYPE.PICKUP);
 			idx++;
 			coord = coord.next();
 		}
@@ -770,7 +771,9 @@ public class GameplayController extends WorldController implements ContactListen
 		setFailure(false);
 		wonGame = false;
 		lostGame = false;
-		music.stop();
+		if (music != null){
+			music.stop();
+		}
 
 		// Reload the level json
 		levelFormat = jsonReader.parse(Gdx.files.internal(LEVEL_PATH));
@@ -1055,7 +1058,7 @@ public class GameplayController extends WorldController implements ContactListen
 		rayCamera.zoom = currentScale;
 
 		if (input.didZoom()) {
-			System.out.println("Zoom Zoom");
+//			System.out.println("Zoom Zoom");
 			if (zoom_in) {
 				zoom_in = false;
 				zoom_out = true;
@@ -1100,7 +1103,7 @@ public class GameplayController extends WorldController implements ContactListen
 			}
 		}
 		muteCooldown += Gdx.graphics.getDeltaTime();
-		System.out.println(muteCooldown);
+//		System.out.println(muteCooldown);
 		if(muteCooldown >= .5){
 			canMute = true;
 		}
@@ -1164,6 +1167,7 @@ public class GameplayController extends WorldController implements ContactListen
 						Vector2 thrown_pos = getThrownPosition(player.getPosition(), e.getPosition(), direction);
 						e.setPosition(new Vector2((int)thrown_pos.x, (int)thrown_pos.y));
 						e.stunned = true;
+						e.collidedWithPlayer = false;
 					}
 				}
 			}
@@ -1203,7 +1207,6 @@ public class GameplayController extends WorldController implements ContactListen
 			}
 		}
 
-
 		// Check win Condition
 		int numLit = 0;
 		for (Enemy e : enemies){
@@ -1216,6 +1219,30 @@ public class GameplayController extends WorldController implements ContactListen
 				controller.resetSound();
 			}
 			music.stop();
+		}
+
+		// Check loss condition
+		// Timer allows game to err on side of player
+		timer++;
+		int numNotCollided = 0;
+		for (Enemy e : enemies){
+			if (e.collidedWithPlayer && !e.getIsLit()){
+				if (timer % GRACE_PERIOD == 0){
+					lostGame = true;
+					timer = 0;
+					deathSound.play(volume);
+					for(AIController controller : controls){
+						controller.resetSound();
+					}
+				}
+			}
+			else {
+				numNotCollided++;
+				e.collidedWithPlayer = false;
+			}
+		}
+		if (numNotCollided == enemies.length){
+			timer = 0;
 		}
 	}
 
@@ -1279,11 +1306,14 @@ public class GameplayController extends WorldController implements ContactListen
 				obj.draw(canvas);
 		}
 
-		// Draw enemies + player; this is redundant but needed for correct ordering of textures
-		player.draw(canvas);
+		// Draw enemies + player + lights; this is redundant but needed for correct ordering of textures
+		for (LightSourceObject light : lights){
+			light.draw(canvas);
+		}
 		for (Enemy e: enemies){
 			e.draw(canvas);
 		}
+		player.draw(canvas);
 		// Draw Exclamation Points
 		for (AIController controller : controls){
 			if (controller.getState() == AIController.FSMState.PAUSED){
@@ -1375,11 +1405,7 @@ public class GameplayController extends WorldController implements ContactListen
 			for (Enemy enemy : enemies) {
 				if (((bd1 == player && bd2 == enemy) || (bd1 == enemy &&  bd2 == player))
 						&& !enemy.getIsLit()){
-					lostGame = true;
-					deathSound.play(volume);
-					for(AIController controller : controls){
-						controller.resetSound();
-					}
+					enemy.collidedWithPlayer = true;
 				}
 			}
 
@@ -1392,7 +1418,7 @@ public class GameplayController extends WorldController implements ContactListen
 			}
 
 			// Check pickup
-			// Very dumb way to do it
+			// Dumb way to do it
 			for (ArtObject pickup : pickups){
 				if((bd1 == player && bd2 == pickup) || (bd1 == pickup && bd2 == player)){
 					pickup.markRemoved(true);

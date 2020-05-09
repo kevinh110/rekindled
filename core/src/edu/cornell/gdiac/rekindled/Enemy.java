@@ -43,6 +43,7 @@ public class Enemy extends FeetHitboxObstacle {
 
     public boolean angry;
     public int[] goal;
+    public boolean collidedWithPlayer;
 
     /** The force to apply to this rocket */
     private Vector2 force;

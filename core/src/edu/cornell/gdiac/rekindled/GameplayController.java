@@ -651,7 +651,7 @@ public class GameplayController extends WorldController implements ContactListen
 		idx = 0;
 		while (light != null){
 			int[] pos = light.get("position").asIntArray();
-			lights[idx] = new LightSourceObject(pos[0], pos[1], 1, 1,light.getBoolean("lit"));
+			lights[idx] = new LightSourceObject(pos[0], pos[1], 1.5f, 1.5f,light.getBoolean("lit"));
 			idx++;
 			light = light.next();
 		}
@@ -1116,7 +1116,6 @@ public class GameplayController extends WorldController implements ContactListen
 		player.move(next_move);
 		player.updateCooldown(dt);
 
-
 		if (input.didSecondary() && player.getTouchingLight() && !player.getToggleCooldown()) {
 			LightSourceObject goalLight = null;
 
@@ -1147,7 +1146,7 @@ public class GameplayController extends WorldController implements ContactListen
 					(thrownLights.isEmpty() || (System.currentTimeMillis() - thrownLights.get(0).getValue() > 500L))) {
 
 				LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius
-				light.setColor(Color.GOLD);
+				light.setColor(Color.PURPLE);
 				light.setPosition(player.getX(), player.getY());
 				thrownLights.add(new Pair<>(light, System.currentTimeMillis()));
 				player.throwLight();

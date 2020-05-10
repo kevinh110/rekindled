@@ -150,7 +150,11 @@ public class AIController extends Entity_Controller {
         // Add initialization code as necessary
         Vector2 pos = enemy.getPosition();
         // Next state depends on current state.
-        if (board.isLitTileBoard((int) pos.x, (int) pos.y)){
+        //check the four corners
+        if (board.isLitTileBoard((int) (pos.x + enemy.getWidth() / 2f), (int) (pos.y + enemy.getHeight() / 2f)) ||
+                board.isLitTileBoard((int) (pos.x + enemy.getWidth() / 2f), (int) (pos.y - enemy.getHeight() / 2f)) ||
+                        board.isLitTileBoard((int) (pos.x - enemy.getWidth() / 2f), (int) (pos.y + enemy.getHeight() / 2f)) ||
+                                board.isLitTileBoard((int) (pos.x - enemy.getWidth() / 2f), (int) (pos.y - enemy.getHeight() / 2f))) {
             if(state != FSMState.LIT){
                 enemy.setIsLit(true);
             }

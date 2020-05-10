@@ -28,7 +28,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import edu.cornell.gdiac.rekindled.obstacle.BorderMarker;
 
 import java.util.LinkedList;
 
@@ -61,6 +60,11 @@ public class Board {
         public boolean isDimTile;
         public boolean isTinted;
         public boolean isWater;
+
+        public boolean topBordered;
+        public boolean bottomBordered;
+        public boolean leftBordered;
+        public boolean rightBordered;
 
         /** Is this a goal tiles */
         public boolean goal = false;
@@ -125,6 +129,12 @@ public class Board {
     private static final String LEFT_BORDER = "images/left-border.png";
     private static final String RIGHT_BORDER = "images/right-border.png";
 
+    /** The file locations for unlit edges */
+    private static final String UNLIT_UP_BORDER = "images/unlit_borders_up.png";
+    private static final String UNLIT_DOWN_BORDER = "images/unlit_borders_down.png";
+    private static final String UNLIT_LEFT_BORDER = "images/unlit_borders_left.png";
+    private static final String UNLIT_RIGHT_BORDER = "images/unlit_borders_right.png";
+
     private static final int LIGHT_RADIUS = 2;
 
     // Instance attributes
@@ -159,6 +169,11 @@ public class Board {
     private Texture leftBorder;
     private Texture rightBorder;
 
+    private Texture unlitUpBorder;
+    private Texture unlitDownBorder;
+    private Texture unlitLeftBorder;
+    private Texture unlitRightBorder;
+
     /**texture region for lightTile*/;
     private TextureRegion lightRegion
     /**texture region for darkTile*/;
@@ -178,8 +193,10 @@ public class Board {
     private TextureRegion leftBorderRegion;
     private TextureRegion rightBorderRegion;
 
-    private BorderMarker border;
-    private Vector2 center;
+    private TextureRegion unlitUpBorderRegion;
+    private TextureRegion unlitDownBorderRegion;
+    private TextureRegion unlitLeftBorderRegion;
+    private TextureRegion unlitRightBorderRegion;
 
     private static final Color sightTint = Color.SALMON;
 
@@ -201,10 +218,16 @@ public class Board {
         this.litLightSource = new Texture(LIT_SOURCE);
         this.waterDarkTile = new Texture(WATER_DARK_FILE);
         this.waterLightTile = new Texture(WATER_LIGHT_FILE);
+
         this.upBorder = new Texture(UP_BORDER);
         this.downBorder = new Texture(DOWN_BORDER);
         this.leftBorder = new Texture(LEFT_BORDER);
         this.rightBorder = new Texture(RIGHT_BORDER);
+
+        this.unlitUpBorder = new Texture(UNLIT_UP_BORDER);
+        this.unlitDownBorder = new Texture(UNLIT_DOWN_BORDER);
+        this.unlitLeftBorder = new Texture(UNLIT_LEFT_BORDER);
+        this.unlitRightBorder = new Texture(UNLIT_RIGHT_BORDER);
 
         this.darkRegion = new TextureRegion(darkTile, TILE_WIDTH, TILE_WIDTH);
         this.lightRegion = new TextureRegion(lightTile, TILE_WIDTH, TILE_WIDTH);
@@ -220,10 +243,13 @@ public class Board {
         this.leftBorderRegion = new TextureRegion(leftBorder, TILE_WIDTH + 16, TILE_WIDTH + 16);
         this.rightBorderRegion = new TextureRegion(rightBorder, TILE_WIDTH + 16, TILE_WIDTH + 16);
 
+        this.unlitUpBorderRegion = new TextureRegion(unlitUpBorder, TILE_WIDTH + 16, TILE_WIDTH + 16);
+        this.unlitDownBorderRegion = new TextureRegion(unlitDownBorder, TILE_WIDTH + 16, TILE_WIDTH + 16);
+        this.unlitLeftBorderRegion = new TextureRegion(unlitLeftBorder, TILE_WIDTH + 16, TILE_WIDTH + 16);
+        this.unlitRightBorderRegion = new TextureRegion(unlitRightBorder, TILE_WIDTH + 16, TILE_WIDTH + 16);
+
         Vector2 temp = new Vector2();
         this.lightSources = new LinkedList<>();
-
-        center = new Vector2();
 
         // Init Tiles
         tiles = new TileState[width][height];
@@ -241,8 +267,6 @@ public class Board {
             tiles[0][y].setWall();
             tiles[this.width - 1][y].setWall();
         }
-
-        border = new BorderMarker(25, TILE_WIDTH);
 
         // Resets visited/goal flags of tiles only. Used for pathfinding.
         // I don't know if this needs to be here
@@ -379,7 +403,6 @@ public class Board {
      * All we do is animate falling tiles.
      */
     public void update(Vector2 pos, float delta, Vector2 center) {
-        this.center = center;
         int xx = Math.round(pos.x);
         int yy = Math.round(pos.y);
 
@@ -389,13 +412,16 @@ public class Board {
                 TileState tile = tiles[x][y];
                 tile.isLitTile = false;
                 tile.isTinted = false;
+
+                tile.topBordered = false;
+                tile.bottomBordered = false;
+                tile.leftBordered = false;
+                tile.rightBordered = false;
             }
         }
-        border.clear();
 
         if (tiles[xx][yy].isLightSource && !tiles[xx][yy].isLitLightSource) {
             updateLitTiles(pos, true);
-            border.update(delta, center);
         }
         for(int ii = 0; ii < lightSources.size() -1; ii += 2){
             TileState source = tiles[lightSources.get(ii)][lightSources.get(ii+1)];
@@ -430,9 +456,6 @@ public class Board {
                 drawLit(x, y, canvas);
             }
         }
-
-        border.draw(canvas);
-
     }
 
     /**
@@ -468,6 +491,16 @@ public class Board {
         float sx = boardToScreenCenter(x);
         float sy = boardToScreenCenter(y);
 
+        if (tile.isTinted) {
+            if (tile.topBordered)
+                canvas.draw(unlitUpBorderRegion, Color.WHITE, 6, 5, sx, sy, 0, 1, 1);
+            if (tile.bottomBordered)
+                canvas.draw(unlitDownBorderRegion, Color.WHITE, 9, 11, sx, sy, 0, 1, 1);
+            if (tile.leftBordered)
+                canvas.draw(unlitLeftBorderRegion, Color.WHITE, 11, 12, sx, sy, 0, 1, 1);
+            if (tile.rightBordered)
+                canvas.draw(unlitRightBorderRegion, Color.WHITE, 4, 1, sx, sy, 0, 1, 1);
+        }
         if (tile.isLitTile && !tile.isWater) {
             canvas.draw(lightRegion, Color.WHITE, 0, 0, sx, sy, 0, 1, 1);
             canvas.draw(upBorderRegion, Color.WHITE, 5, 8, sx, sy, 0, 1, 1);
@@ -956,16 +989,43 @@ public class Board {
     }
 
     private void setTinted(int x, int y) {
-        TileState t = tiles[x][y];
-        if (t.isTinted)
+        TileState tile = tiles[x][y];
+
+        TileState top = null;
+        TileState bottom = null;
+        TileState left = null;
+        TileState right = null;
+
+        if (inBounds(x, y+1))
+            top = tiles[x][y+1];
+        if (inBounds(x, y-1))
+            bottom = tiles[x][y-1];
+        if (inBounds(x-1, y))
+            left = tiles[x-1][y];
+        if (inBounds(x+1, y))
+            right = tiles[x+1][y];
+
+
+        if (tile.isTinted)
             return;
         else {
-            t.isTinted = true;
-            border.add(boardToScreenCenter(x) + TILE_WIDTH/2, boardToScreenCenter(y) + TILE_WIDTH/2);
+            tile.isTinted = true;
+
+            // top border if above tile is not bottom bordered
+            if (top != null && !top.bottomBordered)
+                tile.topBordered = true;
+            // bottom border if bottom tile is not top bordered
+            if (bottom != null && !bottom.topBordered)
+                tile.bottomBordered = true;
+            // left border if left tile is not right bordered
+            if (left != null && !left.rightBordered)
+                tile.leftBordered = true;
+            // right border if right tile is not left bordered
+            if (right != null && !right.leftBordered)
+                tile.rightBordered = true;
         }
     }
 
     public void dispose() {
-        border.dispose();
     }
 }

@@ -27,7 +27,6 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.graphics.*;
-import edu.cornell.gdiac.rekindled.light.AuraLight;
 import edu.cornell.gdiac.rekindled.light.LightSourceLight;
 import edu.cornell.gdiac.rekindled.light.SightConeLight;
 import edu.cornell.gdiac.rekindled.obstacle.BoxObstacle;
@@ -947,8 +946,7 @@ public class GameplayController extends WorldController implements ContactListen
 		player = new Player(spawn[0], spawn[1], 0.5f, 0.5f, initLights);
 		this.spawnx = spawn[0];
 		this.spawny = spawn[1];
-		AuraLight light_a = new AuraLight(sourceRayHandler);
-		player.addAura(light_a);
+
 		player.setDrawScale(scale);
 		player.setAnimations(playerAnimationFront, playerAnimationBack, playerAnimationLeft, playerAnimationRight,
 				placingLightFront, takingLightFront, placingLightLeft, takingLightLeft, placingLightRight,
@@ -1116,11 +1114,10 @@ public class GameplayController extends WorldController implements ContactListen
 
 		//player movement
 		player.move(next_move);
-		player.updateAura();
 		player.updateCooldown(dt);
 
 
-		if (input.didSecondary() && player.getTouchingLight() && !player.getCooldown()) {
+		if (input.didSecondary() && player.getTouchingLight() && !player.getToggleCooldown()) {
 			LightSourceObject goalLight = null;
 
 			for (LightSourceObject light : lights) {
@@ -1146,7 +1143,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 		//throw light
 
-			if((input.didShift() && player.lightCounter > 0 && !player.getCooldown2()) &&
+			if((input.didShift() && player.lightCounter > 0 && !player.getThrowCooldown()) &&
 					(thrownLights.isEmpty() || (System.currentTimeMillis() - thrownLights.get(0).getValue() > 500L))) {
 
 				LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius

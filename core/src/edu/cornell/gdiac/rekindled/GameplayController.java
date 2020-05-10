@@ -1155,35 +1155,34 @@ public class GameplayController extends WorldController implements ContactListen
 		sourceRayHandler.setBlurNum(3);
 	}
 
+
+	private void unmute(){
+		volume = 1.0f;
+		player.unmute();
+		for (LightSourceObject l : lights){
+			l.unmute();
+		}
+		for (AIController a : controls){
+			a.unmute();
+		}
+		music.setVolume(1.0f);
+		muteCooldown = 0;
+		canMute = false;
+		muted = !muted;
+	}
 	private void mute(){
-		if(muted){ // If currently muted, unmute
-			volume = 1.0f;
-			player.unmute();
-			for (LightSourceObject l : lights){
-				l.unmute();
-			}
-			for (AIController a : controls){
-				a.unmute();
-			}
-			music.setVolume(1.0f);
-			muteCooldown = 0;
-			canMute = false;
-			muted = !muted;
+		volume = 0.0f;
+		player.mute();
+		for (LightSourceObject l : lights){
+			l.mute();
 		}
-		else if (!muted){ // If currently not muted, mute
-			volume = 0.0f;
-			player.mute();
-			for (LightSourceObject l : lights){
-				l.mute();
-			}
-			for (AIController a : controls) {
-				a.mute();
-			}
-			music.setVolume(0.0f);
-			muteCooldown = 0;
-			canMute = false;
-			muted = !muted;
+		for (AIController a : controls) {
+			a.mute();
 		}
+		music.setVolume(0.0f);
+		muteCooldown = 0;
+		canMute = false;
+		muted = !muted;
 	}
 
 	/**

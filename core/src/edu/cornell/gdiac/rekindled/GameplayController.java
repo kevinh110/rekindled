@@ -1156,7 +1156,7 @@ public class GameplayController extends WorldController implements ContactListen
 	}
 
 
-	private void unmute(){
+	public void unmute(){
 		volume = 1.0f;
 		player.unmute();
 		for (LightSourceObject l : lights){
@@ -1170,7 +1170,7 @@ public class GameplayController extends WorldController implements ContactListen
 		canMute = false;
 		muted = !muted;
 	}
-	private void mute(){
+	public void mute(){
 		volume = 0.0f;
 		player.mute();
 		for (LightSourceObject l : lights){

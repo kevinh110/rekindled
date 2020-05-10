@@ -136,6 +136,37 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String UDR_SINGLE_WALL = "wall/udr-single.png";
 	private static final String ULR_SINGLE_WALL = "wall/ulr-single.png";
 
+	/** file locations of the hole*/
+	private static final String D_HOLE = "hole/d.png";
+	private static final String DL_HOLE = "hole/dl.png";
+	private static final String DL_SINGLE_HOLE = "hole/dl-single.png";
+	private static final String DLR_HOLE = "hole/dlr.png";
+	private static final String DR_HOLE = "hole/dr.png";
+	private static final String DR_SINGLE_HOLE = "hole/dr-single.png";
+	private static final String L_HOLE = "hole/l.png";
+	private static final String LR_HOLE = "hole/lr.png";
+	private static final String LR__SINGLE_HOLE = "hole/ul-single.png"; //the LR wall single is actually incorrectly named
+																		//for consistency, I am naming this wrong as well
+	private static final String R_HOLE = "hole/r.png";
+	private static final String SINGULAR_HOLE = "hole/single.png"; //name changed for consistency
+	private static final String U_HOLE = "hole/u.png";
+	private static final String UD_HOLE = "hole/ud.png";
+	private static final String UDL_HOLE = "hole/udl.png";
+	private static final String UDLR_HOLE = "hole/udlr.png";
+	private static final String UDR_HOLE = "hole/udr.png";
+	private static final String UL_HOLE = "hole/ul.png";
+	private static final String ULR_HOLE = "hole/ulr.png";
+	private static final String UR_HOLE = "hole/ur.png";
+	private static final String UR_SINGLE_HOLE = "hole/ur-single.png";
+	private static final String DLR_SINGLE_HOLE = "hole/dlr-single.png";
+	private static final String UDL_SINGLE_HOLE = "hole/udl-single.png";
+	private static final String UDLR_SINGLE_HOLE = "hole/udlr-single.png";
+	private static final String UDR_SINGLE_HOLE = "hole/udr-single.png";
+	private static final String ULR_SINGLE_HOLE = "hole/ulr-single.png";
+
+
+
+
 	/** file locations of the light sources*/
 	private static final String LIT_SOURCE_FILE = "images/litLightSource.png";
 	private static final String DIM_SOURCE_FILE = "images/dimLightSource.png";
@@ -173,6 +204,9 @@ public class GameplayController extends WorldController implements ContactListen
 
 	/** Array of Texture Regions for the wall*/
 	private TextureRegion[] wallTextures;
+
+	/**Array of Texture Regions for the holes*/
+	private TextureRegion[] holeTextures;
 
 	/**
 	 * Textures for player
@@ -248,6 +282,11 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private static final float ZOOM_OUT_SCALE = 2.5f;
 	private static final float ZOOM_IN_SCALE = 1.0f;
+
+	/** scale of the walls*/
+	private static final float WALL_SCALE = .33f;
+	/** scale of the hole tiles*/
+	private static final float HOLE_SCALE = .146f;
 
 	private boolean zoom_in;
 	private boolean zoom_out;
@@ -419,7 +458,60 @@ public class GameplayController extends WorldController implements ContactListen
 		manager.load(ULR_SINGLE_WALL, Texture.class);
 		assets.add(ULR_WALL);
 
-
+		manager.load(D_HOLE, Texture.class);
+		assets.add(D_HOLE);
+		manager.load(DL_HOLE, Texture.class);
+		assets.add(DL_HOLE);
+		manager.load(DL_SINGLE_HOLE, Texture.class);
+		assets.add(DL_SINGLE_HOLE);
+		manager.load(DLR_HOLE, Texture.class);
+		assets.add(DLR_HOLE);
+		manager.load(DR_HOLE, Texture.class);
+		assets.add(DR_HOLE);
+		manager.load(DR_SINGLE_HOLE, Texture.class);
+		assets.add(DR_SINGLE_HOLE);
+		manager.load(L_HOLE, Texture.class);
+		assets.add(L_HOLE);
+		manager.load(LR_HOLE, Texture.class);
+		assets.add(LR_HOLE);
+		manager.load(LR__SINGLE_HOLE, Texture.class);
+		assets.add(LR__SINGLE_HOLE);
+		manager.load(R_HOLE, Texture.class);
+		assets.add(R_HOLE);
+		manager.load(SINGULAR_HOLE, Texture.class);
+		assets.add(SINGULAR_HOLE);
+		manager.load(U_HOLE, Texture.class);
+		assets.add(U_HOLE);
+		manager.load(UD_HOLE, Texture.class);
+		assets.add(UD_HOLE);
+		manager.load(UDL_HOLE, Texture.class);
+		assets.add(UDL_HOLE);
+		manager.load(UDLR_HOLE, Texture.class);
+		assets.add(UDLR_HOLE);
+		manager.load(UDR_HOLE, Texture.class);
+		assets.add(UDR_HOLE);
+		manager.load(UDLR_HOLE, Texture.class);
+		assets.add(UDLR_HOLE);
+		manager.load(UL_HOLE, Texture.class);
+		assets.add(UL_HOLE);
+		manager.load(ULR_HOLE, Texture.class);
+		assets.add(ULR_HOLE);
+		manager.load(UR_HOLE, Texture.class);
+		assets.add(UR_HOLE);
+		manager.load(UR_HOLE, Texture.class);
+		assets.add(UR_HOLE);
+		manager.load(UR_SINGLE_HOLE, Texture.class);
+		assets.add(UR_SINGLE_HOLE);
+		manager.load(DLR_SINGLE_HOLE, Texture.class);
+		assets.add(DLR_SINGLE_HOLE);
+		manager.load(UDL_SINGLE_HOLE, Texture.class);
+		assets.add(UDL_SINGLE_HOLE);
+		manager.load(UDLR_SINGLE_HOLE, Texture.class);
+		assets.add(UDLR_SINGLE_HOLE);
+		manager.load(UDR_SINGLE_HOLE, Texture.class);
+		assets.add(UDR_SINGLE_HOLE);
+		manager.load(ULR_SINGLE_HOLE, Texture.class);
+		assets.add(ULR_HOLE);
 
 		manager.load(LIT_SOURCE_FILE, Texture.class);
 		assets.add(LIT_SOURCE_FILE);
@@ -446,6 +538,35 @@ public class GameplayController extends WorldController implements ContactListen
 		assets.add(PICKUP_SOURCE_FILE);
 
 		super.preLoadContent(manager);
+	}
+
+	public void setHoleTextures(AssetManager manager){
+		holeTextures = new TextureRegion[25];
+		holeTextures[0] = createTexture(manager, D_HOLE, false);
+		holeTextures[1] = createTexture(manager, DL_HOLE, false);
+		holeTextures[2] = createTexture(manager, DL_SINGLE_HOLE, false);
+		holeTextures[3] = createTexture(manager, DLR_HOLE, false);
+		holeTextures[4] = createTexture(manager, DR_HOLE, false);
+		holeTextures[5] = createTexture(manager, DR_SINGLE_HOLE, false);
+		holeTextures[6] = createTexture(manager, L_HOLE, false);
+		holeTextures[7] = createTexture(manager, LR_HOLE, false);
+		holeTextures[8] = createTexture(manager, LR__SINGLE_HOLE, false);
+		holeTextures[9] = createTexture(manager, R_HOLE, false);
+		holeTextures[10] = createTexture(manager, SINGULAR_HOLE, false);
+		holeTextures[11] = createTexture(manager, U_HOLE, false);
+		holeTextures[12] = createTexture(manager, UD_HOLE, false);
+		holeTextures[13] = createTexture(manager, UDL_HOLE, false);
+		holeTextures[14] = createTexture(manager, UDLR_HOLE, false);
+		holeTextures[15] = createTexture(manager, UDR_HOLE, false);
+		holeTextures[16] = createTexture(manager, UL_HOLE, false);
+		holeTextures[17] = createTexture(manager, ULR_HOLE, false);
+		holeTextures[18] = createTexture(manager, UR_HOLE, false);
+		holeTextures[19] = createTexture(manager, UR_SINGLE_HOLE, false);
+		holeTextures[20] = createTexture(manager, DLR_SINGLE_HOLE, false);
+		holeTextures[21] = createTexture(manager, UDL_SINGLE_HOLE, false);
+		holeTextures[22] = createTexture(manager, UDLR_SINGLE_HOLE, false);
+		holeTextures[23] = createTexture(manager, UDR_SINGLE_HOLE, false);
+		holeTextures[24] = createTexture(manager, ULR_SINGLE_HOLE, false);
 	}
 
 	public void setWallTextures(AssetManager manager){
@@ -550,6 +671,7 @@ public class GameplayController extends WorldController implements ContactListen
 		pickupTexture = createTexture(manager, PICKUP_SOURCE_FILE, false);
 
 		setWallTextures(manager);
+		setHoleTextures(manager);
 
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
@@ -905,22 +1027,25 @@ public class GameplayController extends WorldController implements ContactListen
 			wall.setDrawScale(scale);
 			wall.setTextures(wallTextures);
 			wall.setTexture(board);
+			wall.setDraw_scale(WALL_SCALE);
 			addObject(wall);
 		}
 
 		// Add Water
 		// We don't set the texture here since it changes
 		// Texture is set by board
-		BoxObstacle obj;
 		for (int i = 0; i < water.length; i+=2){
-			obj = new BoxObstacle(water[i], water[i + 1], 1, 1);
-			obj.setBodyType(BodyDef.BodyType.KinematicBody);
-			obj.setDensity(BASIC_DENSITY);
-			obj.setFriction(BASIC_FRICTION);
-			obj.setRestitution(BASIC_RESTITUTION);
-			obj.setDrawScale(scale);
-			obj.getFilterData().categoryBits = Constants.BIT_WATER;
-			addObject(obj);
+			wall = new Wall(water[i], water[i + 1], 1, 1);
+			wall.setBodyType(BodyDef.BodyType.KinematicBody);
+			wall.setDensity(BASIC_DENSITY);
+			wall.setFriction(BASIC_FRICTION);
+			wall.setRestitution(BASIC_RESTITUTION);
+			wall.setDrawScale(scale);
+			wall.setTextures(holeTextures);
+			wall.setHoleTexture(board);
+			wall.setDraw_scale(HOLE_SCALE);
+			wall.getFilterData().categoryBits = Constants.BIT_WATER;
+			addObject(wall);
 		}
 
 
@@ -935,6 +1060,7 @@ public class GameplayController extends WorldController implements ContactListen
 			border.setDrawScale(scale);
 			border.setTextures(wallTextures);
 			border.setTexture(board);
+			border.setDraw_scale(WALL_SCALE);
 			addObject(border);
 			border = new Wall(ii, BOARD_HEIGHT - 1, 1, 1);
 
@@ -944,6 +1070,8 @@ public class GameplayController extends WorldController implements ContactListen
 			border.setRestitution(BASIC_RESTITUTION);
 			border.setDrawScale(scale);
 			border.setTextures(wallTextures);
+			border.setDraw_scale(WALL_SCALE);
+
 			border.setTexture(board);
 			addObject(border);
 
@@ -957,6 +1085,8 @@ public class GameplayController extends WorldController implements ContactListen
 			border.setDrawScale(scale);
 			border.setTextures(wallTextures);
 			border.setTexture(board);
+			border.setDraw_scale(WALL_SCALE);
+
 			addObject(border);
 
 			border = new Wall(BOARD_WIDTH - 1, jj, 1, 1);
@@ -966,6 +1096,8 @@ public class GameplayController extends WorldController implements ContactListen
 			border.setRestitution(BASIC_RESTITUTION);
 			border.setDrawScale(scale);
 			border.setTextures(wallTextures);
+			border.setDraw_scale(WALL_SCALE);
+
 			border.setTexture(board);
 			addObject(border);
 		}

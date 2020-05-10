@@ -545,6 +545,15 @@ public class Board {
         return false;
     }
 
+    public boolean isHole(int x, int y){
+        if (inBounds(x, y)){
+            return tiles[x][y].isWater;
+        }
+        return false;
+    }
+
+
+
     /**
      * Returns the screen position coordinate for a board cell index.
      *

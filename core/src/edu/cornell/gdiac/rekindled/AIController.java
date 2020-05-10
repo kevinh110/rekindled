@@ -101,7 +101,7 @@ public class AIController extends Entity_Controller {
      * @param board The game board (for pathfinding)
      * @param player The player (for targetting)
      */
-    public AIController(Enemy enemy, Board board, Player player, Enemy[] enemies) {
+    public AIController(Enemy enemy, Board board, Player player, Enemy[] enemies, float volume) {
         this.enemy = enemy;
         this.board = board;
         this.player = player;
@@ -117,11 +117,11 @@ public class AIController extends Entity_Controller {
 
         alarmSound = Gdx.audio.newSound(Gdx.files.internal("sounds/alarm.mp3"));
         enemySound = Gdx.audio.newSound(Gdx.files.internal("sounds/enemy.mp3"));
-        volume = .5f;
+        this.volume = volume;
     }
 
-    public AIController(Enemy enemy, Board board, Player player, Enemy[] enemies, float del){
-        this(enemy, board, player, enemies);
+    public AIController(Enemy enemy, Board board, Player player, Enemy[] enemies, float del, float vol){
+        this(enemy, board, player, enemies, vol);
         delta = del;
     }
 

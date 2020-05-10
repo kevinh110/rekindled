@@ -112,6 +112,16 @@ public class InputController extends Entity_Controller{
 	/** An X-Box controller (if it is connected) */
 	XBox360Controller xbox;
 
+	private boolean isWASD;
+
+	public void setWASD(){
+		isWASD = true;
+	}
+
+	public void setArrow(){
+		isWASD = false;
+	}
+
 	/**
 	 * Returns the amount of sideways movement.
 	 *
@@ -406,14 +416,14 @@ public class InputController extends Entity_Controller{
 		prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
 		nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
 		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
-		upPressed  = (secondary && upPressed) || (Gdx.input.isKeyPressed(Input.Keys.UP))
-				|| (Gdx.input.isKeyPressed(Input.Keys.W));
-		downPressed  = (secondary && downPressed) || (Gdx.input.isKeyPressed(Input.Keys.DOWN))
-				|| (Gdx.input.isKeyPressed(Input.Keys.S));
-		leftPressed  = (secondary && leftPressed) || (Gdx.input.isKeyPressed(Input.Keys.LEFT))
-				|| (Gdx.input.isKeyPressed(Input.Keys.A));
-		rightPressed  = (secondary && rightPressed) || (Gdx.input.isKeyPressed(Input.Keys.RIGHT))
-				|| (Gdx.input.isKeyPressed(Input.Keys.D));
+		upPressed  = (secondary && upPressed) || (Gdx.input.isKeyPressed(Input.Keys.UP) && !isWASD)
+				|| (Gdx.input.isKeyPressed(Input.Keys.W) && isWASD);
+		downPressed  = (secondary && downPressed) || (Gdx.input.isKeyPressed(Input.Keys.DOWN) && !isWASD)
+				|| (Gdx.input.isKeyPressed(Input.Keys.S) && isWASD);
+		leftPressed  = (secondary && leftPressed) || (Gdx.input.isKeyPressed(Input.Keys.LEFT) && !isWASD)
+				|| (Gdx.input.isKeyPressed(Input.Keys.A) && isWASD);
+		rightPressed  = (secondary && rightPressed) || (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !isWASD)
+				|| (Gdx.input.isKeyPressed(Input.Keys.D) && isWASD);
 		shiftPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);
 		pausePressed = (secondary && pausePressed) || (Gdx.input.isKeyPressed(Input.Keys.L));
 		zoomPressed = (secondary && zoomPressed) || (Gdx.input.isKeyPressed(Input.Keys.Z));

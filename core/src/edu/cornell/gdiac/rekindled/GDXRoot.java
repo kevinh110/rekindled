@@ -51,7 +51,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	/** Player mode for the the game proper (CONTROLLER CLASS) */
 	private int current;
 	/** List of all WorldControllers */
-	private WorldController[] controllers;
+	private GameplayController[] controllers;
 
 	private Music music;
 
@@ -173,6 +173,12 @@ public class GDXRoot extends Game implements ScreenListener {
 				controllers[ii].loadContent(manager);
 				controllers[ii].setScreenListener(this);
 				controllers[ii].setCanvas(canvas);
+			}
+			InputController input = InputController.getInstance();
+			if (loading.isArrow()){
+				input.setArrow();
+			} else {
+				input.setWASD();
 			}
 			controllers[current].reset();
 			setScreen(controllers[current]);

@@ -185,13 +185,16 @@ public class GDXRoot extends Game implements ScreenListener {
 				input.setWASD();
 			}
 			controllers[current].reset();
+			if (loading.isMuted()){
+				controllers[current].mute();
+			}
 			if(current != 0){
 				setScreen(controllers[current]);
 			} else {
 				setScreen(trailer);
 			}
 
-			loading.dispose();
+//			loading.dispose();
 //			loading = null;
 			Gdx.graphics.setCursor(transparentCursor);
 			Gdx.input.setInputProcessor(null);

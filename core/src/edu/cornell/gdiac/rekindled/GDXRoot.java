@@ -187,6 +187,8 @@ public class GDXRoot extends Game implements ScreenListener {
 			controllers[current].reset();
 			if (loading.isMuted()){
 				controllers[current].mute();
+			} else {
+				controllers[current].unmute();
 			}
 			if(current != 0){
 				setScreen(controllers[current]);

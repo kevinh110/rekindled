@@ -22,7 +22,6 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import edu.cornell.gdiac.rekindled.light.AuraLight;
 import edu.cornell.gdiac.util.*;
-import edu.cornell.gdiac.rekindled.*;
 import edu.cornell.gdiac.rekindled.obstacle.*;
 
 /**
@@ -161,8 +160,8 @@ public class Player extends FeetHitboxObstacle {
     public static final int SPEED = 4;
 
     public int lightCounter;
-    private float delayTimer;
-    private boolean cooldown;
+    private float toggleDelayTimer;
+    private boolean toggleCooldown;
     private static final float TURN_ON_DELAY = 1.5f;
 
     private boolean placingLight;
@@ -170,9 +169,8 @@ public class Player extends FeetHitboxObstacle {
     private boolean throwingLight;
     private boolean touchingLight;
     private boolean idle;
-    private AuraLight aura;
-    private float delayTimer2;
-    private boolean cooldown2;
+    private float throwDelayTimer;
+    private boolean throwCooldown;
 
     private static final float SOUND_DELAY = .5f;
     private float soundTimer;
@@ -289,8 +287,8 @@ public class Player extends FeetHitboxObstacle {
         setRestitution(DEFAULT_RESTITUTION);
         setName("rocket");
         lightCounter = 0;
-        delayTimer = 0;
-        cooldown = false;
+        toggleDelayTimer = 0;
+        toggleCooldown = false;
         touchingLight = false;
         placingLight = false;
         takingLight = false;
@@ -389,56 +387,47 @@ public class Player extends FeetHitboxObstacle {
     }
 
     public void updateCooldown(float dt) {
-        if (cooldown) {
-            delayTimer += dt;
-            if (delayTimer >= TURN_ON_DELAY) {
-                cooldown = false;
+        if (toggleCooldown) {
+            toggleDelayTimer += dt;
+            if (toggleDelayTimer >= TURN_ON_DELAY) {
+                toggleCooldown = false;
             }
         }
 
-        if (cooldown2) {
-            delayTimer2 += dt;
-            if (delayTimer2 >= TURN_ON_DELAY) {
-                cooldown2 = false;
+        if (throwCooldown) {
+            throwDelayTimer += dt;
+            if (throwDelayTimer >= TURN_ON_DELAY) {
+                throwCooldown = false;
             }
         }
 
     }
 
     public void takeLight() {
-        delayTimer = 0;
-        cooldown = true;
+        toggleDelayTimer = 0;
+        toggleCooldown = true;
         lightCounter += 1;
         takingLight = true;
         super.timeElapsed = 0;
-
-
-        if (lightCounter == 1)
-            this.aura.setActive(true);
     }
 
     public void placeLight() {
-        delayTimer = 0;
-        cooldown = true;
+        toggleDelayTimer = 0;
+        toggleCooldown = true;
         lightCounter -= 1;
         placingLight = true;
         super.timeElapsed = 0;
-
-        if (lightCounter == 0)
-            this.aura.setActive(false);
     }
 
     public void throwLight() {
         throwSound.play(volume);
-        delayTimer = 0;
-        cooldown = true;
-        delayTimer2 = 0;
-        cooldown2 = true;
+        toggleDelayTimer = 0;
+        toggleCooldown = true;
+        throwDelayTimer = 0;
+        throwCooldown = true;
         lightCounter -= 1;
         throwingLight = true;
         super.timeElapsed = 0;
-        if (lightCounter == 0)
-            this.aura.setActive(false);
     }
 
     public int getLightCounter() {
@@ -487,8 +476,8 @@ public class Player extends FeetHitboxObstacle {
         return touchingLight;
     }
 
-    public boolean getCooldown() {
-        return cooldown;
+    public boolean getToggleCooldown() {
+        return toggleCooldown;
     }
 
     /**
@@ -497,7 +486,7 @@ public class Player extends FeetHitboxObstacle {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
-        Color tint = (cooldown) ? Color.CYAN : Color.WHITE;
+        Color tint = (toggleCooldown) ? Color.CYAN : Color.WHITE;
 
         if (placingLight) {
             super.timeElapsed += Gdx.graphics.getDeltaTime();
@@ -601,28 +590,10 @@ public class Player extends FeetHitboxObstacle {
         }
     }
 
-    public void addAura(AuraLight a) {
-        this.aura = a;
-        this.aura.setActive(lightCounter != 0);
-        updateAura();
-    }
 
-    public void updateAura() {
-        if (this.aura.isActive()) {
-            this.aura.setPosition(this.getPosition());
-            float length = Constants.AURA_RADIUS * (float) Math.sqrt(lightCounter);
-            this.aura.setDistance(length);
-        }
-    }
 
-    public float getAuraRadius() {
-        if (!this.aura.isActive())
-            return 0f;
 
-        return this.aura.getDistance();
-    }
-
-    public boolean getCooldown2() {
-        return this.cooldown2;
+    public boolean getThrowCooldown() {
+        return this.throwCooldown;
     }
 }

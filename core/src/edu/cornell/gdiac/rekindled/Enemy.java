@@ -408,13 +408,13 @@ public class Enemy extends FeetHitboxObstacle {
     }
 
 
-    public boolean inSight(Vector2 position, float rad) {
-//        return this.sight.contains(position.x, position.y) ||
-//                this.sight.contains(position.x + rad, position.y) ||
-//                this.sight.contains(position.x - rad, position.y) ||
-//                this.sight.contains(position.x, position.y + rad) ||
-//                this.sight.contains(position.x, position.y - rad);
-        return this.sight.contains(position.x, position.y);
+    public boolean inSight(Vector2 position, float width) {
+        return this.sight.contains(position.x, position.y) ||
+                this.sight.contains(position.x + width/2, position.y + width/2) ||
+                this.sight.contains(position.x - width/2, position.y - width/2) ||
+                this.sight.contains(position.x + width/2, position.y - width/2) ||
+                this.sight.contains(position.x - width/2, position.y + width/2);
+
     }
 
     public int getFacingDirection() {

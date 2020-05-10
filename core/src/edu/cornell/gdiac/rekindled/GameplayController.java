@@ -1011,7 +1011,6 @@ public class GameplayController extends WorldController implements ContactListen
 	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
-
 		if (start_pause) {
 			start_time+=dt;
 			if (start_time >= START_TIME) {
@@ -1073,7 +1072,7 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 
 		if (input.didMute()){
-			if(muted && canMute){
+			if(muted && canMute){ // If currently muted, unmute
 				volume = 1.0f;
 				player.unmute();
 				for (LightSourceObject l : lights){
@@ -1087,7 +1086,7 @@ public class GameplayController extends WorldController implements ContactListen
 				canMute = false;
 				muted = !muted;
 			}
-			else if (!muted && canMute){
+			else if (!muted && canMute){ // If currently not muted, mute
 				volume = 0.0f;
 				player.mute();
 				for (LightSourceObject l : lights){

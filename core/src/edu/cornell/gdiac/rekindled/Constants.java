@@ -18,7 +18,7 @@ public class Constants {
     public static final int MAX_LIGHTS = 10;
 
     // How far the enemies sight cone should extend
-    public static final float SIGHT_CONE_RADIUS = 7f;
+    public static final float SIGHT_CONE_RADIUS = 6f;
 
     // Defines the shape of the enemies sight cone (0..359.XX)
     public static final float SIGHT_CONE_SECTOR = 60f;

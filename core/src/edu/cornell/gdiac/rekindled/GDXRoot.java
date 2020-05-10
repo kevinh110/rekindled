@@ -46,6 +46,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	private GameCanvas canvas;
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
 	private LoadingMode loading;
+	/** Mode for playing the trailer*/
+	private TrailerMode trailer;
 	/** Player mode for level complete screen */
 	private LevelCompleteMode levelComplete;
 	/** Player mode for the the game proper (CONTROLLER CLASS) */
@@ -85,6 +87,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void create() {
 		canvas = new GameCanvas();
 		loading = new LoadingMode(canvas, manager,1);
+		trailer = new TrailerMode(canvas, manager);
+		trailer.setScreenListener(this);
 		levelComplete = new LevelCompleteMode(canvas, manager, 1);
 		levelComplete.setScreenListener(this);
 
@@ -181,15 +185,22 @@ public class GDXRoot extends Game implements ScreenListener {
 				input.setWASD();
 			}
 			controllers[current].reset();
-			setScreen(controllers[current]);
+			if(current != 0){
+				setScreen(controllers[current]);
+			} else {
+				setScreen(trailer);
+			}
 
-//			loading.dispose();
+			loading.dispose();
 //			loading = null;
 			Gdx.graphics.setCursor(transparentCursor);
 			Gdx.input.setInputProcessor(null);
 
 		}
-
+		else if(screen == trailer){
+			setScreen(controllers[current]);
+			trailer.dispose();
+		}
 		else if (screen == levelComplete){
 			if (exitCode == LevelCompleteMode.EXIT_NEXT){
 				Gdx.graphics.setCursor(transparentCursor);

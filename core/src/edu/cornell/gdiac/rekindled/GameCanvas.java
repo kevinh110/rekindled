@@ -477,8 +477,20 @@ public class GameCanvas {
 
 		computeTransform(ox,oy,x,y,angle,sx,sy);
 
+
 		spriteBatch.setColor(tint);
-		spriteBatch.draw((TextureRegion)animation.getKeyFrame(ElapsedTime, looping), x, y );
+		spriteBatch.draw((TextureRegion)animation.getKeyFrame(ElapsedTime, looping), x, y);
+	}
+
+	public void draw(Animation animation, float elapsedTime, float x, float y, float width, float height, float scale){
+		if (active != DrawPass.STANDARD) {
+			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+			return;
+		}
+		computeTransform(0,0,x,y,0,scale,scale);
+
+		spriteBatch.draw((TextureRegion)animation.getKeyFrame(elapsedTime, false), x, y, width * scale, height * scale);
+
 
 	}
 
@@ -1295,6 +1307,7 @@ public class GameCanvas {
 	 * @param sy 	The y-axis scaling factor
 	 */
 	private void computeTransform(float ox, float oy, float x, float y, float angle, float sx, float sy) {
+		System.out.println(sx);
 		local.setToTranslation(x,y);
 		local.rotate(180.0f*angle/(float)Math.PI);
 		local.scale(sx,sy);

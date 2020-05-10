@@ -156,6 +156,7 @@ public class Player extends FeetHitboxObstacle {
     private Animation backIdleAnimation;
     private Animation leftIdleAnimation;
     private Animation rightIdleAnimation;
+    private Animation deathAnimation;
 
     public static final int SPEED = 4;
 
@@ -164,6 +165,7 @@ public class Player extends FeetHitboxObstacle {
     private boolean toggleCooldown;
     private static final float TURN_ON_DELAY = 1.5f;
 
+    private boolean dying;
     private boolean placingLight;
     private boolean takingLight;
     private boolean throwingLight;
@@ -293,6 +295,7 @@ public class Player extends FeetHitboxObstacle {
         placingLight = false;
         takingLight = false;
         throwingLight = false;
+        dying = false;
         idle = true;
         throwSound = Gdx.audio.newSound(Gdx.files.internal("sounds/throw.mp3"));
         grassStep = Gdx.audio.newSound(Gdx.files.internal("sounds/grassStep.mp3"));
@@ -419,6 +422,12 @@ public class Player extends FeetHitboxObstacle {
         super.timeElapsed = 0;
     }
 
+    public void die() {
+        dying = true;
+        timeElapsed = 0;
+        setDirection(Direction.FRONT);
+    }
+
     public void throwLight() {
         throwSound.play(volume);
         toggleDelayTimer = 0;
@@ -439,7 +448,7 @@ public class Player extends FeetHitboxObstacle {
                               TextureRegion leftPlace, TextureRegion leftTake, TextureRegion rightPlace,
                               TextureRegion rightTake, TextureRegion frontIdle, TextureRegion backIdle,
                               TextureRegion leftIdle, TextureRegion rightIdle, TextureRegion frontThrow,
-                              TextureRegion backThrow, TextureRegion rightThrow, TextureRegion leftThrow) {
+                              TextureRegion backThrow, TextureRegion rightThrow, TextureRegion leftThrow, TextureRegion death) {
         frontWalkingAnimation = getAnimation(frontTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
         backWalkingAnimation = getAnimation(backTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
         rightWalkingAnimation = getAnimation(rightTexture, TILE_SIZE, TILE_SIZE, NUMBER_FRAMES, FRAME_RATE);
@@ -458,6 +467,7 @@ public class Player extends FeetHitboxObstacle {
         backIdleAnimation = getAnimation(backIdle, TILE_SIZE, TILE_SIZE, IDLE_FRAMES, FRAME_RATE);
         leftIdleAnimation = getAnimation(leftIdle, TILE_SIZE, TILE_SIZE, IDLE_FRAMES, FRAME_RATE);
         rightIdleAnimation = getAnimation(rightIdle, TILE_SIZE, TILE_SIZE, IDLE_FRAMES, FRAME_RATE);
+        deathAnimation = getAnimation(death, TILE_SIZE, TILE_SIZE, 5, 1/6f);
 
     }
 
@@ -487,8 +497,11 @@ public class Player extends FeetHitboxObstacle {
      */
     public void draw(GameCanvas canvas) {
         Color tint = (toggleCooldown) ? Color.CYAN : Color.WHITE;
-
-        if (placingLight) {
+        if (dying) {
+            super.timeElapsed += Gdx.graphics.getDeltaTime();
+            currentAnimation = deathAnimation;
+            super.draw(canvas, currentAnimation, false, super.getTimeElapsed(), TILE_SIZE, tint);
+        } else if (placingLight) {
             super.timeElapsed += Gdx.graphics.getDeltaTime();
             switch (super.getDirection()) {
                 case FRONT:

@@ -83,6 +83,7 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String PLAYER_BACK_IDLE = "spritesheets/spritesheet_back_idle.png";
 	private static final String PLAYER_LEFT_IDLE = "spritesheets/spritesheet_left_idle.png";
 	private static final String PLAYER_RIGHT_IDLE = "spritesheets/spritesheet_right_idle.png";
+	private static final String DEATH = "spritesheets/spritesheet_lux_death.png";
 	/**
 	 * File storing the enemy
 	 */
@@ -193,6 +194,7 @@ public class GameplayController extends WorldController implements ContactListen
 	private TextureRegion playerBackIdle;
 	private TextureRegion playerLeftIdle;
 	private TextureRegion playerRightIdle;
+	private TextureRegion death;
 
 
 	private TextureRegion enemyAnimationFront;
@@ -342,6 +344,8 @@ public class GameplayController extends WorldController implements ContactListen
 		assets.add(PLAYER_LEFT_IDLE);
 		manager.load(PLAYER_RIGHT_IDLE, Texture.class);
 		assets.add(PLAYER_RIGHT_IDLE);
+		manager.load(DEATH, Texture.class);
+		assets.add(DEATH);
 
 		manager.load(ENEMY_FILE, Texture.class);
 		assets.add(ENEMY_FILE);
@@ -482,6 +486,7 @@ public class GameplayController extends WorldController implements ContactListen
 		playerBackIdle = createTexture(manager, PLAYER_BACK_IDLE, false);
 		playerLeftIdle = createTexture(manager, PLAYER_LEFT_IDLE, false);
 		playerRightIdle = createTexture(manager, PLAYER_RIGHT_IDLE, false);
+		death = createTexture(manager, DEATH, false);
 
 		enemyAngryAnimationFront = createTexture(manager, ENEMY_ANGRY_ANIMATION_FRONT, false);
 		enemyAngryAnimationBack = createTexture(manager, ENEMY_ANGRY_ANIMATION_BACK, false);
@@ -951,7 +956,7 @@ public class GameplayController extends WorldController implements ContactListen
 		player.setAnimations(playerAnimationFront, playerAnimationBack, playerAnimationLeft, playerAnimationRight,
 				placingLightFront, takingLightFront, placingLightLeft, takingLightLeft, placingLightRight,
 				takingLightRight, playerFrontIdle, playerBackIdle, playerLeftIdle, playerRightIdle, throwingLightFront,
-				throwingLightBack, throwingLightRight, throwingLightLeft); //setting animation
+				throwingLightBack, throwingLightRight, throwingLightLeft, death); //setting animation
 		player.setTexture(playerTextureFront);
 
 		addObject(player);
@@ -1225,6 +1230,7 @@ public class GameplayController extends WorldController implements ContactListen
 			if (e.collidedWithPlayer && !e.getIsLit()){
 				if (timer % GRACE_PERIOD == 0){
 					lostGame = true;
+					player.die();
 					timer = 0;
 					deathSound.play(volume);
 					for(AIController controller : controls){

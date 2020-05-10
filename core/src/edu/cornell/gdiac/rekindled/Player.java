@@ -263,8 +263,8 @@ public class Player extends FeetHitboxObstacle {
      * @param width  The object width in physics units
      * @param height The object width in physics units
      */
-    public Player(float width, float height) {
-        this(0, 0, width, height);
+    public Player(float width, float height, float volume) {
+        this(0, 0, width, height, volume);
     }
 
     /**
@@ -279,7 +279,7 @@ public class Player extends FeetHitboxObstacle {
      * @param width  The object width in physics units
      * @param height The object width in physics units
      */
-    public Player(float x, float y, float width, float height) {
+    public Player(float x, float y, float width, float height, float volume) {
         super(x, y, width, height);
         super.setDirection(Direction.FRONT);
 
@@ -301,11 +301,11 @@ public class Player extends FeetHitboxObstacle {
         grassStep = Gdx.audio.newSound(Gdx.files.internal("sounds/grassStep.mp3"));
 
         this.getFilterData().categoryBits = Constants.BIT_PLAYER;
-        volume = 1.0f;
+        this.volume = volume;
     }
 
-    public Player(float x, float y, float width, float height, int lights) {
-        this(x, y, width, height);
+    public Player(float x, float y, float width, float height, int lights, float volume) {
+        this(x, y, width, height, volume);
         lightCounter = lights;
     }
 

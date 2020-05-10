@@ -299,7 +299,7 @@ public class GameplayController extends WorldController implements ContactListen
 	private float start_time;
 	private static final float START_TIME = 1.5f;
 
-	private boolean muted;
+	private static boolean muted = false;
 
 	// Number of frames after collision where player doesn't lose
 	private static final int GRACE_PERIOD = 10;
@@ -739,11 +739,12 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private ArtObject[] artObjects;
 
-	private float muteCooldown;
-	private boolean canMute;
-	private Music music;
-	private Sound deathSound;
-	private float volume;
+	private static float muteCooldown = 0.0f;
+	private static boolean canMute = true;
+	private static Music music;
+	private static Sound deathSound;
+	private static boolean musicPlaying = false;
+	private static float volume = 1.0f;
 
 
 
@@ -883,11 +884,6 @@ public class GameplayController extends WorldController implements ContactListen
 		setComplete(false);
 		setFailure(false);
 		world.setContactListener(this);
-
-		canMute = true;
-		volume = 1.0f;
-		muted = false;
-
 	}
 
 
@@ -921,9 +917,6 @@ public class GameplayController extends WorldController implements ContactListen
 		setFailure(false);
 		wonGame = false;
 		lostGame = false;
-		if (music != null){
-			music.stop();
-		}
 
 		// Reload the level json
 		levelFormat = jsonReader.parse(Gdx.files.internal(LEVEL_PATH));
@@ -990,10 +983,13 @@ public class GameplayController extends WorldController implements ContactListen
 			lights[i].setTextureCache(litSourceTexture, dimSourceTexture);
 			addObject(lights[i]);
 		}
-		music = Gdx.audio.newMusic(Gdx.files.internal("sounds/bgm.mp3"));
-		music.setLooping(true);
-		music.setVolume(volume);
-		music.play();
+		if(!musicPlaying) {
+            music = Gdx.audio.newMusic(Gdx.files.internal("sounds/bgm.mp3"));
+            music.setLooping(true);
+            music.setVolume(volume);
+            music.play();
+            musicPlaying = true;
+        }
 		deathSound = Gdx.audio.newSound(Gdx.files.internal("sounds/death.mp3"));
 		//initialize thrown lights
 		thrownLights = new LinkedList<>();
@@ -1104,7 +1100,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 
 		// Add Player
-		player = new Player(spawn[0], spawn[1], 0.5f, 0.5f, initLights);
+		player = new Player(spawn[0], spawn[1], 0.5f, 0.5f, initLights, volume);
 		this.spawnx = spawn[0];
 		this.spawny = spawn[1];
 
@@ -1119,7 +1115,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 		// Make AI Controllers
 		for (int idx = 0; idx < enemies.length; idx++){
-			controls[idx] = new AIController(enemies[idx], board, player, enemies, getWorldStep());
+			controls[idx] = new AIController(enemies[idx], board, player, enemies, getWorldStep(), volume);
 		}
 
 		//Add Art Objects
@@ -1157,6 +1153,37 @@ public class GameplayController extends WorldController implements ContactListen
 		//sourceRayHandler.setShadows(false);
 		sourceRayHandler.setBlur(true);
 		sourceRayHandler.setBlurNum(3);
+	}
+
+	private void mute(){
+		if(muted){ // If currently muted, unmute
+			volume = 1.0f;
+			player.unmute();
+			for (LightSourceObject l : lights){
+				l.unmute();
+			}
+			for (AIController a : controls){
+				a.unmute();
+			}
+			music.setVolume(1.0f);
+			muteCooldown = 0;
+			canMute = false;
+			muted = !muted;
+		}
+		else if (!muted){ // If currently not muted, mute
+			volume = 0.0f;
+			player.mute();
+			for (LightSourceObject l : lights){
+				l.mute();
+			}
+			for (AIController a : controls) {
+				a.mute();
+			}
+			music.setVolume(0.0f);
+			muteCooldown = 0;
+			canMute = false;
+			muted = !muted;
+		}
 	}
 
 	/**
@@ -1374,7 +1401,6 @@ public class GameplayController extends WorldController implements ContactListen
 			for(AIController controller : controls){
 				controller.resetSound();
 			}
-			music.stop();
 		}
 
 		// Check loss condition
@@ -1387,7 +1413,7 @@ public class GameplayController extends WorldController implements ContactListen
 					lostGame = true;
 					player.die();
 					timer = 0;
-					deathSound.play(volume);
+					deathSound.play(volume*.25f);
 					for(AIController controller : controls){
 						controller.resetSound();
 					}

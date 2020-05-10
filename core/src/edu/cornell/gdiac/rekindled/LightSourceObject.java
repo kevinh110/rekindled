@@ -25,7 +25,7 @@ public class LightSourceObject extends BoxObstacle {
     private Sound offSound;
     private float volume;
 
-    public LightSourceObject(int x, int y, int w, int h, boolean isLit){
+    public LightSourceObject(int x, int y, float w, float h, boolean isLit){
         super(x, y, w, h);
         timeElapsed = 0f;
         this.isLit = isLit;

@@ -1155,7 +1155,7 @@ public class GameplayController extends WorldController implements ContactListen
 		sourceRayHandler.setBlurNum(3);
 	}
 
-	private void mute(){
+	public void mute(){
 		if(muted){ // If currently muted, unmute
 			volume = 1.0f;
 			player.unmute();

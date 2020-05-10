@@ -186,6 +186,11 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private static final String PICKUP_SOURCE_FILE = "spritesheets/spritesheet_pickup.png";
 
+	private static final String PAUSE_FILE = "ui/pause_ui.png";
+
+
+
+
 
 	/** texture for pickup */
 	private TextureRegion pickupTexture;
@@ -257,6 +262,8 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private TextureRegion winScreenTexture;
 	private TextureRegion lossScreenTexture;
+
+	private TextureRegion pauseTexture;
 
 	/**texture region for dim light source*/
 	private TextureRegion dimSourceTexture;
@@ -537,6 +544,9 @@ public class GameplayController extends WorldController implements ContactListen
 		manager.load(PICKUP_SOURCE_FILE, Texture.class);
 		assets.add(PICKUP_SOURCE_FILE);
 
+		manager.load(PAUSE_FILE, Texture.class);
+		assets.add(PAUSE_FILE);
+
 		super.preLoadContent(manager);
 	}
 
@@ -669,6 +679,8 @@ public class GameplayController extends WorldController implements ContactListen
 		waterLightTexture = createTexture(manager, WATER_LIGHT_FILE, false);
 
 		pickupTexture = createTexture(manager, PICKUP_SOURCE_FILE, false);
+
+		pauseTexture = createTexture(manager, PAUSE_FILE, false);
 
 		setWallTextures(manager);
 		setHoleTextures(manager);
@@ -923,35 +935,7 @@ public class GameplayController extends WorldController implements ContactListen
 		parseJson();
 		populateLevel();
 		board.reset(walls, lights);
-
-
 	}
-
-
-//	/**
-//	 * Returns the proper wall texture
-//	 * Pre: board is initialized properly
-//	 * @param x x coord of the wall we want to draw
-//	 * @param y y coord of the wall we want to draw
-//	 * @return the proper wall texture
-//	 */
-//	private TextureRegion getWallTexture(int x, int y){
-//		if (!board.isWall(x - 1, y) && !board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
-//			return wallFrontTexture;
-//		}
-//		else if (!board.isWall(x - 1, y) && board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
-//			return wallLeftTexture;
-//		}
-//		else if (board.isWall(x - 1, y) && !board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
-//			return wallRightTexture;
-//		}
-//		else if (board.isWall(x - 1, y) && board.isWall(x + 1, y) && !board.isWall(x, y - 1)){
-//			return wallMidTexture;
-//		}
-//		else {
-//			return wallBackTexture;
-//		}
-//	}
 
 
 	/**
@@ -1155,35 +1139,35 @@ public class GameplayController extends WorldController implements ContactListen
 		sourceRayHandler.setBlurNum(3);
 	}
 
-	private void mute(){
-		if(muted){ // If currently muted, unmute
-			volume = 1.0f;
-			player.unmute();
-			for (LightSourceObject l : lights){
-				l.unmute();
-			}
-			for (AIController a : controls){
-				a.unmute();
-			}
-			music.setVolume(1.0f);
-			muteCooldown = 0;
-			canMute = false;
-			muted = !muted;
+
+	public void unmute(){
+		volume = 1.0f;
+		player.unmute();
+		for (LightSourceObject l : lights){
+			l.unmute();
 		}
-		else if (!muted){ // If currently not muted, mute
-			volume = 0.0f;
-			player.mute();
-			for (LightSourceObject l : lights){
-				l.mute();
-			}
-			for (AIController a : controls) {
-				a.mute();
-			}
-			music.setVolume(0.0f);
-			muteCooldown = 0;
-			canMute = false;
-			muted = !muted;
+		for (AIController a : controls){
+			a.unmute();
 		}
+		music.setVolume(1.0f);
+		muteCooldown = 0;
+		canMute = false;
+		muted = !muted;
+	}
+
+	public void mute(){
+		volume = 0.0f;
+		player.mute();
+		for (LightSourceObject l : lights){
+			l.mute();
+		}
+		for (AIController a : controls) {
+			a.mute();
+		}
+		music.setVolume(0.0f);
+		muteCooldown = 0;
+		canMute = false;
+		muted = !muted;
 	}
 
 	/**
@@ -1538,6 +1522,7 @@ public class GameplayController extends WorldController implements ContactListen
 				canvas.draw(lightCounterTexture, 105 + i*62, canvas.getHeight() - 90);
 			}
 		}
+		canvas.draw(pauseTexture, canvas.getWidth() - 150, canvas.getHeight() - 125);
 	}
 
 	public boolean isAlive() {

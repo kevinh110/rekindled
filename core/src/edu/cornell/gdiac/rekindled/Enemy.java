@@ -409,11 +409,13 @@ public class Enemy extends FeetHitboxObstacle {
 
 
     public boolean inSight(Vector2 position, float width) {
-        return this.sight.contains(position.x, position.y) ||
-                this.sight.contains(position.x + width/2, position.y + width/2) ||
-                this.sight.contains(position.x - width/2, position.y - width/2) ||
-                this.sight.contains(position.x + width/2, position.y - width/2) ||
-                this.sight.contains(position.x - width/2, position.y + width/2);
+        return this.sight.contains(position.x, position.y);
+//                ||
+//                this.sight.contains(position.x + width/2, position.y + width/2) ||
+//                this.sight.contains(position.x - width/2, position.y - width/2) ||
+//                this.sight.contains(position.x + width/2, position.y - width/2) ||
+//                this.sight.contains(position.x - width/2, position.y + width/2)
+//        ;
 
     }
 

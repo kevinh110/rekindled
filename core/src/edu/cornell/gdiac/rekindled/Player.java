@@ -435,6 +435,8 @@ public class Player extends FeetHitboxObstacle {
         super.timeElapsed = 0;
     }
 
+
+
     public void die() {
         dying = true;
         timeElapsed = 0;
@@ -443,8 +445,8 @@ public class Player extends FeetHitboxObstacle {
 
     public void throwLight() {
         throwSound.play(volume);
-        toggleDelayTimer = 0;
-        toggleCooldown = true;
+//        toggleDelayTimer = 0;
+//        toggleCooldown = true;
         throwDelayTimer = 0;
         throwCooldown = true;
         lightCounter -= 1;
@@ -628,7 +630,7 @@ public class Player extends FeetHitboxObstacle {
 
     public float getCooldownPercent() {
         if (!toggleCooldown)
-            return 100;
+            return 0;
 
         return toggleDelayTimer / TURN_ON_DELAY;
     }

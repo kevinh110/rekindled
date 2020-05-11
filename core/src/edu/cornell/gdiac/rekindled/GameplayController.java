@@ -185,7 +185,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private static final String PAUSE_FILE = "ui/pause_ui.png";
 
-	private static final String COOLDOWN_0 = "images/100.png";
+	private static final String COOLDOWN_0 = "images/0.png";
 	private static final String COOLDOWN_25 = "images/25.png";
 	private static final String COOLDOWN_50 = "images/50.png";
 	private static final String COOLDOWN_75 = "images/75.png";

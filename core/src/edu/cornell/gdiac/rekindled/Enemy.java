@@ -252,8 +252,6 @@ public class Enemy extends FeetHitboxObstacle {
         return true;
     }
 
-
-
     public void moveOnTile(int goalX, int goalY, float delta){
         Vector2 pos = getPosition();
         float diffX = Math.abs(goalX - pos.x);

@@ -66,8 +66,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private static final String VOLUME_SELECTED_FILE = "ui/volume_selected.png";
 	private static final String VOLUME_UNSELECTED_FILE = "ui/volume_unselected.png";
 
-
-
 	private static final String SAVE_CHANGES_FILE = "ui/save_changes.png";
 
 	private static final String PLAY_BTN_FILE = "images/play.png";
@@ -77,6 +75,22 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private static final String NEXT_FILE = "ui/next.png";
 	private static final String PREV_FILE = "ui/prev.png";
 
+	private static final String HOVER_1_FILE = "hover/1s.png";
+	private static final String HOVER_2_FILE = "hover/2s.png";
+	private static final String HOVER_3_FILE = "hover/3s.png";
+	private static final String HOVER_4_FILE = "hover/4s.png";
+	private static final String HOVER_5_FILE = "hover/5s.png";
+	private static final String HOVER_6_FILE = "hover/6s.png";
+	private static final String HOVER_7_FILE = "hover/7s.png";
+	private static final String HOVER_8_FILE = "hover/8s.png";
+	private static final String HOVER_9_FILE = "hover/9s.png";
+	private static final String HOVER_10_FILE = "hover/10s.png";
+	private static final String HOVER_11_FILE = "hover/11s.png";
+	private static final String HOVER_12_FILE = "hover/12s.png";
+	private static final String HOVER_13_FILE = "hover/13s.png";
+	private static final String HOVER_14_FILE = "hover/14s.png";
+	private static final String HOVER_15_FILE = "hover/15s.png";
+	private static final String HOVER_16_FILE = "hover/16s.png";
 
 
 	private final ParticleEffect pe;
@@ -112,8 +126,25 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private Texture arrowSelectedTexture;
 	private Texture volumeUnselectedTexture;
 	private Texture volumeSelectedTexture;
-
 	private Texture saveChangesTexture;
+
+	private Texture hover1;
+	private Texture hover2;
+	private Texture hover3;
+	private Texture hover4;
+	private Texture hover5;
+	private Texture hover6;
+	private Texture hover7;
+	private Texture hover8;
+	private Texture hover9;
+	private Texture hover10;
+	private Texture hover11;
+	private Texture hover12;
+	private Texture hover13;
+	private Texture hover14;
+	private Texture hover15;
+	private Texture hover16;
+
 
 	/** Texture atlas to support a progress bar */
 //	private Texture statusBar;
@@ -187,6 +218,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 	private int currentLevel;
 	private int currentPage;
+
+	private int hoverLevel; // 1 -16 ; 0 if none
 
 	/** Codes for the different screens */
 	public static final int CODE_START = 1;
@@ -311,6 +344,23 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		saveChangesHover = new Texture(SAVE_CHANGES_HOVER_FILE);
 		volumeSelectedTexture = new Texture(VOLUME_SELECTED_FILE);
 		volumeUnselectedTexture = new Texture(VOLUME_UNSELECTED_FILE);
+
+		hover1 = new Texture(HOVER_1_FILE);
+		hover2 = new Texture(HOVER_2_FILE);
+		hover3 = new Texture(HOVER_3_FILE);
+		hover4 = new Texture(HOVER_4_FILE);
+		hover5 = new Texture(HOVER_5_FILE);
+		hover6 = new Texture(HOVER_6_FILE);
+		hover7 = new Texture(HOVER_7_FILE);
+		hover8 = new Texture(HOVER_8_FILE);
+		hover9 = new Texture(HOVER_9_FILE);
+		hover10 = new Texture(HOVER_10_FILE);
+		hover11 = new Texture(HOVER_11_FILE);
+		hover12 = new Texture(HOVER_12_FILE);
+		hover13 = new Texture(HOVER_13_FILE);
+		hover14 = new Texture(HOVER_14_FILE);
+		hover15 = new Texture(HOVER_15_FILE);
+		hover16 = new Texture(HOVER_16_FILE);
 
 
 //		statusBar  = new Texture(PROGRESS_FILE);
@@ -447,6 +497,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			} else {
 				canvas.draw(backToMainTexture, 50, heightY - 75);
 			}
+			drawLevelHover();
 		} else { // Mode start
 			canvas.draw(startBackground, 0, 0);
 			if (hover == HOVER_LEVELS){
@@ -469,6 +520,27 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 //		}
 
 		canvas.end();
+	}
+
+	private void drawLevelHover(){
+		if (hoverLevel == 1){ canvas.draw(hover1, 107, 372); }
+		else if (hoverLevel == 2){ canvas.draw(hover2, 334, 484); }
+		else if (hoverLevel == 3){ canvas.draw(hover3, 319, 246); }
+		else if (hoverLevel == 4){ canvas.draw(hover4, 614, 474); }
+		else if (hoverLevel == 5){ canvas.draw(hover5, 508, 147); }
+		else if (hoverLevel == 6){ canvas.draw(hover6, 715, 306); }
+		else if (hoverLevel == 7){ canvas.draw(hover7, 719, 42); }
+		else if (hoverLevel == 8){ canvas.draw(hover8, 987, 120); }
+
+		else if (hoverLevel == 9){ canvas.draw(hover9, 107, 372); }
+		else if (hoverLevel == 10){ canvas.draw(hover10, 334, 484); }
+		else if (hoverLevel == 11){ canvas.draw(hover11, 319, 246); }
+		else if (hoverLevel == 12){ canvas.draw(hover12, 614, 474); }
+		else if (hoverLevel == 13){ canvas.draw(hover13, 508, 147); }
+		else if (hoverLevel == 14){ canvas.draw(hover14, 715, 306); }
+		else if (hoverLevel == 15){ canvas.draw(hover15, 719, 42); }
+		else if (hoverLevel == 16){ canvas.draw(hover16, 987, 120); }
+
 	}
 	
 	/**
@@ -811,24 +883,34 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private void handleLevelSelectHover(int screenX, int screenY){
 		if (screenX >= 41 && screenX <= 328 && screenY >= 628 && screenY <= 689) {
 			hover = HOVER_BACK_TO_MAIN;
+			hoverLevel = 0;
 		} else if (screenX >= 143 && screenX <= 266 && screenY >= 394 && screenY <= 512) {// Level 0
-
+			hoverLevel = 1 + 8 * currentPage;
+			hover = 0;
 		} else if (screenX >= 377 && screenX <= 490 && screenY >= 510 && screenY <= 621){ // level 1
-
+			hoverLevel = 2 + 8 * currentPage;
+			hover = 0;
 		}else if (screenX >= 364 && screenX <= 472 && screenY >= 278 && screenY <= 380){ // level 2
-
+			hoverLevel = 3 + 8 * currentPage;
+			hover = 0;
 		}else if (screenX >= 660 && screenX <= 762 && screenY >= 505 && screenY <= 606){ // level 3
-
+			hoverLevel = 4 + 8 * currentPage;
+			hover = 0;
 		}else if (screenX >= 552 && screenX <= 657 && screenY >= 175 && screenY <= 275){ // level 4
-
+			hoverLevel = 5 + 8 * currentPage;
+			hover = 0;
 		}else if (screenX >= 760 && screenX <= 860  && screenY >= 330 && screenY <= 440){ // level 5
-
+			hoverLevel = 6 + 8 * currentPage;
+			hover = 0;
 		}else if (screenX >= 763 && screenX <= 870 && screenY >= 68 && screenY <= 175){ // level 6
-
+			hoverLevel = 7 + 8 * currentPage;
+			hover = 0;
 		}else if (screenX >= 1030 && screenX <= 1135 && screenY >= 152 && screenY <= 254){ // level 7
-
+			hoverLevel = 8 + 8 * currentPage;
+			hover = 0;
 		}else {
 			hover = 0;
+			hoverLevel = 0;
 		}
 	}
 

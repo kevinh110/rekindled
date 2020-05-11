@@ -34,12 +34,7 @@ import com.badlogic.gdx.utils.Array;
  */
 public class GameCanvas {
 
-
-
-
-
-
-    /** Enumeration to track which pass we are in */
+	/** Enumeration to track which pass we are in */
 	private enum DrawPass {
 		/** We are not drawing */
 		INACTIVE,
@@ -462,6 +457,19 @@ public class GameCanvas {
 			spriteBatch.setColor(Color.WHITE);
 			spriteBatch.draw(frame, frame.getRegionWidth(), frame.getRegionHeight(), local);
 		}
+		//this will display the non-camera view position.  Good for debugging.
+//		computeTransform(ox,oy,x,y,angle,sx,sy);
+//		spriteBatch.setColor(Color.WHITE);
+//		spriteBatch.draw(frame, frame.getRegionWidth(), frame.getRegionHeight(), local);
+
+	}
+
+	public void drawCooldown(TextureRegion texture, float ox, float oy,  float x, float y,
+					 float angle, float sx, float sy, boolean camera){
+
+			spriteBatch.setColor(Color.WHITE);
+			spriteBatch.draw(texture, (getWidth()/ 2) + 16, (getHeight() / 2) + 32);
+
 		//this will display the non-camera view position.  Good for debugging.
 //		computeTransform(ox,oy,x,y,angle,sx,sy);
 //		spriteBatch.setColor(Color.WHITE);
@@ -1307,7 +1315,7 @@ public class GameCanvas {
 	 * @param sy 	The y-axis scaling factor
 	 */
 	private void computeTransform(float ox, float oy, float x, float y, float angle, float sx, float sy) {
-		System.out.println(sx);
+//		System.out.println(sx);
 		local.setToTranslation(x,y);
 		local.rotate(180.0f*angle/(float)Math.PI);
 		local.scale(sx,sy);

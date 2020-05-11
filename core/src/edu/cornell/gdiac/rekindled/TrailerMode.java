@@ -14,10 +14,10 @@ import java.awt.*;
 
 public class TrailerMode implements Screen {
 
-    private static String TRAILER_0 = "trailer/trailer0.png";
-    private static String TRAILER_1 = "trailer/trailer1.png";
-    private static String TRAILER_2 = "trailer/trailer2.png";
-    private static String TRAILER_3 = "trailer/trailer3.png";
+    private static String TRAILER_0 = "trailer/spritesheet1.png";
+    private static String TRAILER_1 = "trailer/spritesheet2.png";
+    private static String TRAILER_2 = "trailer/spritesheet3.png";
+    private static String TRAILER_3 = "trailer/spritesheet4.png";
     /**
      * AssetManager to be loading in the background
      */
@@ -30,10 +30,10 @@ public class TrailerMode implements Screen {
      * Listener that will update the player mode when we are done
      */
 
-    private static final int FRAME_WIDTH = 605;
-    private static final int FRAME_HEIGHT = 348;
+    private static final int FRAME_WIDTH = 800;
+    private static final int FRAME_HEIGHT = 450;
     private static final int FRAMES_PER_TEXTURE = 16;
-    private static final float SCALE = 2.5f;
+    private static final float SCALE = 1.7f;
 
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
@@ -104,7 +104,7 @@ public class TrailerMode implements Screen {
             canvas.begin();
 //            TextureRegion region = (TextureRegion)trailer[trailer_number].getKeyFrame(elapsedTime);
 //            canvas.draw(region, Color.WHITE, 50, 50, FRAME_WIDTH, FRAME_HEIGHT, 0, 1, 1);
-              canvas.draw(trailer[trailer_number], elapsedTime, (FRAME_WIDTH / (2.5f * SCALE)) - 100f , (FRAME_HEIGHT / (2.5f * SCALE)) - 100f, FRAME_WIDTH, FRAME_HEIGHT, SCALE);
+              canvas.draw(trailer[trailer_number], elapsedTime, (FRAME_WIDTH / (2.5f * SCALE)) - 200 , (FRAME_HEIGHT / (2.5f * SCALE)) - 120f, FRAME_WIDTH, FRAME_HEIGHT, SCALE);
 //            canvas.draw(trailer[trailer_number], elapsedTime, false, 0, 0 , FRAME_WIDTH / 2, FRAME_HEIGHT / 2, 0, 2, 2, Color.WHITE);
             canvas.end();
         }

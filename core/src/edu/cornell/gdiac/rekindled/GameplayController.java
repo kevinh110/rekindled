@@ -36,7 +36,6 @@ import edu.cornell.gdiac.rekindled.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.*;
 import javafx.scene.media.AudioSpectrumListener;
 import javafx.util.Pair;
-import org.w3c.dom.Text;
 
 import java.util.LinkedList;
 
@@ -136,6 +135,10 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String UDLR_SINGLE_WALL = "wall/udlr-single.png";
 	private static final String UDR_SINGLE_WALL = "wall/udr-single.png";
 	private static final String ULR_SINGLE_WALL = "wall/ulr-single.png";
+	private static final String DL_COVER_WALL = "wall/dl-cover.png";
+	private static final String DR_COVER = "wall/dr-cover.png";
+	private static final String UL_COVER = "wall/ul-cover.png";
+	private static final String UR_COVER = "wall/ur-cover.png";
 
 	/** file locations of the hole*/
 	private static final String D_HOLE = "hole/d.png";
@@ -165,9 +168,6 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String UDR_SINGLE_HOLE = "hole/udr-single.png";
 	private static final String ULR_SINGLE_HOLE = "hole/ulr-single.png";
 
-
-
-
 	/** file locations of the light sources*/
 	private static final String LIT_SOURCE_FILE = "images/litLightSource.png";
 	private static final String DIM_SOURCE_FILE = "images/dimLightSource.png";
@@ -176,6 +176,7 @@ public class GameplayController extends WorldController implements ContactListen
 	/** file location for the art objects */
 	private static final String GRASS_SOURCE_FILE = "spritesheets/spritesheet_grass.png";
 	private static final String MUSHROOM_SOURCE_FILE = "spritesheets/spritesheet_mushrooms.png";
+	private static final String MUSHROOM_WIGGLE = "spritesheets/spritesheet_mushrooms_giggle.png";
 
 	/** file location for UI elements */
 	private static final String LIGHTS_TEXT_FILE = "images/light_text.png";
@@ -188,6 +189,16 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String PICKUP_SOURCE_FILE = "spritesheets/spritesheet_pickup.png";
 
 	private static final String PAUSE_FILE = "ui/pause_ui.png";
+
+	private static final String COOLDOWN_0 = "images/0.png";
+	private static final String COOLDOWN_25 = "images/25.png";
+	private static final String COOLDOWN_50 = "images/50.png";
+	private static final String COOLDOWN_75 = "images/75.png";
+	private static final String COOLDOWN_100 = "images/100.png";
+
+
+
+
 
 	/** texture for pickup */
 	private TextureRegion pickupTexture;
@@ -203,6 +214,7 @@ public class GameplayController extends WorldController implements ContactListen
 	/** texture for art objects */
 	private TextureRegion grassTexture;
 	private TextureRegion mushroomTexture;
+	private TextureRegion mushroomWiggle;
 
 	/** Array of Texture Regions for the wall*/
 	private TextureRegion[] wallTextures;
@@ -269,6 +281,7 @@ public class GameplayController extends WorldController implements ContactListen
 	/** spritesheet for light source */
 	private TextureRegion lightAnimation;
 
+	private TextureRegion[] cooldownTextures;
 	/** Track asset loading from all instances and subclasses */
 	private AssetState assetState = AssetState.EMPTY;
 
@@ -461,6 +474,14 @@ public class GameplayController extends WorldController implements ContactListen
 		assets.add(UDR_SINGLE_WALL);
 		manager.load(ULR_SINGLE_WALL, Texture.class);
 		assets.add(ULR_WALL);
+		manager.load(DL_COVER_WALL, Texture.class);
+		assets.add(DL_COVER_WALL);
+		manager.load(DR_COVER, Texture.class);
+		assets.add(DR_COVER);
+		manager.load(UL_COVER, Texture.class);
+		assets.add(UL_COVER);
+		manager.load(UR_COVER, Texture.class);
+		assets.add(UR_COVER);
 
 		manager.load(D_HOLE, Texture.class);
 		assets.add(D_HOLE);
@@ -527,6 +548,8 @@ public class GameplayController extends WorldController implements ContactListen
 		assets.add(GRASS_SOURCE_FILE);
 		manager.load(MUSHROOM_SOURCE_FILE, Texture.class);
 		assets.add(MUSHROOM_SOURCE_FILE);
+		manager.load(MUSHROOM_WIGGLE, Texture.class);
+		assets.add(MUSHROOM_WIGGLE);
 
 		manager.load(LIGHTS_TEXT_FILE, Texture.class);
 		assets.add(LIGHTS_TEXT_FILE);
@@ -543,6 +566,17 @@ public class GameplayController extends WorldController implements ContactListen
 
 		manager.load(PAUSE_FILE, Texture.class);
 		assets.add(PAUSE_FILE);
+
+		manager.load(COOLDOWN_0, Texture.class);
+		assets.add(COOLDOWN_0);
+		manager.load(COOLDOWN_25, Texture.class);
+		assets.add(COOLDOWN_25);
+		manager.load(COOLDOWN_50, Texture.class);
+		assets.add(COOLDOWN_50);
+		manager.load(COOLDOWN_75, Texture.class);
+		assets.add(COOLDOWN_75);
+		manager.load(COOLDOWN_100, Texture.class);
+		assets.add(COOLDOWN_100);
 
 		super.preLoadContent(manager);
 	}
@@ -577,7 +611,7 @@ public class GameplayController extends WorldController implements ContactListen
 	}
 
 	public void setWallTextures(AssetManager manager){
-		wallTextures = new TextureRegion[25];
+		wallTextures = new TextureRegion[29];
 		wallTextures[0] = createTexture(manager, D_WALL, false);
 		wallTextures[1] = createTexture(manager, DL_WALL, false);
 		wallTextures[2] = createTexture(manager, DL_SINGLE_WALL, false);
@@ -604,6 +638,11 @@ public class GameplayController extends WorldController implements ContactListen
 		wallTextures[22] = createTexture(manager, UDLR_SINGLE_WALL, false);
 		wallTextures[23] = createTexture(manager, UDR_SINGLE_WALL, false);
 		wallTextures[24] = createTexture(manager, ULR_SINGLE_WALL, false);
+
+		wallTextures[25] = createTexture(manager, DL_COVER_WALL, false);
+		wallTextures[26] = createTexture(manager, DR_COVER, false);
+		wallTextures[27] = createTexture(manager, UL_COVER, false);
+		wallTextures[28] = createTexture(manager, UR_COVER, false);
 	}
 
 	/**
@@ -668,6 +707,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 		grassTexture = createTexture(manager, GRASS_SOURCE_FILE, false);
 		mushroomTexture = createTexture(manager, MUSHROOM_SOURCE_FILE, false);
+		mushroomWiggle = createTexture(manager, MUSHROOM_WIGGLE, false);
 
 		lightsTexture = createTexture(manager, LIGHTS_TEXT_FILE, false);
 		lightCounterTexture = createTexture(manager, LIGHT_COUNTER_FILE, false);
@@ -681,6 +721,13 @@ public class GameplayController extends WorldController implements ContactListen
 
 		setWallTextures(manager);
 		setHoleTextures(manager);
+
+		cooldownTextures = new TextureRegion[]{
+				createTexture(manager, COOLDOWN_0, false),
+				createTexture(manager, COOLDOWN_25, false),
+				createTexture(manager, COOLDOWN_50, false),
+				createTexture(manager, COOLDOWN_75, false),
+				createTexture(manager, COOLDOWN_100, false)};
 
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
@@ -1091,6 +1138,7 @@ public class GameplayController extends WorldController implements ContactListen
 				takingLightRight, playerFrontIdle, playerBackIdle, playerLeftIdle, playerRightIdle, throwingLightFront,
 				throwingLightBack, throwingLightRight, throwingLightLeft, death); //setting animation
 		player.setTexture(playerTextureFront);
+		player.setCooldownTextures(cooldownTextures);
 
 		addObject(player);
 
@@ -1102,6 +1150,7 @@ public class GameplayController extends WorldController implements ContactListen
 		//Add Art Objects
 		for (ArtObject artObject : artObjects) {
 			artObject.setAnimation(artObject.type == ArtObject.ASSET_TYPE.GRASS ? grassTexture : mushroomTexture);
+			artObject.setHitAnimation(artObject.type == ArtObject.ASSET_TYPE.MUSHROOM ? mushroomWiggle : null);
 			artObject.setDrawScale(scale);
 			artObject.setBodyType(BodyDef.BodyType.StaticBody);
 			artObject.setSensor(true);
@@ -1405,6 +1454,7 @@ public class GameplayController extends WorldController implements ContactListen
 				e.collidedWithPlayer = false;
 			}
 		}
+
 		if (numNotCollided == enemies.length){
 			timer = 0;
 		}
@@ -1564,6 +1614,15 @@ public class GameplayController extends WorldController implements ContactListen
 		try {
 			Obstacle bd1 = (Obstacle)body1.getUserData();
 			Obstacle bd2 = (Obstacle)body2.getUserData();
+
+			//see if we hit a mushroom!
+			for(ArtObject o : artObjects) {
+				if (((bd1 == player && bd2 == o) || (bd1 == o &&  bd2 == player))){
+					if(o.type == ArtObject.ASSET_TYPE.MUSHROOM){
+						o.setHit();
+					}
+				}
+			}
 
 
 			// See if we lost.

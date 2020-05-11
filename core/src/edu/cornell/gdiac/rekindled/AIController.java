@@ -590,10 +590,14 @@ public class AIController extends Entity_Controller {
                         goal[0] = (int) pos.x;
                         goal[1] = (int) pos.y;
                     } else {
-                        if (pos.x == goal[0] && pos.y == goal[1]){
+                        if (pos.x == goal[0] && pos.y == goal[1]){// If goal reached update the pointer
                             enemy.updateWanderGoal();
                         }
                         goal = enemy.getWanderGoal();
+                        if (!isGoalAccessible()){ // Deal with cases where wander path obstructed
+                            goal[0] = (int) pos.x;
+                            goal[1] = (int) pos.y;
+                        }
                     }
                     break;
 
@@ -640,6 +644,27 @@ public class AIController extends Entity_Controller {
         }
         enemy.goal = this.goal;
         enemy.moveOnTile(goal[0], goal[1], delta);
+    }
+
+    private boolean isGoalAccessible(){
+        int posX = Math.round(enemy.getPosition().x);
+        int posY = Math.round(enemy.getPosition().y);
+        if (posX == goal[0] && goal[1] < posY) { // Move down
+            return !board.isLitTileBoard(posX, posY - 1);
+        }
+        else if (posX == goal[0] && goal[1] > posY) { // Move up
+            return !board.isLitTileBoard(posX, posY + 1);
+
+        }
+        else if (goal[0] > posX && goal[1] == posY) { // Move right
+            return !board.isLitTileBoard(posX + 1, posY);
+        }
+        else if (goal[0] < posX && goal[1] == posY) { // Move left
+            return !board.isLitTileBoard(posX - 1, posY);
+        }
+        else { // Goal malformed
+            return false;
+        }
     }
 
     private boolean hasLoS(boolean playerLit){

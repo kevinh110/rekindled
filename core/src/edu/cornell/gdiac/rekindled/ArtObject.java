@@ -10,10 +10,12 @@ public class ArtObject extends FeetHitboxObstacle {
 
     private float FRAME_RATE = 1/10f;
     private Animation animation;
+    private Animation hitAnimation;
     private int tile_size;
     private int num_frames;
     private float timeElapsed;
     private boolean isLit;
+    private boolean isHit; //whether the asset has just been touched ie. walking past a mushroom
     private boolean isTransition;
     public ASSET_TYPE type;
     public boolean isTaken; // Only used for pickup to fix multiple pickups
@@ -39,6 +41,10 @@ public class ArtObject extends FeetHitboxObstacle {
         animation = getAnimation(texture, tile_size, tile_size, num_frames, FRAME_RATE);
     }
 
+    public void setHitAnimation(TextureRegion texture){
+        hitAnimation = texture != null ? getAnimation(texture, tile_size, tile_size, 10, FRAME_RATE) : null;
+    }
+
     public void setLit(boolean lit){
         if(isLit && !lit){
             isTransition = true;
@@ -53,7 +59,20 @@ public class ArtObject extends FeetHitboxObstacle {
         }
     }
 
+    public void setHit(){
+        if(isLit){
+            timeElapsed = 0;
+            isHit = true;
+        }
+
+    }
+
     public void draw(GameCanvas canvas){
+        if(isHit && hitAnimation != null){
+            timeElapsed += Gdx.graphics.getDeltaTime();
+            super.draw(canvas, hitAnimation, false, timeElapsed, tile_size, Color.WHITE);
+            isHit = !hitAnimation.isAnimationFinished(timeElapsed);
+        }
         if(isTransition || type == ASSET_TYPE.PICKUP) {
             timeElapsed += Gdx.graphics.getDeltaTime();
         }

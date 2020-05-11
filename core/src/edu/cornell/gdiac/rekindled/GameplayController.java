@@ -36,6 +36,7 @@ import edu.cornell.gdiac.rekindled.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.util.*;
 import javafx.scene.media.AudioSpectrumListener;
 import javafx.util.Pair;
+import org.w3c.dom.Text;
 
 import java.util.LinkedList;
 
@@ -187,10 +188,6 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String PICKUP_SOURCE_FILE = "spritesheets/spritesheet_pickup.png";
 
 	private static final String PAUSE_FILE = "ui/pause_ui.png";
-
-
-
-
 
 	/** texture for pickup */
 	private TextureRegion pickupTexture;

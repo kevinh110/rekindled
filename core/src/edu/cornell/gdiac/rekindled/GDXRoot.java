@@ -93,19 +93,22 @@ public class GDXRoot extends Game implements ScreenListener {
 		levelComplete.setScreenListener(this);
 
 		// Initialize all the game worlds
-		controllers = new GameplayController[12];
+		controllers = new GameplayController[13];
 		controllers[0] = new GameplayController("jsons/Megan_0.json");
 		controllers[1] = new GameplayController("jsons/level10.json");
 		controllers[2] = new GameplayController("jsons/throwlight.json");
 		controllers[3] = new GameplayController("jsons/level20.json");
 		controllers[4] = new GameplayController("jsons/emeka3.json");
-		controllers[5] = new GameplayController("jsons/intermediate.json");
-		controllers[6] = new GameplayController("jsons/level11_Emeka.json");
-		controllers[7] = new GameplayController("jsons/levelhard2.json");
-		controllers[8] = new GameplayController("jsons/intermediate2.json");
-		controllers[9] = new GameplayController("jsons/spineasy.json");
-		controllers[10] = new GameplayController("jsons/testlevel.json");
-		controllers[11] = new GameplayController("jsons/hallwayandroom.json");
+		controllers[5] = new GameplayController("jsons/intermediate2.json");
+		controllers[6] = new GameplayController("jsons/intermediate.json");
+		controllers[7] = new GameplayController("jsons/spineasy.json");
+		controllers[8] = new GameplayController("jsons/hallwayandroom.json");
+		controllers[9] = new GameplayController("jsons/roundabout.json");
+		controllers[10] = new GameplayController("jsons/level11_Emeka.json");
+		controllers[11] = new GameplayController("jsons/testlevel.json");
+		controllers[12] = new GameplayController("jsons/levelhard2.json");
+
+
 
 		for(int ii = 0; ii < controllers.length; ii++) {
 			controllers[ii].preLoadContent(manager);

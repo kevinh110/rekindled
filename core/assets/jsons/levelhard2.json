@@ -1,7 +1,7 @@
 {
 "dimension": [28,18], 
 "spawn": [11,10], 
-"init_lights": 0, 
+"init_lights": 1, 
 "lights": [
 {"position": [10,16],"lit": true},  
 {"position": [17,16],"lit": true}, 

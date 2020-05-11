@@ -677,7 +677,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		}
 		// Flip to match graphics coordinates
 		screenY = heightY-screenY;
-		System.out.println(screenX + ", " + screenY);
 		switch (mode) {
 			case CODE_START:
 				handleStartButtons(screenX, screenY);

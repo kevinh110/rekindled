@@ -1315,7 +1315,7 @@ public class GameCanvas {
 	 * @param sy 	The y-axis scaling factor
 	 */
 	private void computeTransform(float ox, float oy, float x, float y, float angle, float sx, float sy) {
-		System.out.println(sx);
+//		System.out.println(sx);
 		local.setToTranslation(x,y);
 		local.rotate(180.0f*angle/(float)Math.PI);
 		local.scale(sx,sy);

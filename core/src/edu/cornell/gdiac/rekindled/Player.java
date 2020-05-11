@@ -603,9 +603,6 @@ public class Player extends FeetHitboxObstacle {
         }
     }
 
-
-
-
     public boolean getThrowCooldown() {
         return this.throwCooldown;
     }

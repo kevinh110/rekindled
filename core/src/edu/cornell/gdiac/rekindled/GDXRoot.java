@@ -217,15 +217,18 @@ public class GDXRoot extends Game implements ScreenListener {
 					setScreen(tutorials[current]);
 				} else {
 					setScreen(controllers[current]);
+					Gdx.graphics.setCursor(transparentCursor);
+					Gdx.input.setInputProcessor(null);
 				}
 			} else {
 				setScreen(trailer);
+				Gdx.graphics.setCursor(transparentCursor);
+				Gdx.input.setInputProcessor(null);
 			}
 
 //			loading.dispose();
 //			loading = null;
-			Gdx.graphics.setCursor(transparentCursor);
-			Gdx.input.setInputProcessor(null);
+
 
 		}
 		else if(screen == trailer){
@@ -241,12 +244,20 @@ public class GDXRoot extends Game implements ScreenListener {
 			trailer.dispose();
 		}
 		else if(screen == tutorials[0]){
+			Gdx.graphics.setCursor(transparentCursor);
+			Gdx.input.setInputProcessor(null);
 			setScreen(controllers[0]);
 		} else if(screen == tutorials[1]){
+			Gdx.graphics.setCursor(transparentCursor);
+			Gdx.input.setInputProcessor(null);
 			setScreen(controllers[1]);
 		} else if(screen == tutorials[2]){
+			Gdx.graphics.setCursor(transparentCursor);
+			Gdx.input.setInputProcessor(null);
 			setScreen(controllers[2]);
 		} else if(screen == tutorials[3]){
+			Gdx.graphics.setCursor(transparentCursor);
+			Gdx.input.setInputProcessor(null);
 			setScreen(controllers[3]);
 		}
 		else if (screen == levelComplete){

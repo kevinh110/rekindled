@@ -635,8 +635,6 @@ public class Player extends FeetHitboxObstacle {
         return toggleDelayTimer / TURN_ON_DELAY;
     }
 
-
-
     public boolean getThrowCooldown() {
         return this.throwCooldown;
     }

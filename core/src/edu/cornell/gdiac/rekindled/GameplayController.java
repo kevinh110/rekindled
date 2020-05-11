@@ -135,6 +135,10 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String UDLR_SINGLE_WALL = "wall/udlr-single.png";
 	private static final String UDR_SINGLE_WALL = "wall/udr-single.png";
 	private static final String ULR_SINGLE_WALL = "wall/ulr-single.png";
+	private static final String DL_COVER_WALL = "wall/dl-cover.png";
+	private static final String DR_COVER = "wall/dr-cover.png";
+	private static final String UL_COVER = "wall/ul-cover.png";
+	private static final String UR_COVER = "wall/ur-cover.png";
 
 	/** file locations of the hole*/
 	private static final String D_HOLE = "hole/d.png";
@@ -470,6 +474,14 @@ public class GameplayController extends WorldController implements ContactListen
 		assets.add(UDR_SINGLE_WALL);
 		manager.load(ULR_SINGLE_WALL, Texture.class);
 		assets.add(ULR_WALL);
+		manager.load(DL_COVER_WALL, Texture.class);
+		assets.add(DL_COVER_WALL);
+		manager.load(DR_COVER, Texture.class);
+		assets.add(DR_COVER);
+		manager.load(UL_COVER, Texture.class);
+		assets.add(UL_COVER);
+		manager.load(UR_COVER, Texture.class);
+		assets.add(UR_COVER);
 
 		manager.load(D_HOLE, Texture.class);
 		assets.add(D_HOLE);
@@ -599,7 +611,7 @@ public class GameplayController extends WorldController implements ContactListen
 	}
 
 	public void setWallTextures(AssetManager manager){
-		wallTextures = new TextureRegion[25];
+		wallTextures = new TextureRegion[29];
 		wallTextures[0] = createTexture(manager, D_WALL, false);
 		wallTextures[1] = createTexture(manager, DL_WALL, false);
 		wallTextures[2] = createTexture(manager, DL_SINGLE_WALL, false);
@@ -626,6 +638,11 @@ public class GameplayController extends WorldController implements ContactListen
 		wallTextures[22] = createTexture(manager, UDLR_SINGLE_WALL, false);
 		wallTextures[23] = createTexture(manager, UDR_SINGLE_WALL, false);
 		wallTextures[24] = createTexture(manager, ULR_SINGLE_WALL, false);
+
+		wallTextures[25] = createTexture(manager, DL_COVER_WALL, false);
+		wallTextures[26] = createTexture(manager, DR_COVER, false);
+		wallTextures[27] = createTexture(manager, UL_COVER, false);
+		wallTextures[28] = createTexture(manager, UR_COVER, false);
 	}
 
 	/**
@@ -1603,7 +1620,6 @@ public class GameplayController extends WorldController implements ContactListen
 				if (((bd1 == player && bd2 == o) || (bd1 == o &&  bd2 == player))){
 					if(o.type == ArtObject.ASSET_TYPE.MUSHROOM){
 						o.setHit();
-						System.out.println("wiggle");
 					}
 				}
 			}

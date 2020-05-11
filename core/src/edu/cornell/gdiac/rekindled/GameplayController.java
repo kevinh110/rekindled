@@ -164,9 +164,6 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String UDR_SINGLE_HOLE = "hole/udr-single.png";
 	private static final String ULR_SINGLE_HOLE = "hole/ulr-single.png";
 
-
-
-
 	/** file locations of the light sources*/
 	private static final String LIT_SOURCE_FILE = "images/litLightSource.png";
 	private static final String DIM_SOURCE_FILE = "images/dimLightSource.png";
@@ -187,6 +184,12 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String PICKUP_SOURCE_FILE = "spritesheets/spritesheet_pickup.png";
 
 	private static final String PAUSE_FILE = "ui/pause_ui.png";
+
+	private static final String COOLDOWN_0 = "images/100.png";
+	private static final String COOLDOWN_25 = "images/25.png";
+	private static final String COOLDOWN_50 = "images/50.png";
+	private static final String COOLDOWN_75 = "images/75.png";
+	private static final String COOLDOWN_100 = "images/100.png";
 
 
 
@@ -272,6 +275,7 @@ public class GameplayController extends WorldController implements ContactListen
 	/** spritesheet for light source */
 	private TextureRegion lightAnimation;
 
+	private TextureRegion[] cooldownTextures;
 	/** Track asset loading from all instances and subclasses */
 	private AssetState assetState = AssetState.EMPTY;
 
@@ -547,6 +551,17 @@ public class GameplayController extends WorldController implements ContactListen
 		manager.load(PAUSE_FILE, Texture.class);
 		assets.add(PAUSE_FILE);
 
+		manager.load(COOLDOWN_0, Texture.class);
+		assets.add(COOLDOWN_0);
+		manager.load(COOLDOWN_25, Texture.class);
+		assets.add(COOLDOWN_25);
+		manager.load(COOLDOWN_50, Texture.class);
+		assets.add(COOLDOWN_50);
+		manager.load(COOLDOWN_75, Texture.class);
+		assets.add(COOLDOWN_75);
+		manager.load(COOLDOWN_100, Texture.class);
+		assets.add(COOLDOWN_100);
+
 		super.preLoadContent(manager);
 	}
 
@@ -684,6 +699,13 @@ public class GameplayController extends WorldController implements ContactListen
 
 		setWallTextures(manager);
 		setHoleTextures(manager);
+
+		cooldownTextures = new TextureRegion[]{
+				createTexture(manager, COOLDOWN_0, false),
+				createTexture(manager, COOLDOWN_25, false),
+				createTexture(manager, COOLDOWN_50, false),
+				createTexture(manager, COOLDOWN_75, false),
+				createTexture(manager, COOLDOWN_100, false)};
 
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
@@ -1094,6 +1116,7 @@ public class GameplayController extends WorldController implements ContactListen
 				takingLightRight, playerFrontIdle, playerBackIdle, playerLeftIdle, playerRightIdle, throwingLightFront,
 				throwingLightBack, throwingLightRight, throwingLightLeft, death); //setting animation
 		player.setTexture(playerTextureFront);
+		player.setCooldownTextures(cooldownTextures);
 
 		addObject(player);
 

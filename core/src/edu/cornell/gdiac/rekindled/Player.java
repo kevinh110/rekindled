@@ -180,6 +180,9 @@ public class Player extends FeetHitboxObstacle {
 
     private Sound throwSound;
 
+    private TextureRegion[] cooldownTextures;
+    private TextureRegion currentCooldownTexture;
+
     /**
      * Returns the force applied to this rocket.
      * <p>
@@ -404,6 +407,16 @@ public class Player extends FeetHitboxObstacle {
             }
         }
 
+        if (getCooldownPercent() < .25f)
+            currentCooldownTexture = cooldownTextures[0];
+        else if (getCooldownPercent() < .50f)
+            currentCooldownTexture = cooldownTextures[1];
+        else if (getCooldownPercent() < .75f)
+            currentCooldownTexture = cooldownTextures[2];
+        else if (getCooldownPercent() < 1f)
+            currentCooldownTexture = cooldownTextures[3];
+        else
+            currentCooldownTexture = cooldownTextures[4];
     }
 
     public void takeLight() {
@@ -496,6 +509,10 @@ public class Player extends FeetHitboxObstacle {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
+        // draw cooldown
+        if (toggleCooldown)
+            canvas.drawCooldown(currentCooldownTexture, 0, 0, getX(), getY(), 0, 1, 1, false);
+
         Color tint = (toggleCooldown) ? Color.CYAN : Color.WHITE;
         if (dying) {
             super.timeElapsed += Gdx.graphics.getDeltaTime();
@@ -601,6 +618,19 @@ public class Player extends FeetHitboxObstacle {
 
 
         }
+
+
+    }
+
+    public void setCooldownTextures(TextureRegion[] t) {
+       cooldownTextures = t;
+    }
+
+    public float getCooldownPercent() {
+        if (!toggleCooldown)
+            return 100;
+
+        return toggleDelayTimer / TURN_ON_DELAY;
     }
 
     public boolean getThrowCooldown() {

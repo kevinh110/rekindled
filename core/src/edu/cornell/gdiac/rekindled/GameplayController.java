@@ -172,6 +172,7 @@ public class GameplayController extends WorldController implements ContactListen
 	/** file location for the art objects */
 	private static final String GRASS_SOURCE_FILE = "spritesheets/spritesheet_grass.png";
 	private static final String MUSHROOM_SOURCE_FILE = "spritesheets/spritesheet_mushrooms.png";
+	private static final String MUSHROOM_WIGGLE = "spritesheets/spritesheet_mushrooms_giggle.png";
 
 	/** file location for UI elements */
 	private static final String LIGHTS_TEXT_FILE = "images/light_text.png";
@@ -209,6 +210,7 @@ public class GameplayController extends WorldController implements ContactListen
 	/** texture for art objects */
 	private TextureRegion grassTexture;
 	private TextureRegion mushroomTexture;
+	private TextureRegion mushroomWiggle;
 
 	/** Array of Texture Regions for the wall*/
 	private TextureRegion[] wallTextures;
@@ -534,6 +536,8 @@ public class GameplayController extends WorldController implements ContactListen
 		assets.add(GRASS_SOURCE_FILE);
 		manager.load(MUSHROOM_SOURCE_FILE, Texture.class);
 		assets.add(MUSHROOM_SOURCE_FILE);
+		manager.load(MUSHROOM_WIGGLE, Texture.class);
+		assets.add(MUSHROOM_WIGGLE);
 
 		manager.load(LIGHTS_TEXT_FILE, Texture.class);
 		assets.add(LIGHTS_TEXT_FILE);
@@ -686,6 +690,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 		grassTexture = createTexture(manager, GRASS_SOURCE_FILE, false);
 		mushroomTexture = createTexture(manager, MUSHROOM_SOURCE_FILE, false);
+		mushroomWiggle = createTexture(manager, MUSHROOM_WIGGLE, false);
 
 		lightsTexture = createTexture(manager, LIGHTS_TEXT_FILE, false);
 		lightCounterTexture = createTexture(manager, LIGHT_COUNTER_FILE, false);
@@ -1128,6 +1133,7 @@ public class GameplayController extends WorldController implements ContactListen
 		//Add Art Objects
 		for (ArtObject artObject : artObjects) {
 			artObject.setAnimation(artObject.type == ArtObject.ASSET_TYPE.GRASS ? grassTexture : mushroomTexture);
+			artObject.setHitAnimation(artObject.type == ArtObject.ASSET_TYPE.MUSHROOM ? mushroomWiggle : null);
 			artObject.setDrawScale(scale);
 			artObject.setBodyType(BodyDef.BodyType.StaticBody);
 			artObject.setSensor(true);
@@ -1431,6 +1437,7 @@ public class GameplayController extends WorldController implements ContactListen
 				e.collidedWithPlayer = false;
 			}
 		}
+
 		if (numNotCollided == enemies.length){
 			timer = 0;
 		}
@@ -1590,6 +1597,16 @@ public class GameplayController extends WorldController implements ContactListen
 		try {
 			Obstacle bd1 = (Obstacle)body1.getUserData();
 			Obstacle bd2 = (Obstacle)body2.getUserData();
+
+			//see if we hit a mushroom!
+			for(ArtObject o : artObjects) {
+				if (((bd1 == player && bd2 == o) || (bd1 == o &&  bd2 == player))){
+					if(o.type == ArtObject.ASSET_TYPE.MUSHROOM){
+						o.setHit();
+						System.out.println("wiggle");
+					}
+				}
+			}
 
 
 			// See if we lost.

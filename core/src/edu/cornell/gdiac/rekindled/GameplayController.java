@@ -1302,6 +1302,7 @@ public class GameplayController extends WorldController implements ContactListen
 				canMute = false;
 				muted = !muted;
 			}
+
 			else if (!muted && canMute){ // If currently not muted, mute
 				volume = 0.0f;
 				player.mute();

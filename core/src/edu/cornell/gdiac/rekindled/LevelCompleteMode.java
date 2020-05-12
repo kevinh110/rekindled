@@ -589,7 +589,7 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
      * @return whether to hand the event to other listeners.
      */
     public boolean keyUp(int keycode) {
-        if (keycode == Input.Keys.N || keycode == Input.Keys.P) {
+        if (keycode == Input.Keys.N) {
             pressState = 2;
             return false;
         }

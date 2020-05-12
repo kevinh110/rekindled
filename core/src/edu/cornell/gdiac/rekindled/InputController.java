@@ -51,9 +51,6 @@ public class InputController extends Entity_Controller{
 	/** Whether the button to advanced worlds was pressed. */
 	private boolean nextPressed;
 	private boolean nextPrevious;
-	/** Whether the button to step back worlds was pressed. */
-	private boolean prevPressed;
-	private boolean prevPrevious;
 	/** Whether the primary action button was pressed. */
 	private boolean primePressed;
 	private boolean primePrevious;
@@ -229,9 +226,7 @@ public class InputController extends Entity_Controller{
 	 *
 	 * @return true if the player wants to go to the previous level.
 	 */
-	public boolean didRetreat() {
-		return prevPressed && !prevPrevious;
-	}
+
 
 	/**
 	 * Returns true if the player wants to go toggle the debug mode.
@@ -354,7 +349,6 @@ public class InputController extends Entity_Controller{
 		debugPrevious  = debugPressed;
 		exitPrevious = exitPressed;
 		nextPrevious = nextPressed;
-		prevPrevious = prevPressed;
 		shiftPrevious = shiftPressed;
 		pausePrevious = pausePressed;
 		zoomPrevious = zoomPressed;
@@ -384,7 +378,6 @@ public class InputController extends Entity_Controller{
 		resetPressed = xbox.getStart();
 		exitPressed  = xbox.getBack();
 		nextPressed  = xbox.getRB();
-		prevPressed  = xbox.getLB();
 		primePressed = xbox.getA();
 		debugPressed  = xbox.getY();
 
@@ -413,7 +406,6 @@ public class InputController extends Entity_Controller{
 		debugPressed = (secondary && debugPressed) || (Gdx.input.isKeyPressed(Input.Keys.F));
 		primePressed = (secondary && primePressed) || (Gdx.input.isKeyPressed(Input.Keys.UP));
 		secondPressed = (secondary && secondPressed) || (Gdx.input.isKeyPressed(Input.Keys.SPACE));
-		prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
 		nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
 		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
 		upPressed  = (secondary && upPressed) || (Gdx.input.isKeyPressed(Input.Keys.UP) && !isWASD)
@@ -425,7 +417,7 @@ public class InputController extends Entity_Controller{
 		rightPressed  = (secondary && rightPressed) || (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !isWASD)
 				|| (Gdx.input.isKeyPressed(Input.Keys.D) && isWASD);
 		shiftPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);
-		pausePressed = (secondary && pausePressed) || (Gdx.input.isKeyPressed(Input.Keys.L));
+		pausePressed = (secondary && pausePressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
 		zoomPressed = (secondary && zoomPressed) || (Gdx.input.isKeyPressed(Input.Keys.Z));
 		mutePressed = (Gdx.input.isKeyPressed(Input.Keys.M));
 

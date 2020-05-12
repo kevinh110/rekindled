@@ -267,7 +267,6 @@ public class GDXRoot extends Game implements ScreenListener {
 				current = (current+1) % controllers.length;
 				controllers[current].reset();
 				if(current<4){
-					System.out.println("Level Complete. Next Level. Entering tutorial.");
 					tutorials[current].setScreenListener(this);
 					Gdx.graphics.setCursor(cursor);
 					Gdx.input.setInputProcessor(tutorials[current]);
@@ -281,7 +280,6 @@ public class GDXRoot extends Game implements ScreenListener {
 				Gdx.input.setInputProcessor(null);
 				controllers[current].reset();
 				if(current<4){
-					System.out.println("Level Complete. Replay Level. Entering tutorial.");
 					tutorials[current].setScreenListener(this);
 					Gdx.graphics.setCursor(cursor);
 					Gdx.input.setInputProcessor(tutorials[current]);

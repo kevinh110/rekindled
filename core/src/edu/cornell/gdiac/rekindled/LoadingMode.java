@@ -442,6 +442,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			}
 		}
 
+		if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
+			Gdx.app.exit();
+
 		pe.update(Gdx.graphics.getDeltaTime());
 		pe.setPosition(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY());
 

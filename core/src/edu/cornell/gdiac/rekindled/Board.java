@@ -1035,6 +1035,4 @@ public class Board {
         }
     }
 
-    public void dispose() {
-    }
 }

@@ -1745,7 +1745,6 @@ public class GameplayController extends WorldController implements ContactListen
 		scale  = null;
 		world  = null;
 		canvas = null;
-		board.dispose();
 	}
 
 //	// gets the vectors position relative to the camera

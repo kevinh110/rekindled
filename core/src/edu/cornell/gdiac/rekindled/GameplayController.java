@@ -37,6 +37,8 @@ import edu.cornell.gdiac.util.*;
 import javafx.scene.media.AudioSpectrumListener;
 import javafx.util.Pair;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 
@@ -817,7 +819,7 @@ public class GameplayController extends WorldController implements ContactListen
 	private int initLights;
 	private int[] walls;
 	private int[] water; //Now holes
-	private LinkedList<Pair<LightSourceLight, Long>> thrownLights;
+	private HashMap<LightSourceLight, Long> thrownLights;
 	CollisionController collisions;
 
 	private ArtObject[] pickups;
@@ -1020,7 +1022,7 @@ public class GameplayController extends WorldController implements ContactListen
         }
 		deathSound = Gdx.audio.newSound(Gdx.files.internal("sounds/death.mp3"));
 		//initialize thrown lights
-		thrownLights = new LinkedList<>();
+		thrownLights = new HashMap<>();
 
 		for(int i = 0; i < enemies.length; i ++) {
 
@@ -1325,9 +1327,15 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 
 		//remove old thrown light
-		if(!thrownLights.isEmpty() && System.currentTimeMillis() - thrownLights.get(0).getValue() > 2000L){
-			LightSourceLight light = thrownLights.pop().getKey();
-			light.setActive(false);
+		if(!thrownLights.isEmpty()){
+			for (Iterator<LightSourceLight> it = thrownLights.keySet().iterator(); it.hasNext(); ) {
+				LightSourceLight l = it.next();
+				if (System.currentTimeMillis() - thrownLights.get(l) > 2000L) {
+					l.setActive(false);
+					thrownLights.remove(l);
+				}
+			}
+
 		}
 
 		//player movement
@@ -1361,12 +1369,12 @@ public class GameplayController extends WorldController implements ContactListen
 		//throw light
 
 			if((input.didShift() && player.lightCounter > 0 && !player.getThrowCooldown()) &&
-					(thrownLights.isEmpty() || (System.currentTimeMillis() - thrownLights.get(0).getValue() > 500L))) {
+					(thrownLights.isEmpty() || (over500()))) {
 
 				LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius
 				light.setColor(Color.PURPLE);
 				light.setPosition(player.getX(), player.getY());
-				thrownLights.add(new Pair<>(light, System.currentTimeMillis()));
+				thrownLights.put(light, System.currentTimeMillis());
 				player.throwLight();
 
 				//find enemies in range
@@ -1387,8 +1395,7 @@ public class GameplayController extends WorldController implements ContactListen
 			}
 
 
-		for (Pair p: thrownLights) {
-			LightSourceLight l = (LightSourceLight) p.getKey();
+		for (LightSourceLight l: thrownLights.keySet()) {
 			if (l.isActive() && l.contains(player.getPosition().x, player.getPosition().y))
 				this.insideThrownLight = true;
 		}
@@ -1745,6 +1752,14 @@ public class GameplayController extends WorldController implements ContactListen
 		scale  = null;
 		world  = null;
 		canvas = null;
+	}
+
+	private boolean over500 () {
+		for (Long l : thrownLights.values()) {
+			if (System.currentTimeMillis() - l > 500L)
+				return true;
+		}
+		return false;
 	}
 
 //	// gets the vectors position relative to the camera

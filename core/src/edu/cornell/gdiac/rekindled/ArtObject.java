@@ -50,6 +50,7 @@ public class ArtObject extends FeetHitboxObstacle {
             isTransition = true;
             timeElapsed = 0;
             isLit = lit;
+            isHit = false;
             animation.setPlayMode(Animation.PlayMode.REVERSED);
         } else if(!isLit && lit){
             isTransition = true;
@@ -70,18 +71,19 @@ public class ArtObject extends FeetHitboxObstacle {
     public void draw(GameCanvas canvas){
         if(isHit && hitAnimation != null){
             timeElapsed += Gdx.graphics.getDeltaTime();
-            super.draw(canvas, hitAnimation, false, timeElapsed, tile_size, Color.WHITE);
+            super.draw(canvas, hitAnimation, 1.31f, timeElapsed, tile_size);
             isHit = !hitAnimation.isAnimationFinished(timeElapsed);
-        }
-        if(isTransition || type == ASSET_TYPE.PICKUP) {
-            timeElapsed += Gdx.graphics.getDeltaTime();
-        }
+        } else {
+            if (isTransition || type == ASSET_TYPE.PICKUP) {
+                timeElapsed += Gdx.graphics.getDeltaTime();
+            }
 
-        if(animation != null){
-            if (type == ASSET_TYPE.PICKUP){
-                super.draw(canvas, animation, true, timeElapsed, tile_size, Color.WHITE);
-            } else {
-                super.draw(canvas, animation, false, timeElapsed, tile_size, Color.WHITE);
+            if (animation != null) {
+                if (type == ASSET_TYPE.PICKUP) {
+                    super.draw(canvas, animation, true, timeElapsed, tile_size, Color.WHITE);
+                } else {
+                    super.draw(canvas, animation, false, timeElapsed, tile_size, Color.WHITE);
+                }
             }
         }
     }

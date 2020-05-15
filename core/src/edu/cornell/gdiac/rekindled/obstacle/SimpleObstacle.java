@@ -16,6 +16,7 @@
  */
 package edu.cornell.gdiac.rekindled.obstacle;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -792,6 +793,11 @@ public abstract class SimpleObstacle extends Obstacle {
 		if (texture != null) {
 			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),sx,sy);
 		}
+
+	}
+	public void draw(GameCanvas canvas, Animation animation, float scale, float elapsedTime, int width){
+		TextureRegion texture = (TextureRegion) animation.getKeyFrame(elapsedTime);
+		canvas.draw(texture,Color.WHITE, 0,0,getX() * drawScale.x - (width / 2f) - 5, getY()*drawScale.y - 25,getAngle(),scale,scale);
 
 	}
 

@@ -85,6 +85,8 @@ public class AIController extends Entity_Controller {
     // Custom fields for AI algorithms
     public float delta;
 
+    private boolean tookLight; // If the player took light; jank way to deal with paused->chase edge case
+
     private Sound alarmSound;
     private static final float ALARM_DELAY = 1.5f;
     private boolean soundPlaying;
@@ -199,27 +201,29 @@ public class AIController extends Entity_Controller {
                     enemySound.stop();
                     enemySoundPlaying = false;
                 }
-//                if (!hasLoS(playerLit)){
-//                    state = FSMState.GOTO; // Go to prev goal
-//                    timer = 0;
-//                }
-//                else {
+                if (player.isTakingLights()){
+                    tookLight = true;
+                }
                 timer++;
                 if (timer % PAUSE_TIME == 0){
-                    state = FSMState.CHASE;
+                    if (!hasLoSNoConeCheck() && !tookLight){ // Took light deals with an edge case
+                        state = FSMState.GOTO; // Go to prev goal
+                        tookLight = false;
+                    } else {
+                        state = FSMState.CHASE;
+                    }
                     if(!enemySoundPlaying) {
                         enemySound.loop(volume);
                         enemySoundPlaying = true;
                     }
                     timer = 0;
                 }
-//                }
                 break;
 
             case CHASE:
                 soundPlaying = false;
                 soundTimer = 0;
-                if (!hasLoS(playerLit)) {
+                if (!hasLoSNoConeCheck()) {
                     // has no target
                     state = FSMState.GOTO;
                     if(!enemySoundPlaying) {
@@ -333,6 +337,7 @@ public class AIController extends Entity_Controller {
         board.clearVisited();
         return bfs();
     }
+
     public int[] getReturnGoal(){
         // Set Goal
         setReturnGoalTiles();
@@ -434,7 +439,6 @@ public class AIController extends Entity_Controller {
     private boolean noEnemyAt(int x, int y){
         for (Enemy e : enemies){
             if (e != enemy){
-                Vector2 pos = e.getPosition();
                 if (e.goal[0] == x && e.goal[1] == y){
                     return false;
                 }
@@ -617,6 +621,9 @@ public class AIController extends Entity_Controller {
 
                 case PAUSED:
                     setFacingDirWaiting();
+                    if (hasLoSNoConeCheck()){
+                        getChaseGoal(); // Set target but don't do anything with goal
+                    }
                     goal[0] = (int) pos.x;
                     goal[1] = (int) pos.y;
                     break;
@@ -691,6 +698,29 @@ public class AIController extends Entity_Controller {
             return result;
         }
         return enemy.inSight(player.getPosition(), player.getWidth());
+    }
+
+    public boolean hasLoSNoConeCheck(){
+        int idx = 0;
+        boolean result = true;
+        while (idx < board.walls.length - 1) {
+            float[] vertices = new float[]{
+                    board.walls[idx], board.walls[idx + 1],
+                    board.walls[idx], board.walls[idx + 1] + 1f,
+                    board.walls[idx] + 1f, board.walls[idx + 1],
+                    board.walls[idx] + 1f, board.walls[idx + 1] + 1f
+            };
+            Polygon poly = new Polygon(vertices);
+            Vector2 playerPos = new Vector2(player.getPosition().x + .5f,
+                    player.getPosition().y + .5f);
+            Vector2 enemyPos = new Vector2(enemy.getPosition().x + .5f,
+                    enemy.getPosition().y + .5f);
+            if (Intersector.intersectSegmentPolygon(playerPos, enemyPos, poly)) {
+                result = false;
+            }
+            idx += 2;
+        }
+        return result;
     }
 
     public void playAlarm(){

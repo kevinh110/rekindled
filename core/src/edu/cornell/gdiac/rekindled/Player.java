@@ -32,7 +32,6 @@ import edu.cornell.gdiac.rekindled.obstacle.*;
  */
 public class Player extends FeetHitboxObstacle {
 
-
     // Default physics values
     /**
      * The density of this rocket
@@ -392,6 +391,10 @@ public class Player extends FeetHitboxObstacle {
         // Apply force to the rocket BODY, not the rocket
         body.applyForce(force, getPosition(), true);
         //#endregion
+    }
+
+    public boolean isTakingLights(){
+        return takingLight;
     }
 
     public void updateCooldown(float dt) {

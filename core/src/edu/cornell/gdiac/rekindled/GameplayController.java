@@ -38,6 +38,7 @@ import javafx.scene.media.AudioSpectrumListener;
 import javafx.util.Pair;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -1328,12 +1329,15 @@ public class GameplayController extends WorldController implements ContactListen
 
 		//remove old thrown light
 		if(!thrownLights.isEmpty()){
+			HashSet<LightSourceLight> toRemove = new HashSet<>();
 			for (Iterator<LightSourceLight> it = thrownLights.keySet().iterator(); it.hasNext(); ) {
 				LightSourceLight l = it.next();
 				if (System.currentTimeMillis() - thrownLights.get(l) > 2000L) {
 					l.setActive(false);
-					thrownLights.remove(l);
-				}
+					toRemove.add(l); }
+			}
+			for(LightSourceLight l : toRemove){
+				thrownLights.remove(l);
 			}
 
 		}

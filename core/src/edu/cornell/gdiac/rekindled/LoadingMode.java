@@ -393,9 +393,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		}
 		pe.start();
 		// Let ANY connected controller start the game.
-		for(Controller controller : Controllers.getControllers()) {
-			controller.addListener(this);
-		}
+//		for(Controller controller : Controllers.getControllers()) {
+//			controller.addListener(this);
+//		}
 		active = true;
 	}
 	

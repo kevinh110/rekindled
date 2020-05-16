@@ -335,19 +335,20 @@ public class Player extends FeetHitboxObstacle {
         return true;
     }
 
-    public void move(InputController.Move_Direction move) {
+    public void move(InputController.Move_Direction move, float dt) {
         idle = false;
+        float movement = SPEED * dt * GameplayController.SPEED_SCALE;
         if (move == Entity_Controller.Move_Direction.MOVE_DOWN) {
-            body.setLinearVelocity(0, -SPEED);
+            body.setLinearVelocity(0, -movement);
             super.setDirection(Direction.FRONT);
         } else if (move == Entity_Controller.Move_Direction.MOVE_UP) {
-            body.setLinearVelocity(0, SPEED);
+            body.setLinearVelocity(0, movement);
             super.setDirection(Direction.BACK);
         } else if (move == Entity_Controller.Move_Direction.MOVE_RIGHT) {
-            body.setLinearVelocity(SPEED, 0);
+            body.setLinearVelocity(movement, 0);
             super.setDirection(Direction.RIGHT);
         } else if (move == Entity_Controller.Move_Direction.MOVE_LEFT) {
-            body.setLinearVelocity(-SPEED, 0);
+            body.setLinearVelocity(-movement, 0);
             super.setDirection(Direction.LEFT);
         } else {
             idle = true;

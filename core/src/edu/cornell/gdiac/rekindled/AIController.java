@@ -572,7 +572,7 @@ public class AIController extends Entity_Controller {
         return false;
     }
 
-    public void move(boolean playerLit){
+    public void move(boolean playerLit, float dt){
         Vector2 pos = enemy.getPosition();
         if (isCentered(pos.x, pos.y)){
             enemy.setPosition(Math.round(pos.x), Math.round(pos.y)); // Center pos to account for slight drift
@@ -585,7 +585,7 @@ public class AIController extends Entity_Controller {
 //            System.out.println("-----------");
             switch (state) {
                 case WANDER:
-                    enemy.setWanderSpeed();
+                    enemy.setWanderSpeed(dt);
                     if (enemy.getWanderPath().length == 0){
                         timer++;
                         if (timer % SPIN_TIME == 0){
@@ -606,7 +606,7 @@ public class AIController extends Entity_Controller {
                     break;
 
                 case CHASE:
-                    enemy.setChaseSpeed();
+                    enemy.setChaseSpeed(dt);
                     goal = getChaseGoal();
                     if (playerLit && goal[0] == pos.x && goal[1] == pos.y){ // If waiting for player in light, face player
                         setFacingDirWaiting();
@@ -614,7 +614,7 @@ public class AIController extends Entity_Controller {
                     break;
 
                 case GOTO:
-                    enemy.setChaseSpeed();
+                    enemy.setChaseSpeed(dt);
                     board.setGoal(target[0], target[1]);
                     goal = bfs();
                     break;
@@ -644,7 +644,7 @@ public class AIController extends Entity_Controller {
                     break;
 
                 case RETURN:
-                    enemy.setWanderSpeed();
+                    enemy.setWanderSpeed(dt);
                     goal = getReturnGoal(); // This really only needs to be calculated once
                     break;
             }

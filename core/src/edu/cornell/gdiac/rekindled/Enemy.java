@@ -14,6 +14,8 @@ import edu.cornell.gdiac.util.FilmStrip;
 
 import java.util.Arrays;
 
+import static edu.cornell.gdiac.rekindled.Player.SPEED;
+
 public class Enemy extends FeetHitboxObstacle {
     // Default physics values
     /** The density of this rocket */
@@ -82,11 +84,11 @@ public class Enemy extends FeetHitboxObstacle {
         return isLit;
     }
 
-    public void setChaseSpeed(){
-        speed = CHASE_SPEED;
+    public void setChaseSpeed(float dt){
+        speed = dt * CHASE_SPEED * GameplayController.SPEED_SCALE;
     }
-    public void setWanderSpeed(){
-        speed = WANDER_SPEED;
+    public void setWanderSpeed(float dt){
+        speed = dt * WANDER_SPEED * GameplayController.SPEED_SCALE ;
     }
 
     public void setIsLit(boolean value){
@@ -318,7 +320,7 @@ public class Enemy extends FeetHitboxObstacle {
     }
 
 
-    public void move(InputController.Move_Direction move){
+    public void move(InputController.Move_Direction move, float dt){
         if (move == Entity_Controller.Move_Direction.MOVE_DOWN) {
             body.setLinearVelocity(0, -speed);
             facingDirection = Constants.BACK;

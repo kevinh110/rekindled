@@ -299,6 +299,8 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final float THROWN_LIGHT_RADIUS = 3f;
 
 	private float currentScale;
+	/** This value makes different frame rates all seem the same speed*/
+	public static float SPEED_SCALE = 50f;
 
 	private static final float ZOOM_OUT_SCALE = 2.5f;
 	private static final float ZOOM_IN_SCALE = 1.0f;
@@ -1243,7 +1245,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 		if (lostGame){
 			// Play Lost Animation Here
-			player.move(InputController.Move_Direction.NO_MOVE);
+			player.move(InputController.Move_Direction.NO_MOVE, dt);
 			return;
 		}
 
@@ -1343,7 +1345,7 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 
 		//player movement
-		player.move(next_move);
+		player.move(next_move, dt);
 		player.updateCooldown(dt);
 
 		if (input.didSecondary() && player.getTouchingLight() && !player.getToggleCooldown()) {
@@ -1417,7 +1419,7 @@ public class GameplayController extends WorldController implements ContactListen
 		// Do enemy movement
 		// Enemy Movement
 		for (AIController controller : controls){
-			controller.move(isPlayerLit());
+			controller.move(isPlayerLit(), dt);
 			Enemy enemy = controller.getEnemy();
 			//board.updateSeenTiles(enemy.getPosition(), enemy.getFacingDirection());
 			enemy.updateSightCone();

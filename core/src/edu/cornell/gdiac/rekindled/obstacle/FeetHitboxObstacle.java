@@ -198,7 +198,7 @@ public class FeetHitboxObstacle extends SimpleObstacle {
     public void setDirection(Direction direction){
         if( this.direction != direction) {
             this.direction = direction;
-            timeElapsed = 0;
+            //timeElapsed = 0;
         } else {
             timeElapsed += Gdx.graphics.getDeltaTime();
         }

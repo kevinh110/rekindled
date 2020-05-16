@@ -1262,13 +1262,13 @@ public class GameplayController extends WorldController implements ContactListen
 
 		// Handle camera zoom
 		if (zoom_in) {
-			currentScale -= 0.03f;
+			currentScale -= 0.03f * (60f * dt);
 			if (currentScale <= ZOOM_IN_SCALE) {
 				currentScale = ZOOM_IN_SCALE;
 				zoom_in = false;
 			}
 		} else if (zoom_out) {
-			currentScale += 0.03f;
+			currentScale += 0.03f * (60f * dt);
 			if (currentScale  >= ZOOM_OUT_SCALE) {
 				currentScale = ZOOM_OUT_SCALE;
 				zoom_out = false;
@@ -1276,21 +1276,6 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 		canvas.setScale(currentScale);
 		rayCamera.zoom = currentScale;
-
-		if (input.didZoom()) {
-//			System.out.println("Zoom Zoom");
-			if (zoom_in) {
-				zoom_in = false;
-				zoom_out = true;
-			} else if (zoom_out) {
-				zoom_in = true;
-				zoom_out = false;
-			} else if (currentScale == ZOOM_IN_SCALE) {
-				zoom_out = true;
-			} else if (currentScale == ZOOM_OUT_SCALE) {
-				zoom_in = true;
-			}
-		}
 
 		if (input.didMute()){
 			if(muted && canMute){ // If currently muted, unmute

@@ -544,6 +544,7 @@ public abstract class WorldController implements Screen {
         }
 
         // Turn the physics engine crank.
+        System.out.println("FPS: " + Gdx.graphics.getFramesPerSecond());
         world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 
         // Garbage collect the deleted objects.

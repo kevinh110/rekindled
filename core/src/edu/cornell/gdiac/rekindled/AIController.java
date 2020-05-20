@@ -338,6 +338,29 @@ public class AIController extends Entity_Controller {
         return bfs();
     }
 
+    public int[] getWanderGoal() {
+        target = enemy.getWanderGoal();
+        int posX = Math.round(enemy.getPosition().x);
+        int posY = Math.round(enemy.getPosition().y);
+        if (posX == target[0] && target[1] < posY) {
+            goal[0] = posX;
+            goal[1] = posY - 1;
+        } else if (posX == target[0] && target[1] > posY) {
+            goal[0] = posX;
+            goal[1] = posY + 1;
+        } else if (posX < target[0] && target[1] == posY) {
+            goal[0] = posX + 1;
+            goal[1] = posY;
+        } else if (posX > target[0] && target[1] == posY) {
+            goal[0] = posX - 1;
+            goal[1] = posY;
+        } else {
+            goal[0] = posX;
+            goal[1] = posY;
+        }
+        return goal;
+    }
+
     public int[] getReturnGoal(){
         // Set Goal
         setReturnGoalTiles();
@@ -574,6 +597,7 @@ public class AIController extends Entity_Controller {
 
     public void move(boolean playerLit){
         Vector2 pos = enemy.getPosition();
+        System.out.println("Enemy: " + pos);
         if (isCentered(pos.x, pos.y)){
             enemy.setPosition(Math.round(pos.x), Math.round(pos.y)); // Center pos to account for slight drift
             pos = enemy.getPosition();
@@ -594,13 +618,15 @@ public class AIController extends Entity_Controller {
                         goal[0] = (int) pos.x;
                         goal[1] = (int) pos.y;
                     } else {
-                        if (pos.x == goal[0] && pos.y == goal[1]){// If goal reached update the pointer
+                        if (pos.x == target[0] && pos.y == target[1]){// If goal reached update the pointer
                             enemy.updateWanderGoal();
                         }
-                        goal = enemy.getWanderGoal();
+                        goal = getWanderGoal();
                         if (!isGoalAccessible()){ // Deal with cases where wander path obstructed
                             goal[0] = (int) pos.x;
                             goal[1] = (int) pos.y;
+                            target[0] = (int) pos.x;
+                            target[1] = (int) pos.y;
                         }
                     }
                     break;
@@ -688,8 +714,10 @@ public class AIController extends Entity_Controller {
                 Polygon poly = new Polygon(vertices);
                 Vector2 playerPos = new Vector2(player.getPosition().x + .5f,
                         player.getPosition().y + .5f);
+//                System.out.println("Player: " + playerPos);
                 Vector2 enemyPos = new Vector2(enemy.getPosition().x + .5f,
                         enemy.getPosition().y + .5f);
+//                System.out.println("Enemy: " + enemyPos);
                 if (Intersector.intersectSegmentPolygon(playerPos, enemyPos, poly)) {
                     result = false;
                 }

@@ -298,10 +298,11 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private static final float THROWN_LIGHT_RADIUS = 3f;
 
-	private float currentScale;
+
 	/** This value makes different frame rates all seem the same speed*/
 	public static float SPEED_SCALE = 50f;
 
+	private float currentScale;
 	private static final float ZOOM_OUT_SCALE = 2.5f;
 	private static final float ZOOM_IN_SCALE = 1.0f;
 
@@ -316,16 +317,12 @@ public class GameplayController extends WorldController implements ContactListen
 	private int spawnx;
 	private int spawny;
 
-
-	private boolean start_pause;
-	private float start_time;
-	private static final float START_TIME = 1.5f;
+	private boolean startPause;
 
 	private static boolean muted = false;
 
 	// Number of frames after collision where player doesn't lose
 	private static final int GRACE_PERIOD = 10;
-
 	/**
 	 * Preloads the assets for this controller.
 	 * <p>
@@ -992,8 +989,7 @@ public class GameplayController extends WorldController implements ContactListen
 	 */
 	private void populateLevel() {
 		currentScale = ZOOM_OUT_SCALE;
-		start_pause = true;
-		start_time = 0f;
+		startPause = true;
 		zoom_out = false;
 		zoom_in = false;
 		canvas.setScale(currentScale);
@@ -1232,13 +1228,6 @@ public class GameplayController extends WorldController implements ContactListen
 	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
-		if (start_pause) {
-			start_time+=dt;
-			if (start_time >= START_TIME) {
-				start_pause = true;
-				zoom_in = true;
-			}
-		}
 
 		insideThrownLight = false;
 		inLitTile = false;
@@ -1260,15 +1249,20 @@ public class GameplayController extends WorldController implements ContactListen
 		input.readInput(bounds, scale);
 		InputController.Move_Direction next_move = input.get_Next_Direction();
 
+		if (next_move != Entity_Controller.Move_Direction.NO_MOVE && startPause) {
+			startPause = false;
+			zoom_in = true;
+		}
+
 		// Handle camera zoom
 		if (zoom_in) {
-			currentScale -= 0.03f * (60f * dt);
+			currentScale -= 0.05f * (60f * dt);
 			if (currentScale <= ZOOM_IN_SCALE) {
 				currentScale = ZOOM_IN_SCALE;
 				zoom_in = false;
 			}
 		} else if (zoom_out) {
-			currentScale += 0.03f * (60f * dt);
+			currentScale += 0.05f * (60f * dt);
 			if (currentScale  >= ZOOM_OUT_SCALE) {
 				currentScale = ZOOM_OUT_SCALE;
 				zoom_out = false;
@@ -1330,67 +1324,62 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 
 		//player movement
-		player.move(next_move, dt);
-		player.updateCooldown(dt);
 
-		if (input.didSecondary() && player.getTouchingLight() && !player.getToggleCooldown()) {
-			LightSourceObject goalLight = null;
+		if (!zoom_in && !zoom_out) {
+			player.move(next_move, dt);
+			player.updateCooldown(dt);
 
-			for (LightSourceObject light : lights) {
-				if (light.getTouchingPlayer())
-					goalLight = light;
-			}
+			if (input.didSecondary() && player.getTouchingLight() && !player.getToggleCooldown()) {
+				LightSourceObject goalLight = null;
 
-			if (goalLight != null && goalLight.isLit() && player.getLightCounter() <= Constants.MAX_LIGHTS) {
-				player.takeLight();
-				goalLight.toggleLit();
-				board.toggleSource(goalLight.getPosition());
-			} else if (goalLight != null && !goalLight.isLit() && player.getLightCounter() > 0) {
-				player.placeLight();
-				goalLight.toggleLit();
-				board.toggleSource(goalLight.getPosition());
+				for (LightSourceObject light : lights) {
+					if (light.getTouchingPlayer())
+						goalLight = light;
+				}
+
+				if (goalLight != null && goalLight.isLit() && player.getLightCounter() <= Constants.MAX_LIGHTS) {
+					player.takeLight();
+					goalLight.toggleLit();
+					board.toggleSource(goalLight.getPosition());
+				} else if (goalLight != null && !goalLight.isLit() && player.getLightCounter() > 0) {
+					player.placeLight();
+					goalLight.toggleLit();
+					board.toggleSource(goalLight.getPosition());
+				}
 			}
 		}
-
 		// update board
 		board.update(player.getPosition(), dt, player.getScaledPosition());
 
 		this.inLitTile = insideLightSource(player.getPosition());
 
 		//throw light
+		if((input.didShift() && player.lightCounter > 0 && !player.getThrowCooldown()) &&
+				(thrownLights.isEmpty() || over500()) && !zoom_out &&!zoom_in) {
 
-			if((input.didShift() && player.lightCounter > 0 && !player.getThrowCooldown()) &&
-					(thrownLights.isEmpty() || (over500()))) {
+			LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius
+			light.setColor(Color.PURPLE);
+			light.setPosition(player.getX(), player.getY());
+			thrownLights.put(light, System.currentTimeMillis());
+			player.throwLight();
+			insideThrownLight = true;
 
-				LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius
-				light.setColor(Color.PURPLE);
-				light.setPosition(player.getX(), player.getY());
-				thrownLights.put(light, System.currentTimeMillis());
-				player.throwLight();
-
-				//find enemies in range
-				for (Enemy e : enemies) {
-					float distance = player.getPosition().dst(e.getPosition());
-					if (distance <= THROWN_LIGHT_RADIUS) {
-						float dx = e.getPosition().x - player.getX();
-						float dy = e.getPosition().y - player.getY();
-						Vector2 direction = (new Vector2(dx, dy)).nor();
-						float ratio = THROWN_LIGHT_RADIUS / distance;
-						Vector2 new_pos = new Vector2(Math.round((dx * ratio) + player.getX()), Math.round((dy * ratio) + player.getY()));
-						Vector2 thrown_pos = getThrownPosition(player.getPosition(), e.getPosition(), direction);
-						e.setPosition(new Vector2((int)thrown_pos.x, (int)thrown_pos.y));
-						e.stunned = true;
-						e.collidedWithPlayer = false;
-					}
+			//find enemies in range
+			for (Enemy e : enemies) {
+				float distance = player.getPosition().dst(e.getPosition());
+				if (distance <= THROWN_LIGHT_RADIUS) {
+					float dx = e.getPosition().x - player.getX();
+					float dy = e.getPosition().y - player.getY();
+					Vector2 direction = (new Vector2(dx, dy)).nor();
+					float ratio = THROWN_LIGHT_RADIUS / distance;
+					Vector2 new_pos = new Vector2(Math.round((dx * ratio) + player.getX()), Math.round((dy * ratio) + player.getY()));
+					Vector2 thrown_pos = getThrownPosition(player.getPosition(), e.getPosition(), direction);
+					e.setPosition(new Vector2((int)thrown_pos.x, (int)thrown_pos.y));
+					e.stunned = true;
+					e.collidedWithPlayer = false;
 				}
 			}
-
-
-		for (LightSourceLight l: thrownLights.keySet()) {
-			if (l.isActive() && l.contains(player.getPosition().x, player.getPosition().y))
-				this.insideThrownLight = true;
 		}
-
 
 		//update Art objects
 		for(ArtObject obj : artObjects){
@@ -1457,6 +1446,10 @@ public class GameplayController extends WorldController implements ContactListen
 		if (numNotCollided == enemies.length){
 			timer = 0;
 		}
+
+		if (isPlayerLit())
+			System.out.println(isPlayerLit());
+
 	}
 
 	public Vector2 getThrownPosition(Vector2 playerPosition,Vector2 enemyPosition, Vector2 direction){
@@ -1590,6 +1583,7 @@ public class GameplayController extends WorldController implements ContactListen
 	public boolean isPlayerLit() {
 		return this.inLitTile || this.insideThrownLight;
 	}
+
 
 
 	/// CONTACT LISTENER METHODS

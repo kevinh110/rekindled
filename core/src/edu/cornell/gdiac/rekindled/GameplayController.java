@@ -791,7 +791,6 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private Player player;
 	private boolean inLitTile;
-	private boolean insideThrownLight;
 
 	private Enemy[] enemies;
 
@@ -1240,7 +1239,7 @@ public class GameplayController extends WorldController implements ContactListen
 	 */
 	public void update(float dt) {
 
-		insideThrownLight = false;
+		player.insideThrownLight = false;
 		inLitTile = false;
 
 		if (lostGame){
@@ -1373,7 +1372,7 @@ public class GameplayController extends WorldController implements ContactListen
 			light.setPosition(player.getX(), player.getY());
 			thrownLights.put(light, System.currentTimeMillis());
 			player.throwLight();
-			insideThrownLight = true;
+			player.insideThrownLight = true;
 
 			//find enemies in range
 			for (Enemy e : enemies) {
@@ -1603,7 +1602,7 @@ public class GameplayController extends WorldController implements ContactListen
 	}
 
 	public boolean isPlayerLit() {
-		return this.inLitTile || this.insideThrownLight;
+		return this.inLitTile;
 	}
 
 

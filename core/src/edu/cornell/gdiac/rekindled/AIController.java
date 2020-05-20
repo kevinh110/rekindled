@@ -86,6 +86,7 @@ public class AIController extends Entity_Controller {
     public float delta;
 
     private boolean tookLight; // If the player took light; jank way to deal with paused->chase edge case
+    private boolean threwlight; // If the player threw light; jank way to deal with throw light case
 
     private Sound alarmSound;
     private static final float ALARM_DELAY = 1.5f;
@@ -149,24 +150,34 @@ public class AIController extends Entity_Controller {
      * target gets out of range.
      */
     private void changeStateIfApplicable(boolean playerLit) {
-        // Add initialization code as necessary
         Vector2 pos = enemy.getPosition();
         // Next state depends on current state.
-        //check the four corners
         if (board.isLitTileBoard((int) pos.x, (int) pos.y)){
             if(state != FSMState.LIT){
                 enemy.setIsLit(true);
             }
             state = FSMState.LIT;
             timer = 0;
+            threwlight = false;
             return;
         }
         if (enemy.stunned && state != FSMState.STUNNED){
             state = FSMState.STUNNED;
             timer = 0;
+            threwlight = false;
             return;
         }
         enemy.setIsLit(false);
+
+        // Handle thrown light case separately
+        if (player.insideThrownLight && hasLoSNoConeCheck()){
+            threwlight = true;
+            timer = 0;
+            target[0] = Math.round(player.getPosition().x);
+            target[1] = Math.round(player.getPosition().y);
+            state = FSMState.PAUSED;
+            return;
+        }
 
         switch (state) {
             case SPAWN:
@@ -206,9 +217,10 @@ public class AIController extends Entity_Controller {
                 }
                 timer++;
                 if (timer % PAUSE_TIME == 0){
-                    if (!hasLoSNoConeCheck() && !tookLight){ // Took light deals with an edge case
+                    if ((!hasLoSNoConeCheck() && !tookLight) || threwlight){ // Took light deals with an edge case
                         state = FSMState.GOTO; // Go to prev goal
                         tookLight = false;
+                        threwlight = false;
                     } else {
                         state = FSMState.CHASE;
                     }
@@ -445,12 +457,14 @@ public class AIController extends Entity_Controller {
 
         // If goal not found, don't move
         if (reachedGoal[0] == -1 && reachedGoal[1] == -1){
-            target = root;
+            target[0] = root[0];
+            target[1] = root[1];
             board.clearMarks();
             return root;
         }
 
-        target = reachedGoal;
+        target[0] = reachedGoal[0];
+        target[1] = reachedGoal[1];
 
         while(!Arrays.equals(prev,root) && !Arrays.equals(parent[prev[0]][prev[1]],root))  {
             prev = parent[prev[0]][prev[1]];
@@ -646,7 +660,7 @@ public class AIController extends Entity_Controller {
 
                 case PAUSED:
                     setFacingDirWaiting();
-                    if (hasLoSNoConeCheck()){
+                    if (hasLoSNoConeCheck() && !threwlight){
                         getChaseGoal(); // Set target but don't do anything with goal
                     }
                     goal[0] = (int) pos.x;

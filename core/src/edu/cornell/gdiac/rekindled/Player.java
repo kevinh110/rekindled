@@ -173,6 +173,7 @@ public class Player extends FeetHitboxObstacle {
     private float throwDelayTimer;
     private boolean throwCooldown;
     private float cooldownLinger;
+    public boolean insideThrownLight;
 
     private static final float SOUND_DELAY = .5f;
     private float soundTimer;

@@ -1447,9 +1447,20 @@ public class GameplayController extends WorldController implements ContactListen
 			timer = 0;
 		}
 
-		if (isPlayerLit())
+		if (isPlayerLit()) {
 			System.out.println(isPlayerLit());
+		}
 
+		int numAngry = 0;
+		for (Enemy e : enemies){
+			if (e.angry == true)
+				numAngry ++;
+		}
+		if(numAngry == 0){
+			for(AIController controller : controls){
+				controller.resetSound();
+			}
+		}
 	}
 
 	public Vector2 getThrownPosition(Vector2 playerPosition,Vector2 enemyPosition, Vector2 direction){

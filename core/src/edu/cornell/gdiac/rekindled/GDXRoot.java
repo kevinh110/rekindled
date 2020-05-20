@@ -290,6 +290,7 @@ public class GDXRoot extends Game implements ScreenListener {
 				}
 			}
 			else if (exitCode == LevelCompleteMode.EXIT_QUIT){
+				controllers[current].reset();
 				if (levelComplete.mode == LevelCompleteMode.MODE_COMPLETE){
 					current = (current+1) % controllers.length;
 				}

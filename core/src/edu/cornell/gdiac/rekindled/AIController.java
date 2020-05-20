@@ -176,7 +176,6 @@ public class AIController extends Entity_Controller {
             target[0] = Math.round(player.getPosition().x);
             target[1] = Math.round(player.getPosition().y);
             state = FSMState.PAUSED;
-            return;
         }
 
         switch (state) {

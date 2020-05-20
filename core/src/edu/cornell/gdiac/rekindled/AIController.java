@@ -766,9 +766,15 @@ public class AIController extends Entity_Controller {
 
     public void mute(){
         volume = 0.0f;
+        if(enemySoundPlaying){
+            enemySound.stop();
+        }
     }
     public void unmute(){
         volume = .5f;
+        if(enemySoundPlaying){
+            enemySound.play(volume);
+        }
     }
 
     public void resetSound(){

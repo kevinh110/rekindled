@@ -298,6 +298,7 @@ public class GDXRoot extends Game implements ScreenListener {
 				Gdx.input.setInputProcessor(loading);
 			}
 			else if (exitCode == LevelCompleteMode.EXIT_CONTINUE){
+				controllers[current].unmuteEnemySound();
 				Gdx.graphics.setCursor(transparentCursor);
 				Gdx.input.setInputProcessor(null);
 				setScreen(controllers[current]);
@@ -310,6 +311,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			Gdx.graphics.setCursor(cursor);
 			Gdx.input.setInputProcessor(levelComplete);
 		} else if (exitCode == WorldController.EXIT_PAUSED){
+			controllers[current].muteEnemySound();
 			levelComplete.setModePaused();
 			setScreen(levelComplete);
 			Gdx.graphics.setCursor(cursor);

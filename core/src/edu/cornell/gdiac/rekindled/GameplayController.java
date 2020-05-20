@@ -1217,6 +1217,17 @@ public class GameplayController extends WorldController implements ContactListen
 		muted = !muted;
 	}
 
+	public void muteEnemySound(){
+		for (AIController a : controls) {
+			a.mute();
+		}
+	}
+	public void unmuteEnemySound(){
+		for (AIController a : controls) {
+			a.unmute();
+		}
+	}
+
 	/**
 	 * The core gameplay loop of this world.
 	 * <p>

@@ -1758,6 +1758,12 @@ public class GameplayController extends WorldController implements ContactListen
 		return false;
 	}
 
+	public void resetEnemySound(){
+		for(AIController controller : controls){
+			controller.resetSound();
+		}
+	}
+
 //	// gets the vectors position relative to the camera
 //	public Vector2 getCameraPos() {
 //		return player.getScaledPosition();

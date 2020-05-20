@@ -320,6 +320,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			Gdx.input.setInputProcessor(levelComplete);
 		}
 		else if (exitCode == WorldController.EXIT_NEXT) {
+			controllers[current].resetEnemySound();
 			current = (current+1) % controllers.length;
 			controllers[current].reset();
 			if(current<4){
@@ -332,6 +333,7 @@ public class GDXRoot extends Game implements ScreenListener {
 				setScreen(controllers[current]);
 			}
 		} else if (exitCode == WorldController.EXIT_PREV) {
+			controllers[current].resetEnemySound();
 			current = (current+controllers.length-1) % controllers.length;
 			controllers[current].reset();
 			if(current<4){

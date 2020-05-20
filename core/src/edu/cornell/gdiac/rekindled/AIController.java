@@ -597,7 +597,6 @@ public class AIController extends Entity_Controller {
 
     public void move(boolean playerLit){
         Vector2 pos = enemy.getPosition();
-        System.out.println("Enemy: " + pos);
         if (isCentered(pos.x, pos.y)){
             enemy.setPosition(Math.round(pos.x), Math.round(pos.y)); // Center pos to account for slight drift
             pos = enemy.getPosition();

@@ -178,7 +178,7 @@ public abstract class WorldController implements Screen {
     public static final int EXIT_COUNT = 120;
 
     /** The amount of time for a physics engine step. */
-    public static final float WORLD_STEP = 1/60.0f;
+    public static float WORLD_STEP = 1/60.0f;
     /** Number of velocity iterations for the constrain solvers */
     public static final int WORLD_VELOC = 6;
     /** Number of position iterations for the constrain solvers */
@@ -544,6 +544,7 @@ public abstract class WorldController implements Screen {
         }
 
         // Turn the physics engine crank.
+        WORLD_STEP = 1 / (float) Gdx.graphics.getFramesPerSecond();
         System.out.println("FPS: " + Gdx.graphics.getFramesPerSecond());
         world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 

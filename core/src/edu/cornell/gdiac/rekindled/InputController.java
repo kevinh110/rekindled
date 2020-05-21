@@ -18,6 +18,8 @@ import com.badlogic.gdx.math.*;
 
 import edu.cornell.gdiac.util.*;
 
+import java.util.LinkedList;
+
 import static edu.cornell.gdiac.rekindled.Entity_Controller.Move_Direction.*;
 
 /**
@@ -41,6 +43,7 @@ public class InputController extends Entity_Controller{
 		if (theController == null) {
 			theController = new InputController();
 		}
+
 		return theController;
 	}
 	
@@ -91,6 +94,8 @@ public class InputController extends Entity_Controller{
 	/** Whether the mute key (M) was pressed */
 	private boolean mutePressed;
 	private boolean mutePrevious;
+
+	private LinkedList<Move_Direction> keysPressed;
 
 	/** whether the shift key was previously pressed */
 	private boolean shiftPrevious;
@@ -283,18 +288,37 @@ public class InputController extends Entity_Controller{
 
 	public Move_Direction get_Next_Direction(){
 		if(didDown()){
-			return MOVE_DOWN;
+			if(!keysPressed.contains(MOVE_DOWN)){
+				keysPressed.addFirst(MOVE_DOWN);
+			}
+		} else {
+			keysPressed.remove(MOVE_DOWN);
 		}
 		if (didUp()){
-			return MOVE_UP;
+			if(!keysPressed.contains(MOVE_UP)){
+				keysPressed.addFirst(MOVE_UP);
+			}
+		} else{
+			keysPressed.remove(MOVE_UP);
 		}
 		if(didRight()){
-			return  MOVE_RIGHT;
+			if(!keysPressed.contains(MOVE_RIGHT)){
+				keysPressed.addFirst(MOVE_RIGHT);
+			}
+		} else {
+			keysPressed.remove(MOVE_RIGHT);
 		}
 		if(didLeft()){
-			return  MOVE_LEFT;
+			if(!keysPressed.contains(MOVE_LEFT)){
+				keysPressed.addFirst(MOVE_LEFT);
+			}
+		} else {
+			keysPressed.remove(MOVE_LEFT);
 		}
-		return NO_MOVE;
+		if(keysPressed.isEmpty()){
+			return NO_MOVE;
+		}
+		return keysPressed.getFirst();
 	}
 
 	public boolean didMute() { return mutePressed; }
@@ -328,6 +352,7 @@ public class InputController extends Entity_Controller{
 		xbox = new XBox360Controller(0);
 		crosshair = new Vector2();
 		crosscache = new Vector2();
+		keysPressed = new LinkedList<>();
 	}
 
 	/**

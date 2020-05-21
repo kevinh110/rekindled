@@ -72,6 +72,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 	private static final String LEVELS = "ui/levels.png";
 	private static final String LEVELS2 = "ui/levels2.png";
+	private static final String LEVELS3 = "ui/levels3.png";
 	private static final String NEXT_FILE = "ui/next.png";
 	private static final String PREV_FILE = "ui/prev.png";
 
@@ -91,6 +92,14 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private static final String HOVER_14_FILE = "hover/14s.png";
 	private static final String HOVER_15_FILE = "hover/15s.png";
 	private static final String HOVER_16_FILE = "hover/16s.png";
+	private static final String HOVER_17_FILE = "hover/17s.png";
+	private static final String HOVER_18_FILE = "hover/18s.png";
+	private static final String HOVER_19_FILE = "hover/19s.png";
+	private static final String HOVER_20_FILE = "hover/20s.png";
+	private static final String HOVER_21_FILE = "hover/21s.png";
+	private static final String HOVER_22_FILE = "hover/22s.png";
+	private static final String HOVER_23_FILE = "hover/23s.png";
+	private static final String HOVER_24_FILE = "hover/24s.png";
 
 
 	private final ParticleEffect pe;
@@ -115,6 +124,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 	private Texture levelsTexture;
 	private Texture levels2Texture;
+	private Texture levels3Texture;
 	private Texture prevArrowTexture;
 	private Texture nextArrowTexture;
 
@@ -144,6 +154,14 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private Texture hover14;
 	private Texture hover15;
 	private Texture hover16;
+	private Texture hover17;
+	private Texture hover18;
+	private Texture hover19;
+	private Texture hover20;
+	private Texture hover21;
+	private Texture hover22;
+	private Texture hover23;
+	private Texture hover24;
 
 
 	/** Texture atlas to support a progress bar */
@@ -219,7 +237,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private int currentLevel;
 	private int currentPage;
 
-	private int hoverLevel; // 1 -16 ; 0 if none
+	private int hoverLevel; // 1 -24 ; 0 if none
 
 	/** Codes for the different screens */
 	public static final int CODE_START = 1;
@@ -335,6 +353,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		saveChangesTexture = new Texture(SAVE_CHANGES_FILE);
 		levelsTexture = new Texture(LEVELS);
 		levels2Texture = new Texture(LEVELS2);
+		levels3Texture = new Texture(LEVELS3);
 		nextArrowTexture = new Texture(NEXT_FILE);
 		prevArrowTexture = new Texture(PREV_FILE);
 		levelHover = new Texture(LEVEL_HOVER_FILE);
@@ -361,6 +380,14 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		hover14 = new Texture(HOVER_14_FILE);
 		hover15 = new Texture(HOVER_15_FILE);
 		hover16 = new Texture(HOVER_16_FILE);
+		hover17 = new Texture(HOVER_17_FILE);
+		hover18 = new Texture(HOVER_18_FILE);
+		hover19 = new Texture(HOVER_19_FILE);
+		hover20 = new Texture(HOVER_20_FILE);
+		hover21 = new Texture(HOVER_21_FILE);
+		hover22 = new Texture(HOVER_22_FILE);
+		hover23 = new Texture(HOVER_23_FILE);
+		hover24 = new Texture(HOVER_24_FILE);
 
 
 //		statusBar  = new Texture(PROGRESS_FILE);
@@ -494,6 +521,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			} else if (currentPage == 1){
 				canvas.draw(levels2Texture, 125, 50);
 				canvas.draw(prevArrowTexture, 50, 50);
+				canvas.draw(nextArrowTexture, 1230 - nextArrowTexture.getWidth(), 50);
+			} else if (currentPage == 2){
+				canvas.draw(levels3Texture, 125, 50);
+				canvas.draw(prevArrowTexture, 50, 50);
 			}
 			if (hover == HOVER_BACK_TO_MAIN){
 				canvas.draw(backToMainHover, 50, heightY - 75);
@@ -543,6 +574,15 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		else if (hoverLevel == 14){ canvas.draw(hover14, 715, 306); }
 		else if (hoverLevel == 15){ canvas.draw(hover15, 719, 42); }
 		else if (hoverLevel == 16){ canvas.draw(hover16, 987, 120); }
+
+		else if (hoverLevel == 17){ canvas.draw(hover17, 107, 372); }
+		else if (hoverLevel == 18){ canvas.draw(hover18, 334, 484); }
+		else if (hoverLevel == 19){ canvas.draw(hover19, 319, 246); }
+		else if (hoverLevel == 20){ canvas.draw(hover20, 614, 474); }
+		else if (hoverLevel == 21){ canvas.draw(hover21, 508, 147); }
+		else if (hoverLevel == 22){ canvas.draw(hover22, 715, 306); }
+		else if (hoverLevel == 23){ canvas.draw(hover23, 719, 42); }
+		else if (hoverLevel == 24){ canvas.draw(hover24, 987, 120); }
 
 	}
 	
@@ -730,10 +770,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			currentLevel = 7 + currentPage * 8;
 			pressState = 1;
 			exitCode = CODE_LEVEL_SELECT;
-		} else if (screenX >= 1190 && screenX <= 1245 && screenY >= 39 && screenY <= 127){
-			currentPage = 1;
-		} else if (screenX >= 43 && screenX <= 105 && screenY >= 39 && screenY <= 127){
-			currentPage = 0;
+		} else if (screenX >= 1190 && screenX <= 1245 && screenY >= 39 && screenY <= 127 && currentPage != 2){
+			currentPage += 1;
+		} else if (screenX >= 43 && screenX <= 105 && screenY >= 39 && screenY <= 127 && currentPage != 0){
+			currentPage -=1;
 		}
 	}
 

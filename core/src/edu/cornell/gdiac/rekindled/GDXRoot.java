@@ -102,7 +102,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
 
 		// Initialize all the game worlds
-		controllers = new GameplayController[18];
+		controllers = new GameplayController[22];
 		controllers[0] = new GameplayController("jsons/tutorial/level0.json");
 		controllers[1] = new GameplayController("jsons/tutorial/level1.json");
 		controllers[2] = new GameplayController("jsons/tutorial/level2.json");
@@ -121,6 +121,12 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers[15] = new GameplayController("jsons/levelhard2.json");
 		controllers[16] = new GameplayController("jsons/longlure.json");
 		controllers[17] = new GameplayController("jsons/experiment.json");
+		controllers[18] = new GameplayController("jsons/blockedpaths.json");
+		controllers[19] = new GameplayController("jsons/spinstun.json");
+		controllers[20] = new GameplayController("jsons/timedstun.json");
+		controllers[21] = new GameplayController("jsons/simultrap.json");
+
+
 
 
 

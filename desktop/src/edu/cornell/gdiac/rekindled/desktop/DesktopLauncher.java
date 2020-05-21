@@ -37,8 +37,6 @@ public class DesktopLauncher {
 		config.width  = 1280;
 		config.height = 720;
 		config.resizable = false;
-		config.backgroundFPS = 30;
-		config.foregroundFPS = 30;
 		config.title = "Rekindle";
 		new LwjglApplication(new GDXRoot(), config);
 	}

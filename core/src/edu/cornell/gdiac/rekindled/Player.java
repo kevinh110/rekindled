@@ -157,7 +157,7 @@ public class Player extends FeetHitboxObstacle {
     private Animation rightIdleAnimation;
     private Animation deathAnimation;
 
-    public static final float SPEED = 3.4f;
+    public static final float SPEED = 4.0f;
 
     public int lightCounter;
     private float toggleDelayTimer;

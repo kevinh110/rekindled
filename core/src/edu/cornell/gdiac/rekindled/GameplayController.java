@@ -345,7 +345,6 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private static final float THROWN_LIGHT_RADIUS = 3f;
 
-
 	/** This value makes different frame rates all seem the same speed*/
 	public static float SPEED_SCALE = 50f;
 

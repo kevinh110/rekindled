@@ -85,10 +85,10 @@ public class Enemy extends FeetHitboxObstacle {
     }
 
     public void setChaseSpeed(float dt){
-        speed = dt * CHASE_SPEED * GameplayController.SPEED_SCALE;
+        speed =  CHASE_SPEED;
     }
     public void setWanderSpeed(float dt){
-        speed = dt * WANDER_SPEED * GameplayController.SPEED_SCALE ;
+        speed = WANDER_SPEED ;
     }
 
     public void setIsLit(boolean value){

@@ -78,7 +78,7 @@ public class AIController extends Entity_Controller {
     /** How long to pause before changing */
     private final int PAUSE_TIME = 65;
     /** the number of ticks between spins for stationary enemies */
-    private final int SPIN_TIME = 38;
+    private final int SPIN_TIME = 50;
 
     private Enemy[] enemies;
 
@@ -169,14 +169,6 @@ public class AIController extends Entity_Controller {
         }
         enemy.setIsLit(false);
 
-        // Handle thrown light case separately
-        if (player.insideThrownLight && hasLoSNoConeCheck()){
-            threwlight = true;
-            timer = 0;
-            target[0] = Math.round(player.getPosition().x);
-            target[1] = Math.round(player.getPosition().y);
-            state = FSMState.PAUSED;
-        }
 
         switch (state) {
             case SPAWN:
@@ -610,6 +602,14 @@ public class AIController extends Entity_Controller {
 
     public void move(boolean playerLit, float dt){
         Vector2 pos = enemy.getPosition();
+        // Handle thrown light case separately
+        if (player.insideThrownLight && hasLoSNoConeCheck()){
+            threwlight = true;
+            timer = 0;
+            target[0] = Math.round(player.getPosition().x);
+            target[1] = Math.round(player.getPosition().y);
+            state = FSMState.PAUSED;
+        }
         if (isCentered(pos.x, pos.y)){
             enemy.setPosition(Math.round(pos.x), Math.round(pos.y)); // Center pos to account for slight drift
             pos = enemy.getPosition();

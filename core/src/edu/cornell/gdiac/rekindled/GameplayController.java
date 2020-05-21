@@ -1457,9 +1457,6 @@ public class GameplayController extends WorldController implements ContactListen
 			timer = 0;
 		}
 
-		if (isPlayerLit()) {
-			System.out.println(isPlayerLit());
-		}
 
 		int numAngry = 0;
 		for (Enemy e : enemies){

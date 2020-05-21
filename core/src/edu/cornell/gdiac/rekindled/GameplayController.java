@@ -1692,6 +1692,10 @@ public class GameplayController extends WorldController implements ContactListen
 				obj.draw(canvas);
 		}
 
+		if(TUTORIAL){
+			drawTutorial();
+		}
+
 		// Draw enemies + player + lights; this is redundant but needed for correct ordering of textures
 		for (LightSourceObject light : lights){
 			light.draw(canvas);
@@ -1710,9 +1714,7 @@ public class GameplayController extends WorldController implements ContactListen
 			}
 		}
 		drawUI();
-		if(TUTORIAL){
-			drawTutorial();
-		}
+
 
 		canvas.end();
 

@@ -688,7 +688,7 @@ public class AIController extends Entity_Controller {
             }
         }
         enemy.goal = this.goal;
-        enemy.moveOnTile(goal[0], goal[1], delta);
+        enemy.moveOnTile(goal[0], goal[1], dt);
     }
 
     private boolean isGoalAccessible(){

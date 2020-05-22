@@ -351,7 +351,6 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private static final float THROWN_LIGHT_RADIUS = 3f;
 
-
 	/** This value makes different frame rates all seem the same speed*/
 	public static float SPEED_SCALE = 50f;
 
@@ -1472,7 +1471,7 @@ public class GameplayController extends WorldController implements ContactListen
 		input.readInput(bounds, scale);
 		InputController.Move_Direction next_move = input.get_Next_Direction();
 
-		if (next_move != Entity_Controller.Move_Direction.NO_MOVE && startPause) {
+		if (input.anyKeyPressed()) {
 			startPause = false;
 			zoom_in = true;
 		}
@@ -1790,6 +1789,7 @@ public class GameplayController extends WorldController implements ContactListen
 	}
 
 	private void drawUI() {
+
 		// Magic Numbers - will change later
 		canvas.draw(lightsTexture, 10, canvas.getHeight() - 75);
 		if (player.getLightCounter() > 0){

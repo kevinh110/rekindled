@@ -349,6 +349,9 @@ public class GameplayController extends WorldController implements ContactListen
 	private TextureRegion tutorial711;
 	private TextureRegion tutorial811;
 
+	//pickup sound
+	private Sound pickupSound;
+
 	/** Track asset loading from all instances and subclasses */
 	private AssetState assetState = AssetState.EMPTY;
 
@@ -882,6 +885,8 @@ public class GameplayController extends WorldController implements ContactListen
 				createTexture(manager, COOLDOWN_50, false),
 				createTexture(manager, COOLDOWN_75, false),
 				createTexture(manager, COOLDOWN_100, false)};
+
+		pickupSound = Gdx.audio.newSound(Gdx.files.internal("sounds/off.mp3"));
 
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
@@ -1958,6 +1963,7 @@ public class GameplayController extends WorldController implements ContactListen
 				if((bd1 == player && bd2 == pickup) || (bd1 == pickup && bd2 == player)){
 					pickup.markRemoved(true);
 					if (!pickup.isTaken){
+						pickupSound.play((float)(volume*(.75)));
 						player.lightCounter++;
 						pickup.isTaken = true;
 					}

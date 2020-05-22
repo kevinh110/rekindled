@@ -111,10 +111,10 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers[13] = new GameplayController("jsons/roundabout.json",13);
 		controllers[14] = new GameplayController("jsons/level11_Emeka.json",14);
 		controllers[15] = new GameplayController("jsons/simultrap.json",15);
-		controllers[16] = new GameplayController("jsons/longlure.json",16);
-		controllers[17] = new GameplayController("jsons/timedstun.json",17);
-		controllers[18] = new GameplayController("jsons/blockedpaths.json",18);
-		controllers[19] = new GameplayController("jsons/experiment.json",19); // holes
+		controllers[16] = new GameplayController("jsons/blockedpaths.json",16);
+		controllers[17] = new GameplayController("jsons/experiment.json",17); // holes
+		controllers[18] = new GameplayController("jsons/longlure.json",18);
+		controllers[19] = new GameplayController("jsons/timedstun.json",19);
 		controllers[20] = new GameplayController("jsons/keys.json" , 20);
 		controllers[21] = new GameplayController("jsons/testlevel.json",21); // circle thing
 		controllers[22] = new GameplayController("jsons/levelhard2.json",22); // calvin

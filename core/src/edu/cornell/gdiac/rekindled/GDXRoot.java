@@ -125,7 +125,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers[19] = new GameplayController("jsons/spinstun.json",19);
 		controllers[20] = new GameplayController("jsons/timedstun.json",20);
 		controllers[21] = new GameplayController("jsons/simultrap.json",21);
-		controllers[21] = new GameplayController("jsons/last.json",22);
+		controllers[22] = new GameplayController("jsons/last.json",22);
 		
 
 		for(int ii = 0; ii < controllers.length; ii++) {

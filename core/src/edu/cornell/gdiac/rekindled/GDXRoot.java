@@ -54,8 +54,6 @@ public class GDXRoot extends Game implements ScreenListener {
 	private int current;
 	/** List of all WorldControllers */
 	private GameplayController[] controllers;
-	/** List of TutorialModes*/
-	private TutorialMode[] tutorials;
 
 	private Music music;
 
@@ -93,12 +91,6 @@ public class GDXRoot extends Game implements ScreenListener {
 		trailer.setScreenListener(this);
 		levelComplete = new LevelCompleteMode(canvas, manager, 1);
 		levelComplete.setScreenListener(this);
-
-//		tutorials = new TutorialMode[4];
-//		tutorials[0] = new TutorialMode(canvas, manager,1,1);
-//		tutorials[1] = new TutorialMode(canvas, manager,1,2);
-//		tutorials[2] = new TutorialMode(canvas, manager,1,3);
-//		tutorials[3] = new TutorialMode(canvas, manager,1,4);
 
 
 		// Initialize all the game worlds
@@ -214,17 +206,6 @@ public class GDXRoot extends Game implements ScreenListener {
 				controllers[current].unmute();
 			}
 			if(current != 0){
-////				if(current<4){
-////					System.out.println("Exited loading mode. Entering tutorial.");
-////					tutorials[current].setScreenListener(this);
-////					Gdx.graphics.setCursor(cursor);
-////					Gdx.input.setInputProcessor(tutorials[current]);
-////					setScreen(tutorials[current]);
-////				} else {
-////					setScreen(controllers[current]);
-////					Gdx.graphics.setCursor(transparentCursor);
-////					Gdx.input.setInputProcessor(null);
-////				}
 				setScreen(controllers[current]);
 				Gdx.graphics.setCursor(transparentCursor);
 				Gdx.input.setInputProcessor(null);
@@ -233,75 +214,24 @@ public class GDXRoot extends Game implements ScreenListener {
 				Gdx.graphics.setCursor(transparentCursor);
 				Gdx.input.setInputProcessor(null);
 			}
-//			setScreen(controllers[current]);
-//			Gdx.graphics.setCursor(transparentCursor);
-//			Gdx.input.setInputProcessor(null);
-
-//			loading.dispose();
-//			loading = null;
-
 
 		}
 		else if(screen == trailer){
-//			if(current<4){
-////				System.out.println("Exited trailer. Entering tutorial.");
-////				tutorials[current].setScreenListener(this);
-////				Gdx.graphics.setCursor(cursor);
-////				Gdx.input.setInputProcessor(tutorials[current]);
-////				setScreen(tutorials[current]);
-////			} else {
-////				setScreen(controllers[current]);
-////			}
 			setScreen(controllers[current]);
 			trailer.dispose();
 		}
-//		else if(screen == tutorials[0]){
-//			Gdx.graphics.setCursor(transparentCursor);
-//			Gdx.input.setInputProcessor(null);
-//			setScreen(controllers[0]);
-//		} else if(screen == tutorials[1]){
-//			Gdx.graphics.setCursor(transparentCursor);
-//			Gdx.input.setInputProcessor(null);
-//			setScreen(controllers[1]);
-//		} else if(screen == tutorials[2]){
-//			Gdx.graphics.setCursor(transparentCursor);
-//			Gdx.input.setInputProcessor(null);
-//			setScreen(controllers[2]);
-//		} else if(screen == tutorials[3]){
-//			Gdx.graphics.setCursor(transparentCursor);
-//			Gdx.input.setInputProcessor(null);
-//			setScreen(controllers[3]);
-//		}
 		else if (screen == levelComplete){
 			if (exitCode == LevelCompleteMode.EXIT_NEXT){
 				Gdx.graphics.setCursor(transparentCursor);
 				Gdx.input.setInputProcessor(null);
 				current = (current+1) % controllers.length;
 				controllers[current].reset();
-//				if(current<4){
-//					System.out.println("Level Complete. Next Level. Entering tutorial.");
-//					tutorials[current].setScreenListener(this);
-//					Gdx.graphics.setCursor(cursor);
-//					Gdx.input.setInputProcessor(tutorials[current]);
-//					setScreen(tutorials[current]);
-//				} else {
-//					setScreen(controllers[current]);
-//				}
 				setScreen(controllers[current]);
 			}
 			else if (exitCode == LevelCompleteMode.EXIT_REPLAY){
 				Gdx.graphics.setCursor(transparentCursor);
 				Gdx.input.setInputProcessor(null);
 				controllers[current].reset();
-//				if(current<4){
-//					System.out.println("Level Complete. Replay Level. Entering tutorial.");
-//					tutorials[current].setScreenListener(this);
-//					Gdx.graphics.setCursor(cursor);
-//					Gdx.input.setInputProcessor(tutorials[current]);
-//					setScreen(tutorials[current]);
-//				} else {
-//					setScreen(controllers[current]);
-//				}
 				setScreen(controllers[current]);
 			}
 			else if (exitCode == LevelCompleteMode.EXIT_QUIT){
@@ -341,29 +271,11 @@ public class GDXRoot extends Game implements ScreenListener {
 			controllers[current].resetEnemySound();
 			current = (current+1) % controllers.length;
 			controllers[current].reset();
-//			if(current<4){
-//				System.out.println("Next Level. Entering tutorial.");
-//				tutorials[current].setScreenListener(this);
-//				Gdx.graphics.setCursor(cursor);
-//				Gdx.input.setInputProcessor(tutorials[current]);
-//				setScreen(tutorials[current]);
-//			} else {
-//				setScreen(controllers[current]);
-//			}
 			setScreen(controllers[current]);
 		} else if (exitCode == WorldController.EXIT_PREV) {
 			controllers[current].resetEnemySound();
 			current = (current+controllers.length-1) % controllers.length;
 			controllers[current].reset();
-//			if(current<4){
-//				System.out.println("Previous Level. Entering tutorial.");
-//				tutorials[current].setScreenListener(this);
-//				Gdx.graphics.setCursor(cursor);
-//				Gdx.input.setInputProcessor(tutorials[current]);
-//				setScreen(tutorials[current]);
-//			} else {
-//				setScreen(controllers[current]);
-//			}
 			setScreen(controllers[current]);
 		} else if (exitCode == WorldController.EXIT_QUIT) {
 			// We quit the main application

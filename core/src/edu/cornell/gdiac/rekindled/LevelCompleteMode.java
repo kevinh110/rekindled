@@ -53,9 +53,11 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
     private static final String PLAY_BTN_FILE = "images/play.png";
 
     private static final String EXIT_HOVER = "ui/exit_hover.png";
+    private static final String EXIT_HOVER_PAUSE = "ui/exit_hover_pause.png";
     private static final String CONTINUE_HOVER = "ui/continue_hover.png";
     private static final String REPLAY_HOVER = "ui/replay_hover.png";
     private static final String NEXT_HOVER = "ui/next_level_hover.png";
+
 
 
     /** Background texture for start-up */
@@ -63,6 +65,7 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
     private Texture pauseBackground;
     private Texture lostBackground;
     private Texture exitHover;
+    private Texture exitHoverPause;
     private Texture continueHover;
     private Texture replayHover;
     private Texture nextHover;
@@ -245,6 +248,7 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
         lostBackground = new Texture(BACKGROUND_LOST_FILE);
         replayHover = new Texture(REPLAY_HOVER);
         exitHover = new Texture(EXIT_HOVER);
+        exitHoverPause = new Texture(EXIT_HOVER_PAUSE);
         continueHover = new Texture(CONTINUE_HOVER);
         nextHover = new Texture(NEXT_HOVER);
 
@@ -328,17 +332,17 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
         canvas.begin();
         if (mode == MODE_COMPLETE){
             canvas.draw(completeBackground, 0, 0);
-            if (hover == HOVER_NEXT){ canvas.draw(nextHover, 100, 100); }
-            else if (hover == HOVER_REPLAY){ canvas.draw(replayHover, 100, 100); }
-            else if (hover == HOVER_EXIT){ canvas.draw(exitHover, 100, 100); }
+            if (hover == HOVER_NEXT){ canvas.draw(nextHover, 828, 86); }
+            else if (hover == HOVER_REPLAY){ canvas.draw(replayHover, 470, 71); }
+            else if (hover == HOVER_EXIT){ canvas.draw(exitHover, 193, 69); }
         } else if (mode == MODE_PAUSED){
             canvas.draw(pauseBackground, 0, 0);
-            if (hover == HOVER_CONTINUE){ canvas.draw(continueHover, 100, 100); }
-            else if (hover == HOVER_EXIT){ canvas.draw(exitHover, 100, 100); }
+            if (hover == HOVER_CONTINUE){ canvas.draw(continueHover, 648, 114); }
+            else if (hover == HOVER_EXIT){ canvas.draw(exitHoverPause, 427, 106); }
         } else if (mode == MODE_LOST){
             canvas.draw(lostBackground, 0, 0);
-            if (hover == HOVER_REPLAY){ canvas.draw(replayHover, 100, 100); }
-            else if (hover == HOVER_EXIT){ canvas.draw(exitHover, 100, 100); }
+            if (hover == HOVER_REPLAY){ canvas.draw(replayHover, 599, 71); }
+            else if (hover == HOVER_EXIT){ canvas.draw(exitHover, 323, 69); }
         }
 
 
@@ -489,39 +493,39 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
         }
 //        // Flip to match graphics coordinates
         screenY = heightY-screenY;
-//        System.out.println(screenX + ", " + screenY);
+        System.out.println(screenX + ", " + screenY);
         switch (mode) {
             case MODE_COMPLETE:
-                if (screenY >= 98 && screenY <= 173){
-                    if (screenX >= 335 && screenX <= 494){ // Next
+                if (screenY >= 80 && screenY <= 160){
+                    if (screenX >= 880 && screenX <= 1095){ // Next
                         pressState = 1;
                         exitCode = EXIT_NEXT;
-                    } else if (screenX >= 621 && screenX <= 804) {
+                    } else if (screenX >= 516 && screenX <= 770) {
                         pressState = 1;
                         exitCode = EXIT_REPLAY;
-                    } else if (screenX >= 904 && screenX <= 982) {
+                    } else if (screenX >= 250 && screenX <= 350) {
                         pressState = 1;
                         exitCode = EXIT_QUIT;
                     }
                 }
                 break;
             case MODE_PAUSED:
-                if (screenY >= 102 && screenY <= 159) {
-                    if (screenX >= 492 && screenX <= 652){ // Continue
+                if (screenY >= 96 && screenY <= 168) {
+                    if (screenX >= 680 && screenX <= 850){ // Continue
                         pressState = 1;
                         exitCode = EXIT_CONTINUE;
-                    } else if (screenX >= 756 && screenX <= 838){ // Exit
+                    } else if (screenX >= 473 && screenX <= 556){ // Exit
                         pressState = 1;
                         exitCode = EXIT_QUIT;
                     }
                 }
                 break;
             case MODE_LOST:
-                if (screenY >= 102 && screenY <= 159) {
-                    if (screenX >= 460 && screenX <= 647){
+                if (screenY >= 80 && screenY <= 160) {
+                    if (screenX >= 650 && screenX <= 900){
                         pressState = 1;
                         exitCode = EXIT_REPLAY;
-                    } else if (screenX >= 744 && screenX <= 826){
+                    } else if (screenX >= 380 && screenX <= 480){
                         pressState = 1;
                         exitCode = EXIT_QUIT;
                     }
@@ -638,12 +642,12 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
         screenY = heightY-screenY;
         switch (mode) {
             case MODE_COMPLETE:
-                if (screenY >= 98 && screenY <= 173){
-                    if (screenX >= 335 && screenX <= 494){ // Next
+                if (screenY >= 80 && screenY <= 160){
+                    if (screenX >= 880 && screenX <= 1095){ // Next
                         hover = HOVER_NEXT;
-                    } else if (screenX >= 621 && screenX <= 804) {
+                    } else if (screenX >= 516 && screenX <= 770) {
                         hover = HOVER_REPLAY;
-                    } else if (screenX >= 904 && screenX <= 982) {
+                    } else if (screenX >= 250 && screenX <= 350) {
                         hover = HOVER_EXIT;
                     }
                     else { hover = 0; }
@@ -653,10 +657,10 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
                 }
                 break;
             case MODE_PAUSED:
-                if (screenY >= 102 && screenY <= 159) {
-                    if (screenX >= 492 && screenX <= 652){ // Continue
+                if (screenY >= 96 && screenY <= 168) {
+                    if (screenX >= 680 && screenX <= 850){ // Continue
                         hover = HOVER_CONTINUE;
-                    } else if (screenX >= 756 && screenX <= 838){ // Exit
+                    } else if (screenX >= 473 && screenX <= 556){ // Exit
                         hover = HOVER_EXIT;
                     }
                     else {
@@ -667,10 +671,10 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
                 }
                 break;
             case MODE_LOST:
-                if (screenY >= 102 && screenY <= 159) {
-                    if (screenX >= 460 && screenX <= 647){
+                if (screenY >= 80 && screenY <= 160) {
+                    if (screenX >= 650 && screenX <= 900){
                         hover = HOVER_REPLAY;
-                    } else if (screenX >= 744 && screenX <= 826){
+                    } else if (screenX >= 380 && screenX <= 480){
                         hover = HOVER_EXIT;
                     } else {hover = 0; }
                 }

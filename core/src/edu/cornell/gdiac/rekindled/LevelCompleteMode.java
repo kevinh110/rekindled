@@ -106,6 +106,8 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
 
     public void setModeLost() { mode = MODE_LOST;}
 
+    private final ParticleEffect pe;
+
     /** Texture atlas to support a progress bar */
 //	private Texture statusBar;
 
@@ -269,6 +271,13 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
 //		statusFrgRight  = new TextureRegion(statusBar,statusBar.getWidth()-PROGRESS_CAP,offset,PROGRESS_CAP,PROGRESS_HEIGHT);
 //		statusFrgMiddle = new TextureRegion(statusBar,PROGRESS_CAP,offset,PROGRESS_MIDDLE,PROGRESS_HEIGHT);
 
+        pe = new ParticleEffect();
+        pe.load(Gdx.files.internal("particles/mouse.party"), Gdx.files.internal(""));
+        for (ParticleEmitter e : pe.getEmitters()) {
+            e.setPosition(Gdx.input.getX(), Gdx.input.getY());
+        }
+        pe.start();
+
         startButton = (System.getProperty("os.name").equals("Mac OS X") ? MAC_OS_X_START : WINDOWS_START);
 //        Gdx.input.setInputProcessor(this);
         // Let ANY connected controller start the game.
@@ -291,6 +300,7 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
 //		 statusFrgMiddle = null;
 
         completeBackground.dispose();
+        pe.dispose();
 //		 statusBar.dispose();
         completeBackground = null;
 //		 statusBar  = null;
@@ -318,7 +328,13 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
                 playButton = new Texture(PLAY_BTN_FILE);
                 playButton.setFilter(TextureFilter.Linear, TextureFilter.Linear);
             }
+
         }
+        pe.update(Gdx.graphics.getDeltaTime());
+        pe.setPosition(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY());
+
+        if (pe.isComplete())
+            pe.reset();
     }
 
     /**
@@ -355,6 +371,7 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
 //						centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale, false);
 //		}
 
+        canvas.drawParticle(pe);
         canvas.end();
     }
 

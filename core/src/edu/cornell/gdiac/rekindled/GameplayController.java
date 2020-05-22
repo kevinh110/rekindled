@@ -1546,8 +1546,7 @@ public class GameplayController extends WorldController implements ContactListen
 		input.readInput(bounds, scale);
 		InputController.Move_Direction next_move = input.get_Next_Direction();
 
-		if (input.didZoom() && startPause) {
-			startPause = false;
+		if (currentScale != ZOOM_IN_SCALE && input.didZoom()) {
 			zoom_in = true;
 			removePressAnyKeyText = true;
 		}

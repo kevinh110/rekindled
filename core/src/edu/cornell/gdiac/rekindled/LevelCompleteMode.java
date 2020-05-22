@@ -332,7 +332,7 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
         canvas.begin();
         if (mode == MODE_COMPLETE){
             canvas.draw(completeBackground, 0, 0);
-            if (hover == HOVER_NEXT){ canvas.draw(nextHover, 828, 86); }
+            if (hover == HOVER_NEXT){ canvas.draw(nextHover, 830, 86); }
             else if (hover == HOVER_REPLAY){ canvas.draw(replayHover, 470, 71); }
             else if (hover == HOVER_EXIT){ canvas.draw(exitHover, 193, 69); }
         } else if (mode == MODE_PAUSED){

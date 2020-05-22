@@ -53,11 +53,11 @@ public class Enemy extends FeetHitboxObstacle {
     private SightConeLight sight;
 
     // DEFAULT - 6
-    public float speed = 5.0f;
+    public float speed = 5.5f;
 
     public static final int WANDER_SPEED = 3;
 
-    public static final float CHASE_SPEED = 5.0f;
+    public static final float CHASE_SPEED = 5.5f;
 
     public static final float FRAME_RATE = 1/10f;
 

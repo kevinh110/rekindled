@@ -228,6 +228,9 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String TUTORIAL_413 = "tutorial/lv4/4.1.3.png";
 	private static final String TUTORIAL_414 = "tutorial/lv4/4.1.4.png";
 	private static final String TUTORIAL_511 = "tutorial/lv5/5.1.1.png";
+	private static final String TUTORIAL_512 = "tutorial/lv5/5.1.2.png";
+	private static final String TUTORIAL_611 = "tutorial/lv6/6.1.1.png";
+	private static final String TUTORIAL_612 = "tutorial/lv6/6.1.2.png";
 	private static final String TUTORIAL_711 = "tutorial/lv7/7.1.1.png";
 	private static final String TUTORIAL_811 = "tutorial/lv8/8.1.1.png";
 
@@ -340,6 +343,9 @@ public class GameplayController extends WorldController implements ContactListen
 	private TextureRegion tutorial413;
 	private TextureRegion tutorial414;
 	private TextureRegion tutorial511;
+	private TextureRegion tutorial512;
+	private TextureRegion tutorial611;
+	private TextureRegion tutorial612;
 	private TextureRegion tutorial711;
 	private TextureRegion tutorial811;
 
@@ -679,6 +685,12 @@ public class GameplayController extends WorldController implements ContactListen
 			assets.add(TUTORIAL_414);
 			manager.load(TUTORIAL_511, Texture.class);
 			assets.add(TUTORIAL_511);
+			manager.load(TUTORIAL_512, Texture.class);
+			assets.add(TUTORIAL_512);
+			manager.load(TUTORIAL_611, Texture.class);
+			assets.add(TUTORIAL_611);
+			manager.load(TUTORIAL_612, Texture.class);
+			assets.add(TUTORIAL_612);
 			manager.load(TUTORIAL_711, Texture.class);
 			assets.add(TUTORIAL_711);
 			manager.load(TUTORIAL_811, Texture.class);
@@ -772,6 +784,9 @@ public class GameplayController extends WorldController implements ContactListen
 		tutorial413 = createTexture(manager, TUTORIAL_413, false);
 		tutorial414 = createTexture(manager, TUTORIAL_414, false);
 		tutorial511 = createTexture(manager, TUTORIAL_511, false);
+		tutorial512 = createTexture(manager, TUTORIAL_512, false);
+		tutorial611 = createTexture(manager, TUTORIAL_611, false);
+		tutorial612 = createTexture(manager, TUTORIAL_612, false);
 		tutorial711 = createTexture(manager, TUTORIAL_711, false);
 		tutorial811 = createTexture(manager, TUTORIAL_811, false);
 
@@ -1081,7 +1096,7 @@ public class GameplayController extends WorldController implements ContactListen
 		world.setContactListener(this);
 
 		LEVEL_ID = id; //starts at 0
-		if(LEVEL_ID <5 || LEVEL_ID==6 || LEVEL_ID==7){ //levels 1-5 (first 5 levels) + lv7 + lv8
+		if(LEVEL_ID <8){ //levels 0-7; first 8 levels
 			TUTORIAL = true;
 		} else {
 			TUTORIAL = false;
@@ -1382,14 +1397,30 @@ public class GameplayController extends WorldController implements ContactListen
 				tutorialTexts[2].setTexture(tutorialFirefly);
 
 			} else if(LEVEL_ID==4){
-				tutorialTexts = new TutorialObject[2];
+				tutorialTexts = new TutorialObject[3];
 //				tutorialTexts[0] = new TutorialObject(6, 8, 500, 500); // location for transparent text
 
 				tutorialTexts[0] = new TutorialObject(4, 10, 500, 500);
 				tutorialTexts[0].setTexture(tutorial511);
 
-				tutorialTexts[1] = new TutorialObject(0, 11, 500, 500);
-				tutorialTexts[1].setTexture(tutorialFireflyFlipped);
+				tutorialTexts[1] = new TutorialObject(8, 10, 500, 500);
+				tutorialTexts[1].setTexture(tutorial512);
+
+				tutorialTexts[2] = new TutorialObject(0, 11, 500, 500);
+				tutorialTexts[2].setTexture(tutorialFireflyFlipped);
+
+			} else if(LEVEL_ID==5){
+				tutorialTexts = new TutorialObject[3];
+//				tutorialTexts[0] = new TutorialObject(6, 8, 500, 500);
+
+				tutorialTexts[0] = new TutorialObject(18, 5, 500, 500);
+				tutorialTexts[0].setTexture(tutorial611);
+
+				tutorialTexts[1] = new TutorialObject(18, 4, 500, 500);
+				tutorialTexts[1].setTexture(tutorial612);
+
+				tutorialTexts[2] = new TutorialObject(18, 7, 500, 500);
+				tutorialTexts[2].setTexture(tutorialFirefly);
 
 			} else if(LEVEL_ID==6){
 				tutorialTexts = new TutorialObject[1];

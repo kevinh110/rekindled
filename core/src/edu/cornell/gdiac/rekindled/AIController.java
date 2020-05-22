@@ -64,21 +64,23 @@ public class AIController extends Entity_Controller {
     /** The enemy's current state in the FSM */
     private FSMState state;
     /** Timer used for stun/wait/pause */
-    private long timer;
+    private double timer;
     /** The enemies next goal tile. This is a tile adjacent to at least one axis */
     private int[] goal;
     /** The target tile the enemy eventually would like to reach */
     private int[] target;
     /** How many ticks to wait before returning to wander */
-    private final int WAIT_TIME = 300;
+    private final float WAIT_TIME = 300f/60f;
     /** How many ticks the enemy is stunned for */
-    private final int STUN_TIME = 70;
+    private final float STUN_TIME = 70f/60f;
     /** How many times the enemy changes direction while waiting */
     private final int SPIN_NUM = 8;
     /** How long to pause before changing */
-    private final int PAUSE_TIME = 65;
+    private final float PAUSE_TIME = 65f/60f;
     /** the number of ticks between spins for stationary enemies */
-    private final int SPIN_TIME = 50;
+    private final float SPIN_TIME = 50f/60f;
+    private int spin;
+    private boolean facingDirSet;
 
     private Enemy[] enemies;
 
@@ -117,6 +119,8 @@ public class AIController extends Entity_Controller {
         Vector2 pos = enemy.getPosition();
         goal = new int[]{(int) pos.x, (int) pos.y};
         timer = 0;
+        spin = 0;
+        facingDirSet = false;
 
         alarmSound = Gdx.audio.newSound(Gdx.files.internal("sounds/alarm.mp3"));
         enemySound = Gdx.audio.newSound(Gdx.files.internal("sounds/enemy.mp3"));
@@ -149,7 +153,7 @@ public class AIController extends Entity_Controller {
      * in the ATTACK state, we may want to switch to the CHASE state if the
      * target gets out of range.
      */
-    private void changeStateIfApplicable(boolean playerLit) {
+    private void changeStateIfApplicable(boolean playerLit, float dt) {
         Vector2 pos = enemy.getPosition();
         // Next state depends on current state.
         if (board.isLitTileBoard((int) pos.x, (int) pos.y)){
@@ -158,12 +162,14 @@ public class AIController extends Entity_Controller {
             }
             state = FSMState.LIT;
             timer = 0;
+            spin = 0;
             threwlight = false;
             return;
         }
         if (enemy.stunned && state != FSMState.STUNNED){
             state = FSMState.STUNNED;
             timer = 0;
+            spin = 0;
             threwlight = false;
             return;
         }
@@ -194,6 +200,7 @@ public class AIController extends Entity_Controller {
                 soundTimer = 0;
                 if (hasLoS(playerLit)) {// has target
                     timer = 0;
+                    spin = 0;
                     state = FSMState.PAUSED;
                 }
                 break;
@@ -206,8 +213,8 @@ public class AIController extends Entity_Controller {
                 if (player.isTakingLights()){
                     tookLight = true;
                 }
-                timer++;
-                if (timer % PAUSE_TIME == 0){
+                timer+= dt;
+                if (timer >= PAUSE_TIME){
                     if ((!hasLoSNoConeCheck() && !tookLight) || threwlight){ // Took light deals with an edge case
                         state = FSMState.GOTO; // Go to prev goal
                         tookLight = false;
@@ -220,6 +227,7 @@ public class AIController extends Entity_Controller {
                         enemySoundPlaying = true;
                     }
                     timer = 0;
+                    spin = 0;
                 }
                 break;
 
@@ -260,8 +268,10 @@ public class AIController extends Entity_Controller {
                 }
                 if (hasLoS(playerLit)){
                     if (timer < WAIT_TIME / SPIN_NUM){
+                        facingDirSet = false;
                         state = FSMState.CHASE;
                     } else {
+                        facingDirSet = false;
                         state = FSMState.PAUSED;
                     }
                     if(!enemySoundPlaying) {
@@ -269,11 +279,14 @@ public class AIController extends Entity_Controller {
                         enemySoundPlaying = true;
                     }
                     timer = 0;
+                    spin = 0;
                 }
                 else {
-                    timer++;
-                    if (timer % WAIT_TIME == 0){
+                    timer+= dt;
+                    if (timer >= WAIT_TIME){
                         timer = 0;
+                        spin = 0;
+                        facingDirSet = false;
                         state = FSMState.RETURN;
                     }
                 }
@@ -303,10 +316,11 @@ public class AIController extends Entity_Controller {
                 soundPlaying = false;
                 soundTimer = 0;
                 if(!board.isLitTileBoard((int) pos.x,(int) pos.y)){
-                    timer++;
-                    if (timer % PAUSE_TIME == 0){
+                    timer+= dt;
+                    if (timer >= PAUSE_TIME){
                         state = FSMState.WAIT;
                         timer = 0;
+                        spin = 0;
                     }
                 }
                 break;
@@ -318,10 +332,11 @@ public class AIController extends Entity_Controller {
                 }
                 soundPlaying = false;
                 soundTimer = 0;
-                timer++;
-                if (timer % STUN_TIME == 0){
+                timer+= dt;
+                if (timer >= STUN_TIME){
                     enemy.stunned = false;
-                    timer = SPIN_TIME + 1; // Edge Case
+                    // URGENT: IDK WHAT TO CHANGE THIS TO
+                    timer = SPIN_TIME + .000000001f; // Edge Case
                     state = FSMState.WAIT;
                 }
                 break;
@@ -606,6 +621,7 @@ public class AIController extends Entity_Controller {
         if (player.insideThrownLight && hasLoSNoConeCheck()){
             threwlight = true;
             timer = 0;
+            spin = 0;
             target[0] = Math.round(player.getPosition().x);
             target[1] = Math.round(player.getPosition().y);
             state = FSMState.PAUSED;
@@ -613,7 +629,7 @@ public class AIController extends Entity_Controller {
         if (isCentered(pos.x, pos.y)){
             enemy.setPosition(Math.round(pos.x), Math.round(pos.y)); // Center pos to account for slight drift
             pos = enemy.getPosition();
-            changeStateIfApplicable(playerLit);
+            changeStateIfApplicable(playerLit, dt);
 //            System.out.println("State: " + state);
 //            System.out.println("Enemy Pos: " + pos);
 //            System.out.println("Goal: " + goal[0] + ", " + goal[1]);
@@ -623,9 +639,10 @@ public class AIController extends Entity_Controller {
                 case WANDER:
                     enemy.setWanderSpeed(dt);
                     if (enemy.getWanderPath().length == 0){
-                        timer++;
-                        if (timer % SPIN_TIME == 0){
+                        timer+= dt;
+                        if (timer > SPIN_TIME * (spin + 1)){
                             spinEnemy(enemy.facingDirection);
+                            spin++;
                         }
                         goal[0] = (int) pos.x;
                         goal[1] = (int) pos.y;
@@ -667,11 +684,14 @@ public class AIController extends Entity_Controller {
                     break;
 
                 case WAIT:
-                    if (timer == 1){
+                    // IDK IF RIGHT!!
+                    if (!facingDirSet){
                         setFacingDirWaiting();
+                        facingDirSet = true;
                     }
-                    if (timer % (WAIT_TIME / SPIN_NUM) == 0){
+                    if (spin < SPIN_NUM &&timer >= (WAIT_TIME / SPIN_NUM) * (spin + 1)){
                         spinEnemy(enemy.facingDirection);
+                        spin++;
                     }
                     break;
 

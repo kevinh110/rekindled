@@ -640,13 +640,7 @@ public class LevelCompleteMode implements Screen, InputProcessor, ControllerList
      * @param keycode the key released
      * @return whether to hand the event to other listeners.
      */
-    public boolean keyUp(int keycode) {
-        if (keycode == Input.Keys.N) {
-            pressState = 2;
-            return false;
-        }
-        return true;
-    }
+    public boolean keyUp(int keycode) { return true; }
 
     /**
      * Called when the mouse was moved without any buttons being pressed. (UNSUPPORTED)

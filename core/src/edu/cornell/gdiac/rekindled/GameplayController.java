@@ -159,7 +159,7 @@ public class GameplayController extends WorldController implements ContactListen
 	private static final String L_HOLE = "hole/l.png";
 	private static final String LR_HOLE = "hole/lr.png";
 	private static final String LR__SINGLE_HOLE = "hole/ul-single.png"; //the LR wall single is actually incorrectly named
-																		//for consistency, I am naming this wrong as well
+	//for consistency, I am naming this wrong as well
 	private static final String R_HOLE = "hole/r.png";
 	private static final String SINGULAR_HOLE = "hole/single.png"; //name changed for consistency
 	private static final String U_HOLE = "hole/u.png";
@@ -207,26 +207,24 @@ public class GameplayController extends WorldController implements ContactListen
 
 
 	/** file location for tutorials */
-    private static final String TUTORIAL_FIREFLY_FILE = "tutorial/firefly.png";
+	private static final String TUTORIAL_ZOOM = "tutorial/zoom.png";
+
+	private static final String TUTORIAL_FIREFLY_FILE = "tutorial/firefly.png";
 	private static final String TUTORIAL_FIREFLY_FLIPPED = "tutorial/firefly_flipped.png";
 
-//    private static final String TUTORIAL_NEXT_FILE = "tutorial/next.png";
-//    private static final String TUTORIAL_PLAY_FILE = "tutorial/play.png";
-
-    private static final String TUTORIAL_111 = "tutorial/lv1/1.1.1.png";
-    private static final String TUTORIAL_112 = "tutorial/lv1/1.1.2.png";
-    private static final String TUTORIAL_121 = "tutorial/lv1/1.2.1.png";
-    private static final String TUTORIAL_122 = "tutorial/lv1/1.2.2.png";
-    private static final String TUTORIAL_131 = "tutorial/lv1/1.3.1.png";
-    private static final String TUTORIAL_132 = "tutorial/lv1/1.3.2.png";
-    private static final String TUTORIAL_141 = "tutorial/lv1/1.4.1.png";
-    private static final String TUTORIAL_151 = "tutorial/lv1/1.5.1.png";
-    private static final String TUTORIAL_211 = "tutorial/lv2/2.1.1.png";
-    private static final String TUTORIAL_221 = "tutorial/lv2/2.2.1.png";
-    private static final String TUTORIAL_311 = "tutorial/lv3/3.1.1.png";
+	private static final String TUTORIAL_111 = "tutorial/lv1/1.1.1.png";
+	private static final String TUTORIAL_112 = "tutorial/lv1/1.1.2.png";
+	private static final String TUTORIAL_121 = "tutorial/lv1/1.2.1.png";
+	private static final String TUTORIAL_122 = "tutorial/lv1/1.2.2.png";
+	private static final String TUTORIAL_131 = "tutorial/lv1/1.3.1.png";
+	private static final String TUTORIAL_132 = "tutorial/lv1/1.3.2.png";
+	private static final String TUTORIAL_141 = "tutorial/lv1/1.4.1.png";
+	private static final String TUTORIAL_211 = "tutorial/lv2/2.1.1.png";
+	private static final String TUTORIAL_221 = "tutorial/lv2/2.2.1.png";
+	private static final String TUTORIAL_311 = "tutorial/lv3/3.1.1.png";
 	private static final String TUTORIAL_312 = "tutorial/lv3/3.1.2.png";
 	private static final String TUTORIAL_411 = "tutorial/lv4/4.1.1.png";
-    private static final String TUTORIAL_412 = "tutorial/lv4/4.1.2.png";
+	private static final String TUTORIAL_412 = "tutorial/lv4/4.1.2.png";
 	private static final String TUTORIAL_413 = "tutorial/lv4/4.1.3.png";
 	private static final String TUTORIAL_414 = "tutorial/lv4/4.1.4.png";
 	private static final String TUTORIAL_511 = "tutorial/lv5/5.1.1.png";
@@ -322,25 +320,23 @@ public class GameplayController extends WorldController implements ContactListen
 	/**
 	 * Texture for Tutorial Text
 	 */
-    private TextureRegion tutorialFirefly;
+	private TextureRegion tutorialZoom;
+	private TextureRegion tutorialFirefly;
 	private TextureRegion tutorialFireflyFlipped;
-//    private TextureRegion tutorialNext;
-//    private TextureRegion tutorialPlay;
 
-    private TextureRegion tutorial111;
-    private TextureRegion tutorial112;
-    private TextureRegion tutorial121;
-    private TextureRegion tutorial122;
-    private TextureRegion tutorial131;
+	private TextureRegion tutorial111;
+	private TextureRegion tutorial112;
+	private TextureRegion tutorial121;
+	private TextureRegion tutorial122;
+	private TextureRegion tutorial131;
 	private TextureRegion tutorial132;
-    private TextureRegion tutorial141;
-    private TextureRegion tutorial151;
-    private TextureRegion tutorial211;
-    private TextureRegion tutorial221;
-    private TextureRegion tutorial311;
+	private TextureRegion tutorial141;
+	private TextureRegion tutorial211;
+	private TextureRegion tutorial221;
+	private TextureRegion tutorial311;
 	private TextureRegion tutorial312;
 	private TextureRegion tutorial411;
-    private TextureRegion tutorial412;
+	private TextureRegion tutorial412;
 	private TextureRegion tutorial413;
 	private TextureRegion tutorial414;
 	private TextureRegion tutorial511;
@@ -372,6 +368,7 @@ public class GameplayController extends WorldController implements ContactListen
 	/** scale of the hole tiles*/
 	private static final float HOLE_SCALE = .146f;
 
+	private boolean removePressAnyKeyText;
 	private boolean zoom_in;
 	private boolean zoom_out;
 
@@ -641,15 +638,14 @@ public class GameplayController extends WorldController implements ContactListen
 		manager.load(COOLDOWN_100, Texture.class);
 		assets.add(COOLDOWN_100);
 
+		manager.load(TUTORIAL_ZOOM, Texture.class);
+		assets.add(TUTORIAL_ZOOM);
+
 		if(TUTORIAL) {
 			manager.load(TUTORIAL_FIREFLY_FILE, Texture.class);
 			assets.add(TUTORIAL_FIREFLY_FILE);
 			manager.load(TUTORIAL_FIREFLY_FLIPPED, Texture.class);
 			assets.add(TUTORIAL_FIREFLY_FILE);
-//			manager.load(TUTORIAL_NEXT_FILE, Texture.class);
-//			assets.add(TUTORIAL_NEXT_FILE);
-//			manager.load(TUTORIAL_PLAY_FILE, Texture.class);
-//			assets.add(TUTORIAL_PLAY_FILE);
 
 			manager.load(TUTORIAL_111, Texture.class);
 			assets.add(TUTORIAL_111);
@@ -665,8 +661,6 @@ public class GameplayController extends WorldController implements ContactListen
 			assets.add(TUTORIAL_132);
 			manager.load(TUTORIAL_141, Texture.class);
 			assets.add(TUTORIAL_141);
-			manager.load(TUTORIAL_151, Texture.class);
-			assets.add(TUTORIAL_151);
 			manager.load(TUTORIAL_211, Texture.class);
 			assets.add(TUTORIAL_211);
 			manager.load(TUTORIAL_221, Texture.class);
@@ -759,13 +753,8 @@ public class GameplayController extends WorldController implements ContactListen
 	}
 
 	public void setTutorialTextures(AssetManager manager){
-//		System.out.println("level "+LEVEL_ID+", tutorial: "+TUTORIAL+"; inside setTutorialTextures");
-
 		tutorialFirefly = createTexture(manager, TUTORIAL_FIREFLY_FILE, false);
 		tutorialFireflyFlipped = createTexture(manager, TUTORIAL_FIREFLY_FLIPPED, false);
-
-//		tutorialNext = createTexture(manager, TUTORIAL_NEXT_FILE, false);
-//		tutorialPlay = createTexture(manager, TUTORIAL_PLAY_FILE, false);
 
 		tutorial111 = createTexture(manager, TUTORIAL_111, false);
 		tutorial112 = createTexture(manager, TUTORIAL_112, false);
@@ -774,7 +763,6 @@ public class GameplayController extends WorldController implements ContactListen
 		tutorial131 = createTexture(manager, TUTORIAL_131, false);
 		tutorial132 = createTexture(manager, TUTORIAL_132, false);
 		tutorial141 = createTexture(manager, TUTORIAL_141, false);
-		tutorial151 = createTexture(manager, TUTORIAL_151, false);
 		tutorial211 = createTexture(manager, TUTORIAL_211, false);
 		tutorial221 = createTexture(manager, TUTORIAL_221, false);
 		tutorial311 = createTexture(manager, TUTORIAL_311, false);
@@ -862,6 +850,9 @@ public class GameplayController extends WorldController implements ContactListen
 		pickupTexture = createTexture(manager, PICKUP_SOURCE_FILE, false);
 
 		pauseTexture = createTexture(manager, PAUSE_FILE, false);
+
+		tutorialZoom = createTexture(manager, TUTORIAL_ZOOM, false);
+
 
 		if(TUTORIAL){
 			setTutorialTextures(manager);
@@ -1147,6 +1138,8 @@ public class GameplayController extends WorldController implements ContactListen
 		startPause = true;
 		zoom_out = false;
 		zoom_in = false;
+		removePressAnyKeyText = false;
+
 		canvas.setScale(currentScale);
 		initLighting();
 
@@ -1168,12 +1161,12 @@ public class GameplayController extends WorldController implements ContactListen
 			addObject(lights[i]);
 		}
 		if(!musicPlaying) {
-            music = Gdx.audio.newMusic(Gdx.files.internal("sounds/bgm.mp3"));
-            music.setLooping(true);
-            music.setVolume(volume);
-            music.play();
-            musicPlaying = true;
-        }
+			music = Gdx.audio.newMusic(Gdx.files.internal("sounds/bgm.mp3"));
+			music.setLooping(true);
+			music.setVolume(volume);
+			music.play();
+			musicPlaying = true;
+		}
 		deathSound = Gdx.audio.newSound(Gdx.files.internal("sounds/death.mp3"));
 		//initialize thrown lights
 		thrownLights = new HashMap<>();
@@ -1520,6 +1513,7 @@ public class GameplayController extends WorldController implements ContactListen
 		if (input.anyKeyPressed()) {
 			startPause = false;
 			zoom_in = true;
+			removePressAnyKeyText = true;
 		}
 
 		// Handle camera zoom
@@ -1851,17 +1845,11 @@ public class GameplayController extends WorldController implements ContactListen
 			canvas.draw(tutorial413, 380, canvas.getHeight() - 90);
 			canvas.draw(tutorial414, 250, canvas.getHeight() - 75);
 		}
+		if(!removePressAnyKeyText) {
+			canvas.draw(tutorialZoom, 0, 0);
+		}
+
 	}
-//
-//	private void drawTutorial(){
-////		System.out.println("--level "+LEVEL_ID+", tutorial: "+TUTORIAL+"; inside drawTutorial()");
-//
-//		for (int i=0; i<tutorialTexts.length;i++){
-//			tutorialTexts[i].draw(canvas);
-//		}
-////		System.out.println("--level "+LEVEL_ID+", tutorial: "+TUTORIAL+"; leaving drawTutorial()");
-//
-//	}
 
 	public boolean isAlive() {
 		return true;

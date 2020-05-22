@@ -349,6 +349,9 @@ public class GameplayController extends WorldController implements ContactListen
 	private TextureRegion tutorial711;
 	private TextureRegion tutorial811;
 
+	//pickup sound
+	private Sound pickupSound;
+
 	/** Track asset loading from all instances and subclasses */
 	private AssetState assetState = AssetState.EMPTY;
 
@@ -882,6 +885,8 @@ public class GameplayController extends WorldController implements ContactListen
 				createTexture(manager, COOLDOWN_50, false),
 				createTexture(manager, COOLDOWN_75, false),
 				createTexture(manager, COOLDOWN_100, false)};
+
+		pickupSound = Gdx.audio.newSound(Gdx.files.internal("sounds/off.mp3"));
 
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
@@ -1541,7 +1546,7 @@ public class GameplayController extends WorldController implements ContactListen
 		input.readInput(bounds, scale);
 		InputController.Move_Direction next_move = input.get_Next_Direction();
 
-		if (input.didZoom()) {
+		if (input.didZoom() && startPause) {
 			startPause = false;
 			zoom_in = true;
 			removePressAnyKeyText = true;
@@ -1618,7 +1623,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 		//player movement
 
-		if (!zoom_in && !zoom_out) {
+		if (currentScale == ZOOM_IN_SCALE) {
 			player.move(next_move, dt);
 			player.updateCooldown(dt);
 
@@ -1648,7 +1653,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 		//throw light
 		if((input.didShift() && player.lightCounter > 0 && !player.getThrowCooldown()) &&
-				(thrownLights.isEmpty() || over500()) && !zoom_out &&!zoom_in) {
+				(thrownLights.isEmpty() || over500()) && currentScale == ZOOM_IN_SCALE) {
 
 			LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius
 			light.setColor(Color.PURPLE);
@@ -1958,6 +1963,7 @@ public class GameplayController extends WorldController implements ContactListen
 				if((bd1 == player && bd2 == pickup) || (bd1 == pickup && bd2 == player)){
 					pickup.markRemoved(true);
 					if (!pickup.isTaken){
+						pickupSound.play((float)(volume*(.75)));
 						player.lightCounter++;
 						pickup.isTaken = true;
 					}

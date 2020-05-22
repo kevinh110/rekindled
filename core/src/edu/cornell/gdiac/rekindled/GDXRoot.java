@@ -94,7 +94,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
 
 		// Initialize all the game worlds
-		controllers = new GameplayController[23];
+		controllers = new GameplayController[24];
 		controllers[0] = new GameplayController("jsons/tutorial/level0.json",0);
 		controllers[1] = new GameplayController("jsons/tutorial/level1.json",1);
 		controllers[2] = new GameplayController("jsons/tutorial/level2.json",2);
@@ -107,18 +107,20 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers[9] = new GameplayController("jsons/intermediate.json",9);
 		controllers[10] = new GameplayController("jsons/spineasy.json",10);
 		controllers[11] = new GameplayController("jsons/hallwayandroom.json",11);
-		controllers[12] = new GameplayController("jsons/roundabout.json",12);
-		controllers[13] = new GameplayController("jsons/level11_Emeka.json",13);
-		controllers[14] = new GameplayController("jsons/testlevel.json",14);
-		controllers[15] = new GameplayController("jsons/levelhard2.json",15);
+		controllers[12] = new GameplayController("jsons/spinstun.json",12);
+		controllers[13] = new GameplayController("jsons/roundabout.json",13);
+		controllers[14] = new GameplayController("jsons/level11_Emeka.json",14);
+		controllers[15] = new GameplayController("jsons/simultrap.json",15);
 		controllers[16] = new GameplayController("jsons/longlure.json",16);
-		controllers[17] = new GameplayController("jsons/experiment.json",17);
+		controllers[17] = new GameplayController("jsons/timedstun.json",17);
 		controllers[18] = new GameplayController("jsons/blockedpaths.json",18);
-		controllers[19] = new GameplayController("jsons/spinstun.json",19);
-		controllers[20] = new GameplayController("jsons/timedstun.json",20);
-		controllers[21] = new GameplayController("jsons/simultrap.json",21);
-		controllers[22] = new GameplayController("jsons/last.json",22);
-		
+		controllers[19] = new GameplayController("jsons/experiment.json",19); // holes
+		controllers[20] = new GameplayController("jsons/keys.json" , 20);
+		controllers[21] = new GameplayController("jsons/testlevel.json",21); // circle thing
+		controllers[22] = new GameplayController("jsons/levelhard2.json",22); // calvin
+		controllers[23] = new GameplayController("jsons/last.json",23);
+
+
 
 		for(int ii = 0; ii < controllers.length; ii++) {
 			controllers[ii].preLoadContent(manager);

@@ -1618,7 +1618,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 		//player movement
 
-		if (currentScale == ZOOM_IN_SCALE) {
+		if (!zoom_in && !zoom_out) {
 			player.move(next_move, dt);
 			player.updateCooldown(dt);
 

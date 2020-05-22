@@ -431,7 +431,7 @@ public class InputController extends Entity_Controller{
 		debugPressed = (secondary && debugPressed) || (Gdx.input.isKeyPressed(Input.Keys.F));
 		primePressed = (secondary && primePressed) || (Gdx.input.isKeyPressed(Input.Keys.UP));
 		secondPressed = (secondary && secondPressed) || (Gdx.input.isKeyPressed(Input.Keys.SPACE));
-		nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
+		nextPressed = false;
 		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
 		upPressed  = (secondary && upPressed) || (Gdx.input.isKeyPressed(Input.Keys.UP) && !isWASD)
 				|| (Gdx.input.isKeyPressed(Input.Keys.W) && isWASD);

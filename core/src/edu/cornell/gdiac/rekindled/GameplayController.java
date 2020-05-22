@@ -222,8 +222,11 @@ public class GameplayController extends WorldController implements ContactListen
     private static final String TUTORIAL_211 = "tutorial/lv2/2.1.1.png";
     private static final String TUTORIAL_221 = "tutorial/lv2/2.2.1.png";
     private static final String TUTORIAL_311 = "tutorial/lv3/3.1.1.png";
-    private static final String TUTORIAL_411 = "tutorial/lv4/4.1.1.png";
+	private static final String TUTORIAL_312 = "tutorial/lv3/3.1.2.png";
+	private static final String TUTORIAL_411 = "tutorial/lv4/4.1.1.png";
     private static final String TUTORIAL_412 = "tutorial/lv4/4.1.2.png";
+	private static final String TUTORIAL_413 = "tutorial/lv4/4.1.3.png";
+	private static final String TUTORIAL_414 = "tutorial/lv4/4.1.4.png";
 
 
 
@@ -329,8 +332,11 @@ public class GameplayController extends WorldController implements ContactListen
     private TextureRegion tutorial211;
     private TextureRegion tutorial221;
     private TextureRegion tutorial311;
-    private TextureRegion tutorial411;
+	private TextureRegion tutorial312;
+	private TextureRegion tutorial411;
     private TextureRegion tutorial412;
+	private TextureRegion tutorial413;
+	private TextureRegion tutorial414;
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState assetState = AssetState.EMPTY;
@@ -657,10 +663,16 @@ public class GameplayController extends WorldController implements ContactListen
 			assets.add(TUTORIAL_221);
 			manager.load(TUTORIAL_311, Texture.class);
 			assets.add(TUTORIAL_311);
+			manager.load(TUTORIAL_312, Texture.class);
+			assets.add(TUTORIAL_312);
 			manager.load(TUTORIAL_411, Texture.class);
 			assets.add(TUTORIAL_411);
 			manager.load(TUTORIAL_412, Texture.class);
 			assets.add(TUTORIAL_412);
+			manager.load(TUTORIAL_413, Texture.class);
+			assets.add(TUTORIAL_413);
+			manager.load(TUTORIAL_414, Texture.class);
+			assets.add(TUTORIAL_414);
 		}
 
 		super.preLoadContent(manager);
@@ -748,8 +760,12 @@ public class GameplayController extends WorldController implements ContactListen
 		tutorial211 = createTexture(manager, TUTORIAL_211, false);
 		tutorial221 = createTexture(manager, TUTORIAL_221, false);
 		tutorial311 = createTexture(manager, TUTORIAL_311, false);
+		tutorial312 = createTexture(manager, TUTORIAL_312, false);
 		tutorial411 = createTexture(manager, TUTORIAL_411, false);
 		tutorial412 = createTexture(manager, TUTORIAL_412, false);
+		tutorial413 = createTexture(manager, TUTORIAL_413, false);
+		tutorial414 = createTexture(manager, TUTORIAL_414, false);
+
 	}
 
 	/**
@@ -1293,6 +1309,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 			if(LEVEL_ID==0){
 				tutorialTexts = new TutorialObject[8];
+				//width & height just have to be large enough... I manually sized the files to the correct size...
 				tutorialTexts[0] = new TutorialObject(-5, 5, 500, 500);
 				tutorialTexts[0].setTexture(tutorial111);
 
@@ -1317,7 +1334,41 @@ public class GameplayController extends WorldController implements ContactListen
 				tutorialTexts[7] = new TutorialObject(-5, -1, 300, 300);
 				tutorialTexts[7].setTexture(tutorialFirefly);
 
+			} else if(LEVEL_ID==1){
+				tutorialTexts = new TutorialObject[3];
+				tutorialTexts[0] = new TutorialObject(-4, 2, 500, 500);
+				tutorialTexts[0].setTexture(tutorial211);
+
+				tutorialTexts[1] = new TutorialObject(8, 2, 500, 500);
+				tutorialTexts[1].setTexture(tutorial221);
+
+				tutorialTexts[2] = new TutorialObject(-4, 5, 300, 300);
+				tutorialTexts[2].setTexture(tutorialFirefly);
+
+			} else if(LEVEL_ID==2){
+				tutorialTexts = new TutorialObject[3];
+				tutorialTexts[0] = new TutorialObject(5, 11, 600, 600);
+				tutorialTexts[0].setTexture(tutorial311);
+
+				tutorialTexts[1] = new TutorialObject(7, 7, 500, 500);
+				tutorialTexts[1].setTexture(tutorial312);
+
+				tutorialTexts[2] = new TutorialObject(0, 11, 300, 300);
+				tutorialTexts[2].setTexture(tutorialFirefly);
+
+			} else if(LEVEL_ID==3){
+				tutorialTexts = new TutorialObject[3];
+				tutorialTexts[0] = new TutorialObject(-5, 4, 500, 500);
+				tutorialTexts[0].setTexture(tutorial411);
+
+				tutorialTexts[1] = new TutorialObject(-5, 2, 500, 500);
+				tutorialTexts[1].setTexture(tutorial412);
+
+				tutorialTexts[2] = new TutorialObject(-5, -1, 300, 300);
+				tutorialTexts[2].setTexture(tutorialFirefly);
+
 			}
+
 			for (int i=0; i<tutorialTexts.length;i++){
 				tutorialTexts[i].setDrawScale(scale);
 				tutorialTexts[i].setBodyType(BodyDef.BodyType.StaticBody);
@@ -1747,6 +1798,14 @@ public class GameplayController extends WorldController implements ContactListen
 			}
 		}
 		canvas.draw(pauseTexture, canvas.getWidth() - 150, canvas.getHeight() - 125);
+
+		if(LEVEL_ID==3 && TUTORIAL){
+
+			canvas.draw(tutorial413, 380, canvas.getHeight() - 90);
+			canvas.draw(tutorial414, 250, canvas.getHeight() - 75);
+
+
+		}
 	}
 
 	private void drawTutorial(){

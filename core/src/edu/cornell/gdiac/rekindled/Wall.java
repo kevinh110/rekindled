@@ -23,8 +23,6 @@ public class Wall extends BoxObstacle {
 
 
     public void setTexture(Board board){
-        System.out.println("inside wall setTexture()");
-
 
         int x = (int)getX();
         int y = (int)getY();

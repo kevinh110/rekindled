@@ -388,8 +388,8 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private static boolean muted = false;
 
-	// Number of frames after collision where player doesn't lose
-	private static final int GRACE_PERIOD = 10;
+	// Number of sec after collision where player doesn't lose
+	private static final float GRACE_PERIOD = 10f / 60f;
 	/**
 	 * Preloads the assets for this controller.
 	 * <p>
@@ -943,7 +943,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 	private static final int TURN_ON_DELAY = 2;
 
-	private int timer;
+	private float timer;
 	private boolean cooldown;
 
 	private Player player;
@@ -1720,11 +1720,11 @@ public class GameplayController extends WorldController implements ContactListen
 
 		// Check loss condition
 		// Timer allows game to err on side of player
-		timer++;
+		timer+= dt;
 		int numNotCollided = 0;
 		for (Enemy e : enemies){
 			if (e.collidedWithPlayer && !e.getIsLit()){
-				if (timer % GRACE_PERIOD == 0){
+				if (timer >= GRACE_PERIOD){
 					lostGame = true;
 					player.die();
 					timer = 0;
@@ -1747,7 +1747,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 		int numAngry = 0;
 		for (Enemy e : enemies){
-			if (e.angry == true)
+			if (e.angry)
 				numAngry ++;
 		}
 		if(numAngry == 0){

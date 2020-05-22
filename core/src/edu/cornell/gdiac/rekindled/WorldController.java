@@ -175,7 +175,7 @@ public abstract class WorldController implements Screen {
 
     public static final int EXIT_LOST = 5;
     /** How many frames after winning/losing do we continue? */
-    public static final int EXIT_COUNT = 120;
+    public static final float EXIT_COUNT = 120f / 60f;
 
     /** The amount of time for a physics engine step. */
     public static final float WORLD_STEP = 1/60.0f;
@@ -216,13 +216,13 @@ public abstract class WorldController implements Screen {
     /** Whether or not debug mode is active */
     protected boolean debug;
     /** Countdown active for winning or losing */
-    private int countdown;
+    private float countdown;
     /** If the player has won or not */
     boolean wonGame;
     /** If the player lost or not */
     boolean lostGame;
     /** timer for adding delay between sending exit codes */
-    private int timer;
+    private float timer;
 
 
     /**
@@ -486,15 +486,15 @@ public abstract class WorldController implements Screen {
             listener.exitScreen(this, EXIT_QUIT);
             return false;
         } else if (wonGame){
-            timer++;
-            if (timer % 100 == 0){
+            timer+= dt;
+            if (timer >= 100f / 60f){
                 timer = 0;
                 wonGame = false;
                 listener.exitScreen(this, EXIT_COMPLETE);
             }
         } else if (lostGame){
-            timer++;
-            if (timer % 100 == 0){
+            timer+= dt;
+            if (timer >= 100f / 60f){
                 timer = 0;
                 lostGame = false;
                 listener.exitScreen(this, EXIT_LOST);
@@ -506,8 +506,8 @@ public abstract class WorldController implements Screen {
         } else if (input.didPause()){
             listener.exitScreen(this, EXIT_PAUSED);
         } else if (countdown > 0) {
-            countdown--;
-        } else if (countdown == 0) {
+            countdown-= dt;
+        } else if (countdown <= 0 && countdown >= -1) {
             if (failed) {
                 reset();
             } else if (complete) {

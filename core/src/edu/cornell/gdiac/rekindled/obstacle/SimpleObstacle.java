@@ -774,8 +774,6 @@ public abstract class SimpleObstacle extends Obstacle {
 	 * @param value  the object texture for drawing purposes.
 	 */
 	public void setTexture(TextureRegion value) {
-		System.out.println("inside simple obstacle setTexture()");
-
 		texture = value;
 		origin.set(texture.getRegionWidth()/2.0f, texture.getRegionHeight()/2.0f);
 	}
@@ -786,21 +784,13 @@ public abstract class SimpleObstacle extends Obstacle {
 	 * @param canvas Drawing context
 	 */
 	public void draw(GameCanvas canvas) {
-		System.out.println("inside simple obstacle draw(canvas)");
-
 		if (texture != null) {
 			this.draw(canvas, 1, 1);
 		}
 	}
 
 	public void draw(GameCanvas canvas, float sx,  float sy){
-		System.out.println("inside simple obstacle draw(canvas,sx,sy)");
-
 		if (texture != null) {
-//			System.out.println("texture: "+texture);
-//			System.out.println("x: "+getX()*drawScale.x+"; y: "+getY()*drawScale.x+"; sx: "+sx+"; sy: "+sy);
-
-
 			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),sx,sy);
 		}
 

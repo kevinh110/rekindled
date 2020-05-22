@@ -1541,7 +1541,7 @@ public class GameplayController extends WorldController implements ContactListen
 		input.readInput(bounds, scale);
 		InputController.Move_Direction next_move = input.get_Next_Direction();
 
-		if (input.didZoom()) {
+		if (input.didZoom() && startPause) {
 			startPause = false;
 			zoom_in = true;
 			removePressAnyKeyText = true;
@@ -1618,7 +1618,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 		//player movement
 
-		if (!zoom_in && !zoom_out) {
+		if (currentScale == ZOOM_IN_SCALE) {
 			player.move(next_move, dt);
 			player.updateCooldown(dt);
 
@@ -1648,7 +1648,7 @@ public class GameplayController extends WorldController implements ContactListen
 
 		//throw light
 		if((input.didShift() && player.lightCounter > 0 && !player.getThrowCooldown()) &&
-				(thrownLights.isEmpty() || over500()) && !zoom_out &&!zoom_in) {
+				(thrownLights.isEmpty() || over500()) && currentScale == ZOOM_IN_SCALE) {
 
 			LightSourceLight light = new LightSourceLight(sourceRayHandler, THROWN_LIGHT_RADIUS + 2); //don't know why this is necesary, something weird going on with light radius
 			light.setColor(Color.PURPLE);

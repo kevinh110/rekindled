@@ -1420,7 +1420,7 @@ public class GameplayController extends WorldController implements ContactListen
 		input.readInput(bounds, scale);
 		InputController.Move_Direction next_move = input.get_Next_Direction();
 
-		if (input.anyKeyPressed()) {
+		if (input.didZoom()) {
 			startPause = false;
 			zoom_in = true;
 		}
@@ -1719,13 +1719,13 @@ public class GameplayController extends WorldController implements ContactListen
 
 		//draw the  UI
 
-		if (debug) {
-			canvas.beginDebug();
-			for(Obstacle obj : objects) {
-				obj.drawDebug(canvas);
-			}
-			canvas.endDebug();
-		}
+//		if (debug) {
+//			canvas.beginDebug();
+//			for(Obstacle obj : objects) {
+//				obj.drawDebug(canvas);
+//			}
+//			canvas.endDebug();
+//		}
 
 		if (complete && !failed) {
 			canvas.begin(); // DO NOT SCALE

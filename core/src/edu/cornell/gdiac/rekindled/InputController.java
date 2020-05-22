@@ -464,7 +464,7 @@ public class InputController extends Entity_Controller{
 		}
 	}
 
-    public boolean didZoom() {
-		return zoomPressed && !zoomPrevious;
-    }
+	public boolean didZoom() {
+		return Gdx.input.isKeyPressed(Input.Keys.ANY_KEY) && !Gdx.input.isKeyPressed(Input.Keys.R) && !Gdx.input.isKeyPressed(Input.Keys.P);
+	}
 }

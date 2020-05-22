@@ -208,8 +208,10 @@ public class GameplayController extends WorldController implements ContactListen
 
 	/** file location for tutorials */
     private static final String TUTORIAL_FIREFLY_FILE = "tutorial/firefly.png";
-    private static final String TUTORIAL_NEXT_FILE = "tutorial/next.png";
-    private static final String TUTORIAL_PLAY_FILE = "tutorial/play.png";
+	private static final String TUTORIAL_FIREFLY_FLIPPED = "tutorial/firefly_flipped.png";
+
+//    private static final String TUTORIAL_NEXT_FILE = "tutorial/next.png";
+//    private static final String TUTORIAL_PLAY_FILE = "tutorial/play.png";
 
     private static final String TUTORIAL_111 = "tutorial/lv1/1.1.1.png";
     private static final String TUTORIAL_112 = "tutorial/lv1/1.1.2.png";
@@ -222,8 +224,14 @@ public class GameplayController extends WorldController implements ContactListen
     private static final String TUTORIAL_211 = "tutorial/lv2/2.1.1.png";
     private static final String TUTORIAL_221 = "tutorial/lv2/2.2.1.png";
     private static final String TUTORIAL_311 = "tutorial/lv3/3.1.1.png";
-    private static final String TUTORIAL_411 = "tutorial/lv4/4.1.1.png";
+	private static final String TUTORIAL_312 = "tutorial/lv3/3.1.2.png";
+	private static final String TUTORIAL_411 = "tutorial/lv4/4.1.1.png";
     private static final String TUTORIAL_412 = "tutorial/lv4/4.1.2.png";
+	private static final String TUTORIAL_413 = "tutorial/lv4/4.1.3.png";
+	private static final String TUTORIAL_414 = "tutorial/lv4/4.1.4.png";
+	private static final String TUTORIAL_511 = "tutorial/lv5/5.1.1.png";
+	private static final String TUTORIAL_711 = "tutorial/lv7/7.1.1.png";
+	private static final String TUTORIAL_811 = "tutorial/lv8/8.1.1.png";
 
 
 
@@ -315,8 +323,9 @@ public class GameplayController extends WorldController implements ContactListen
 	 * Texture for Tutorial Text
 	 */
     private TextureRegion tutorialFirefly;
-    private TextureRegion tutorialNext;
-    private TextureRegion tutorialPlay;
+	private TextureRegion tutorialFireflyFlipped;
+//    private TextureRegion tutorialNext;
+//    private TextureRegion tutorialPlay;
 
     private TextureRegion tutorial111;
     private TextureRegion tutorial112;
@@ -329,8 +338,14 @@ public class GameplayController extends WorldController implements ContactListen
     private TextureRegion tutorial211;
     private TextureRegion tutorial221;
     private TextureRegion tutorial311;
-    private TextureRegion tutorial411;
+	private TextureRegion tutorial312;
+	private TextureRegion tutorial411;
     private TextureRegion tutorial412;
+	private TextureRegion tutorial413;
+	private TextureRegion tutorial414;
+	private TextureRegion tutorial511;
+	private TextureRegion tutorial711;
+	private TextureRegion tutorial811;
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState assetState = AssetState.EMPTY;
@@ -629,10 +644,12 @@ public class GameplayController extends WorldController implements ContactListen
 		if(TUTORIAL) {
 			manager.load(TUTORIAL_FIREFLY_FILE, Texture.class);
 			assets.add(TUTORIAL_FIREFLY_FILE);
-			manager.load(TUTORIAL_NEXT_FILE, Texture.class);
-			assets.add(TUTORIAL_NEXT_FILE);
-			manager.load(TUTORIAL_PLAY_FILE, Texture.class);
-			assets.add(TUTORIAL_PLAY_FILE);
+			manager.load(TUTORIAL_FIREFLY_FLIPPED, Texture.class);
+			assets.add(TUTORIAL_FIREFLY_FILE);
+//			manager.load(TUTORIAL_NEXT_FILE, Texture.class);
+//			assets.add(TUTORIAL_NEXT_FILE);
+//			manager.load(TUTORIAL_PLAY_FILE, Texture.class);
+//			assets.add(TUTORIAL_PLAY_FILE);
 
 			manager.load(TUTORIAL_111, Texture.class);
 			assets.add(TUTORIAL_111);
@@ -656,10 +673,22 @@ public class GameplayController extends WorldController implements ContactListen
 			assets.add(TUTORIAL_221);
 			manager.load(TUTORIAL_311, Texture.class);
 			assets.add(TUTORIAL_311);
+			manager.load(TUTORIAL_312, Texture.class);
+			assets.add(TUTORIAL_312);
 			manager.load(TUTORIAL_411, Texture.class);
 			assets.add(TUTORIAL_411);
 			manager.load(TUTORIAL_412, Texture.class);
 			assets.add(TUTORIAL_412);
+			manager.load(TUTORIAL_413, Texture.class);
+			assets.add(TUTORIAL_413);
+			manager.load(TUTORIAL_414, Texture.class);
+			assets.add(TUTORIAL_414);
+			manager.load(TUTORIAL_511, Texture.class);
+			assets.add(TUTORIAL_511);
+			manager.load(TUTORIAL_711, Texture.class);
+			assets.add(TUTORIAL_711);
+			manager.load(TUTORIAL_811, Texture.class);
+			assets.add(TUTORIAL_811);
 		}
 
 		super.preLoadContent(manager);
@@ -733,8 +762,10 @@ public class GameplayController extends WorldController implements ContactListen
 //		System.out.println("level "+LEVEL_ID+", tutorial: "+TUTORIAL+"; inside setTutorialTextures");
 
 		tutorialFirefly = createTexture(manager, TUTORIAL_FIREFLY_FILE, false);
-		tutorialNext = createTexture(manager, TUTORIAL_NEXT_FILE, false);
-		tutorialPlay = createTexture(manager, TUTORIAL_PLAY_FILE, false);
+		tutorialFireflyFlipped = createTexture(manager, TUTORIAL_FIREFLY_FLIPPED, false);
+
+//		tutorialNext = createTexture(manager, TUTORIAL_NEXT_FILE, false);
+//		tutorialPlay = createTexture(manager, TUTORIAL_PLAY_FILE, false);
 
 		tutorial111 = createTexture(manager, TUTORIAL_111, false);
 		tutorial112 = createTexture(manager, TUTORIAL_112, false);
@@ -747,8 +778,15 @@ public class GameplayController extends WorldController implements ContactListen
 		tutorial211 = createTexture(manager, TUTORIAL_211, false);
 		tutorial221 = createTexture(manager, TUTORIAL_221, false);
 		tutorial311 = createTexture(manager, TUTORIAL_311, false);
+		tutorial312 = createTexture(manager, TUTORIAL_312, false);
 		tutorial411 = createTexture(manager, TUTORIAL_411, false);
 		tutorial412 = createTexture(manager, TUTORIAL_412, false);
+		tutorial413 = createTexture(manager, TUTORIAL_413, false);
+		tutorial414 = createTexture(manager, TUTORIAL_414, false);
+		tutorial511 = createTexture(manager, TUTORIAL_511, false);
+		tutorial711 = createTexture(manager, TUTORIAL_711, false);
+		tutorial811 = createTexture(manager, TUTORIAL_811, false);
+
 	}
 
 	/**
@@ -1052,7 +1090,7 @@ public class GameplayController extends WorldController implements ContactListen
 		world.setContactListener(this);
 
 		LEVEL_ID = id; //starts at 0
-		if(LEVEL_ID <4){ //levels 0-3; first 4 levels
+		if(LEVEL_ID <5 || LEVEL_ID==6 || LEVEL_ID==7){ //levels 1-5 (first 5 levels) + lv7 + lv8
 			TUTORIAL = true;
 		} else {
 			TUTORIAL = false;
@@ -1286,12 +1324,13 @@ public class GameplayController extends WorldController implements ContactListen
 
 		// Add Tutorial Texts
 		if(TUTORIAL){
-			System.out.println("level "+LEVEL_ID+", tutorial: "+TUTORIAL+"; adding tutorial text");
+//			System.out.println("level "+LEVEL_ID+", tutorial: "+TUTORIAL+"; adding tutorial text");
 
 			tutorialTexts = new TutorialObject[0]; //default; empty list
 
 			if(LEVEL_ID==0){
 				tutorialTexts = new TutorialObject[8];
+				//width & height just have to be large enough... I manually sized the files to the correct size...
 				tutorialTexts[0] = new TutorialObject(-5, 5, 500, 500);
 				tutorialTexts[0].setTexture(tutorial111);
 
@@ -1316,14 +1355,72 @@ public class GameplayController extends WorldController implements ContactListen
 				tutorialTexts[7] = new TutorialObject(-5, -1, 300, 300);
 				tutorialTexts[7].setTexture(tutorialFirefly);
 
+			} else if(LEVEL_ID==1){
+				tutorialTexts = new TutorialObject[3];
+				tutorialTexts[0] = new TutorialObject(-4, 2, 500, 500);
+				tutorialTexts[0].setTexture(tutorial211);
+
+				tutorialTexts[1] = new TutorialObject(8, 2, 500, 500);
+				tutorialTexts[1].setTexture(tutorial221);
+
+				tutorialTexts[2] = new TutorialObject(-4, 5, 300, 300);
+				tutorialTexts[2].setTexture(tutorialFirefly);
+
+			} else if(LEVEL_ID==2){
+				tutorialTexts = new TutorialObject[3];
+				tutorialTexts[0] = new TutorialObject(5, 11, 600, 600);
+				tutorialTexts[0].setTexture(tutorial311);
+
+				tutorialTexts[1] = new TutorialObject(7, 7, 500, 500);
+				tutorialTexts[1].setTexture(tutorial312);
+
+				tutorialTexts[2] = new TutorialObject(0, 11, 300, 300);
+				tutorialTexts[2].setTexture(tutorialFirefly);
+
+			} else if(LEVEL_ID==3){
+				tutorialTexts = new TutorialObject[3];
+				tutorialTexts[0] = new TutorialObject(-5, 4, 500, 500);
+				tutorialTexts[0].setTexture(tutorial411);
+
+				tutorialTexts[1] = new TutorialObject(-5, 2, 500, 500);
+				tutorialTexts[1].setTexture(tutorial412);
+
+				tutorialTexts[2] = new TutorialObject(-5, -1, 300, 300);
+				tutorialTexts[2].setTexture(tutorialFirefly);
+
+			} else if(LEVEL_ID==4){
+				tutorialTexts = new TutorialObject[2];
+//				tutorialTexts[0] = new TutorialObject(6, 8, 500, 500); // location for transparent text
+
+				tutorialTexts[0] = new TutorialObject(4, 10, 500, 500);
+				tutorialTexts[0].setTexture(tutorial511);
+
+				tutorialTexts[1] = new TutorialObject(0, 11, 500, 500);
+				tutorialTexts[1].setTexture(tutorialFireflyFlipped);
+
+			} else if(LEVEL_ID==6){
+				tutorialTexts = new TutorialObject[1];
+//				tutorialTexts[0] = new TutorialObject(6, 8, 500, 500);
+
+				tutorialTexts[0] = new TutorialObject(5, 8, 500, 500);
+				tutorialTexts[0].setTexture(tutorial711);
+
+			} else if(LEVEL_ID==7){
+				tutorialTexts = new TutorialObject[1];
+//				tutorialTexts[0] = new TutorialObject(6, 8, 500, 500);
+
+				tutorialTexts[0] = new TutorialObject(5, 2, 500, 500);
+				tutorialTexts[0].setTexture(tutorial811);
+
 			}
+
 			for (int i=0; i<tutorialTexts.length;i++){
 				tutorialTexts[i].setDrawScale(scale);
 				tutorialTexts[i].setBodyType(BodyDef.BodyType.StaticBody);
 				tutorialTexts[i].setSensor(true);
 				addObject(tutorialTexts[i]);
 			}
-			System.out.println("level "+LEVEL_ID+", tutorial: "+TUTORIAL+"; done adding tutorial texts");
+//			System.out.println("level "+LEVEL_ID+", tutorial: "+TUTORIAL+"; done adding tutorial texts");
 
 		}
 	}
@@ -1420,7 +1517,7 @@ public class GameplayController extends WorldController implements ContactListen
 		input.readInput(bounds, scale);
 		InputController.Move_Direction next_move = input.get_Next_Direction();
 
-		if (next_move != Entity_Controller.Move_Direction.NO_MOVE && startPause) {
+		if (input.didZoom()) {
 			startPause = false;
 			zoom_in = true;
 		}
@@ -1692,7 +1789,9 @@ public class GameplayController extends WorldController implements ContactListen
 		}
 
 		if(TUTORIAL){
-			drawTutorial();
+			for (int i=0; i<tutorialTexts.length;i++){
+				tutorialTexts[i].draw(canvas);
+			}
 		}
 
 		// Draw enemies + player + lights; this is redundant but needed for correct ordering of textures
@@ -1719,13 +1818,13 @@ public class GameplayController extends WorldController implements ContactListen
 
 		//draw the  UI
 
-		if (debug) {
-			canvas.beginDebug();
-			for(Obstacle obj : objects) {
-				obj.drawDebug(canvas);
-			}
-			canvas.endDebug();
-		}
+//		if (debug) {
+//			canvas.beginDebug();
+//			for(Obstacle obj : objects) {
+//				obj.drawDebug(canvas);
+//			}
+//			canvas.endDebug();
+//		}
 
 		if (complete && !failed) {
 			canvas.begin(); // DO NOT SCALE
@@ -1738,6 +1837,7 @@ public class GameplayController extends WorldController implements ContactListen
 	}
 
 	private void drawUI() {
+
 		// Magic Numbers - will change later
 		canvas.draw(lightsTexture, 10, canvas.getHeight() - 75);
 		if (player.getLightCounter() > 0){
@@ -1746,22 +1846,22 @@ public class GameplayController extends WorldController implements ContactListen
 			}
 		}
 		canvas.draw(pauseTexture, canvas.getWidth() - 150, canvas.getHeight() - 125);
-	}
 
-	private void drawTutorial(){
-		System.out.println("--level "+LEVEL_ID+", tutorial: "+TUTORIAL+"; inside drawTutorial()");
-
-//		if(LEVEL_ID==0){
-//			tutorialTexts[0].draw(canvas);
-//			canvas.draw(tutorial111, 100, canvas.getHeight() - 75);
-//		}
-
-		for (int i=0; i<tutorialTexts.length;i++){
-			tutorialTexts[i].draw(canvas);
+		if(LEVEL_ID==3 && TUTORIAL){
+			canvas.draw(tutorial413, 380, canvas.getHeight() - 90);
+			canvas.draw(tutorial414, 250, canvas.getHeight() - 75);
 		}
-		System.out.println("--level "+LEVEL_ID+", tutorial: "+TUTORIAL+"; leaving drawTutorial()");
-
 	}
+//
+//	private void drawTutorial(){
+////		System.out.println("--level "+LEVEL_ID+", tutorial: "+TUTORIAL+"; inside drawTutorial()");
+//
+//		for (int i=0; i<tutorialTexts.length;i++){
+//			tutorialTexts[i].draw(canvas);
+//		}
+////		System.out.println("--level "+LEVEL_ID+", tutorial: "+TUTORIAL+"; leaving drawTutorial()");
+//
+//	}
 
 	public boolean isAlive() {
 		return true;

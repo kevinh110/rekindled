@@ -16,7 +16,6 @@ public class TutorialObject extends BoxObstacle {
 
     }
     public void setTexture(TextureRegion t){
-        System.out.println("set tutorial texture");
         super.setTexture(t);
     }
 
@@ -27,9 +26,7 @@ public class TutorialObject extends BoxObstacle {
 //    }
 
     public void draw(GameCanvas canvas){
-        System.out.println("--draw tutorial object");
         super.draw(canvas);
-        System.out.println("--done drawing tutorial object");
 
     }
 
